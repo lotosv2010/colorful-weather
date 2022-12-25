@@ -1,0 +1,81 @@
+/* components/air/index.wxss */
+.weather-air {
+  background-color: rgb(34, 37, 48);
+  padding: 15px;
+  border-radius: 15px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+.weather-air-header {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.weather-air-main {
+  display: flex;
+  box-sizing: border-box;
+}
+.weather-air-chart {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  text-align: center;
+}
+.weather-air-chart .chart {
+  font-size: 2rem;
+  height: 5rem;
+  line-height: 5rem;
+  width: 5rem;
+  border-radius: 50%;
+  border: 5px #9BB365 solid;
+  margin-bottom: 10px;
+}
+.weather-air-chart .title {
+  font-size: 1.2rem;
+}
+.weather-air-grid {
+  height: 9rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+}
+.weather-air-grid .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+.weather-air-grid .col {
+  height: 90%;
+  width: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  box-sizing: border-box;
+}
+.weather-air-grid .progress{
+  height: 5px;
+  width: 100%;
+  border-radius: 5px;
+}
+.weather-air-grid .col .value {
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+.weather-air-grid .col .label {
+  font-size: 0.7rem;
+  color: #A6A9AD;
+  position: relative;
+}
+.weather-air-grid .col .label .unit {
+  font-size: 0.5rem;
+  position: absolute;
+  bottom: -4px;
+  margin-left: 1px;
+}

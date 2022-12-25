@@ -1,0 +1,40 @@
+<!--components/life/index.wxml-->
+<view class="weather-life">
+  <view class="weather-life-header">
+    <text class="right" bindtap="gotoDetail">生活预报</text>
+  </view>
+  <view class="weather-life-main">
+    <view class="weather-life-row">
+      <view class="weather-life-col">
+        <weather-icon class="weather-life-icon" colors="{{['rgb(68, 179, 255)']}}" src="/static/icons/pb.svg" />
+        <view class="weather-life-desc">
+          <text class="title">运动</text>
+          <text>{{indices[0].category}}</text>
+        </view>
+      </view>
+      <view class="weather-life-col">
+        <weather-icon class="weather-life-icon" colors="{{['rgb(68, 179, 255)']}}" src="/static/icons/yf.svg" />
+        <view class="weather-life-desc">
+          <text class="title">穿衣</text>
+          <text>{{indices[2].category}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="weather-life-row">
+      <view class="weather-life-col">
+        <weather-icon class="weather-life-icon" colors="{{['rgb(68, 179, 255)']}}" src="/static/icons/qc.svg" />
+        <view class="weather-life-desc">
+          <text class="title">洗车</text>
+          <text>{{indices[1].category}}</text>
+        </view>
+      </view>
+      <view class="weather-life-col">
+        <weather-icon class="weather-life-icon" colors="{{['rgb(68, 179, 255)']}}" src="/static/icons/ys.svg" />
+        <view class="weather-life-desc">
+          <text class="title">紫外线</text>
+          <text>{{indices[4].category}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

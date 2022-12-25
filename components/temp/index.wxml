@@ -1,0 +1,63 @@
+<!--components/temp/index.wxml-->
+<view class="weather-header">
+  <view class="weather-header-date" bindtap="getNow">
+    <view>{{ date }} </view>
+    <weather-icon class="weather-header-refresh" colors="{{['rgb(181, 187, 204)']}}" src="/static/icons/refresh.svg" />
+  </view>
+  <view class="weather-header-container">
+    <view class="weather-header-city">{{ city }}</view>
+    <view class="weather-header-main">
+      <text class="weather-header-svg qi-{{weather.icon || 100}}-fill"></text>
+      <view class="weather-header-left">
+        <view class="weather-header-temp">
+          {{ weather.temp }}
+          <text class="weather-header-unit">o</text>
+        </view>
+        <view class="weather-header-text">{{ weather.text }}</view>
+      </view>
+    </view>
+    <view class="weather-header-desc">{{desc}}</view>
+    <view class="weather-header-other">
+      <view class="weather-header-other-left">
+        <image src="../../static/icons/fxd.svg"></image>
+        <text>{{weather.windDir}} {{weather.windScale}}级</text>
+        <text>{{weather.windSpeed}}km/h</text>
+      </view>
+      <view class="weather-header-other-right">
+        <view class="row">
+          <view class="grid">
+            <text class="value">{{weather.humidity}}%</text>
+            <text class="label">湿度</text>
+          </view>
+          <view class="grid">
+            <text class="value">{{uv}}</text>
+            <text class="label">紫外线</text>
+          </view>
+        </view>
+        <view class="row">
+          <view class="grid">
+            <text class="value">
+              <text>{{weather.feelsLike}}</text>
+              <text class="unit">o</text>
+            </text>
+            <text class="label">体感温度</text>
+          </view>
+          <view class="grid">
+            <text class="value">{{weather.vis}}km</text>
+            <text class="label">能见度</text>
+          </view>
+        </view>
+        <view class="row">
+          <view class="grid">
+            <text class="value">{{weather.precip}}mm</text>
+            <text class="label">降水量</text>
+          </view>
+          <view class="grid">
+            <text class="value">{{weather.pressure}}pha</text>
+            <text class="label">大气压</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

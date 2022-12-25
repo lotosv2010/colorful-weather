@@ -1,0 +1,55 @@
+/* components/life/index.wxss */
+.weather-life {
+  background-color: rgb(34, 37, 48);
+  padding: 15px;
+  border-radius: 15px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+.weather-life-header {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.weather-life-main{
+  display: flex;
+  justify-content: center;
+}
+.weather-life-row {
+  flex: 1;
+}
+.weather-life-row:nth-child(odd) {
+  margin-right: 5px;
+}
+.weather-life-row:nth-child(even) {
+  margin-left: 5px;
+}
+.weather-life-col {
+  background-color: rgb(46, 48, 63);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+.weather-life-col:nth-child(odd) {
+  margin-bottom: 10px;
+}
+.weather-life-icon {
+  height: 2rem;
+  width: 2rem;
+  text-align: center;
+}
+.weather-life-desc {
+  width: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.7rem;
+}
+.weather-life-desc .title {
+  font-size: 0.9rem;
+}

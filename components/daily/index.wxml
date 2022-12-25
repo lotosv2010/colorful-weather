@@ -1,0 +1,28 @@
+<!--components/daily/index.wxml-->
+<view class="weather-daily">
+  <view class="weather-daily-header">
+    <text class="right">未来预报</text>
+    <text class="left">7天预报</text>
+  </view>
+  <view class="weather-daily-item" wx:for="{{daily}}" wx:key="fxDate">
+    <view class="weather-daily-date">
+      <text class="week">{{item.week}}</text>
+      <tex class="time">{{item.month}}月{{item.day}}日</tex>
+    </view>
+    <view class="weather-daily-day">
+      <text class="weather-daily-icon qi-{{item.iconDay}}-fill"></text>
+      <view class="weather-daily-day-temp">
+        <text class="value">{{item.tempMax}}</text>
+        <text class="unit">o</text>
+      </view>
+    </view>
+    <view class="weather-daily-progress"></view>
+    <view class="weather-daily-night">
+      <view class="weather-daily-night-temp">
+        <text class="value">{{item.tempMin}}</text>
+        <text class="unit">o</text>
+      </view>
+      <text class="weather-daily-icon qi-{{item.iconNight}}-fill"></text>
+    </view>
+  </view>
+</view>

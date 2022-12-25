@@ -1,0 +1,65 @@
+/* components/hourly/index.wxss */
+.weather-hourly {
+  padding: 15px;
+  border-radius: 15px;
+  background-color: rgb(34, 37, 48);
+  margin: 10px 0;
+  display: flex;
+  overflow-x: auto;
+}
+.weather-hourly-main {
+  height: 10rem;
+  box-sizing: border-box;
+  display: flex;
+}
+.weather-hourly::-webkit-scrollbar{
+  width: 0;
+  height: 0;
+  color: transparent;
+  display:none;
+ }
+
+.weather-hourly-item {
+  width: 3.35rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  justify-content: space-around;
+  font-size: 0.8rem;
+  background-color: rgb(17, 17, 21);
+  box-sizing: border-box;
+  border-radius: 10px;
+  padding: 10px;
+  margin-right: 10px;
+}
+.weather-hourly-icon {
+  color: rgb(68, 179, 255);
+  font-size: 1.25rem;
+}
+.weather-hourly-temp {
+  font-weight: 300;
+  position: relative;
+}
+.weather-hourly-temp .value {
+  display: inline-block;
+  width: 1.1rem;
+  font-size: 0.9rem;
+}
+.weather-hourly-temp .unit {
+  position: absolute;
+  top: 0;
+  font-size: 0.5rem;
+}
+.weather-hourly-windDir {
+  font-size: 0.6rem;
+}
+.weather-hourly-windSpeed {
+  font-size: 0.6rem;
+  color: rgb(142, 142, 144);
+}
+.weather-hourly-fxTime {
+  font-size: 0.6rem;
+  color: rgb(142, 142, 144);
+}

@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "weather-temp": "../../components/temp/index",
+    "weather-icon": "../../components/icon/index",
+    "weather-hourly": "../../components/hourly/index",
+    "weather-daily": "../../components/daily/index",
+    "weather-air": "../../components/air/index",
+    "weather-life": "../../components/life/index"
+  }
+}

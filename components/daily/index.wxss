@@ -1,0 +1,77 @@
+/* components/daily/index.wxss */
+.weather-daily {
+  background-color: rgb(34, 37, 48);
+  padding: 15px;
+  border-radius: 15px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+.weather-daily-header {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.weather-daily-header .left {
+  color: rgb(61, 104, 198);
+  font-size: 0.7rem;
+  margin-bottom: 15px;
+}
+.weather-daily-item {
+  background-color: rgb(46, 48, 61);
+  box-sizing: border-box;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.weather-daily-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 15px;
+}
+.weather-daily-date .week {
+  font-size: 0.9rem;
+}
+.weather-daily-date .time {
+  font-size: 0.7rem;
+}
+.weather-daily-day, .weather-daily-night {
+  width: 3.4rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.weather-daily-progress {
+  flex: 1;
+  height: 5px;
+  border-radius: 5px;
+  width: 100%;
+  margin: 0 5px;
+  background: linear-gradient(to right,rgb(238, 141, 114), rgb(86, 110, 255));
+}
+.weather-daily-icon {
+  color: rgb(68, 179, 255);
+  font-size: 1.5rem;
+}
+.weather-daily-night-temp, .weather-daily-day-temp {
+  width: 1.3rem;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+.weather-daily-day-temp .unit, .weather-daily-night-temp .unit {
+  height: 0.5rem;
+  width: 0.5rem;
+  line-height: 0.5rem;
+  text-align: center;
+  font-size: 0.5rem;
+  position: absolute;
+  display: inline-block;
+  top: 0;
+  right: 0;
+}

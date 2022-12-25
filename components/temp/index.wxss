@@ -1,0 +1,126 @@
+/* components/temp/index.wxss */
+.weather-header {
+  background-color: rgb(59, 74, 114);
+  padding: 15px;
+  border-radius: 15px;
+}
+.weather-header-date {
+  font-size: 0.8rem;
+  color: rgb(181, 187, 204);
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
+}
+.weather-header-refresh {
+  width: 1rem;
+  height: 1rem;
+  margin-left: 5px;
+}
+.weather-header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgb(182, 188, 203);
+}
+.weather-header-city {
+  font-size: 1.5rem;
+}
+.weather-header-main {
+  height: 4.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.weather-header-svg {
+  font-size: 4.5rem;
+  color: rgb(68, 179, 255)
+}
+.weather-header-left {
+  height: 100%;
+  font-size: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-left: 10px;
+  color: #fff;
+}
+.weather-header-temp {
+  height: 2rem;
+  line-height: 2rem;
+  position: relative;
+}
+.weather-header-unit {
+  font-size: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+  position: absolute;
+  top: 0px;
+  right: -12px;
+  margin-left: 5px;
+}
+.weather-header-text {
+  font-size: 1.2rem;
+}
+.weather-header-desc {
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 15px;
+  font-weight: 300;
+}
+.weather-header-other {
+  height: 12rem;
+  width: 100%;
+  background-color: rgb(44, 57, 93);
+  box-sizing: border-box;
+  border-radius: 10px;
+  display: flex;
+  font-size: 0.8rem;
+  padding: 20px;
+  margin: 30px 20px 10px 20px;
+}
+.weather-header-other-left{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 30%;
+  height: 100%;
+  color: #fff;
+} 
+.weather-header-other-left image {
+  height: 3rem;
+  width: 3rem;
+  margin-bottom: 20px;
+}
+.weather-header-other-right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.weather-header-other-right .row {
+  display: flex;
+  flex: 1;
+}
+.weather-header-other-right .grid{
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.weather-header-other-right .grid .label {
+  color: #fff;
+}
+.weather-header-other-right .grid .value {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.weather-header-other-right .grid .unit {
+  position: absolute;
+  top: 0px;
+  right: -5px;
+  font-size: 0.5rem;
+}

@@ -1,0 +1,4 @@
+/**app.wxss**/
+@import 'static/qweather-icons.wxss';
+@import 'weui.wxss';
+

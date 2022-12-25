@@ -1,0 +1,26 @@
+/**index.wxss**/
+.weather {
+  background-color: black;
+  color: #ffffff;
+  padding: 10px 0;
+}
+.weather .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 16px;
+  font-size: 0.9rem;
+  color: #fff;
+}
+.weather-search {
+  display: flex;
+  align-items: center;
+}
+.weather-search .icon-title {
+  margin-left: 5px;
+}
+.weather .container {
+  height: 100%;
+  padding: 0px 16px;
+  box-sizing: border-box;
+}

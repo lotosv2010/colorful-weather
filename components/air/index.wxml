@@ -1,0 +1,66 @@
+<!--components/air/index.wxml-->
+<view class="weather-air">
+  <view class="weather-air-header">
+    <text class="right">空气质量</text>
+  </view>
+  <view class="weather-air-main">
+    <view class="weather-air-chart">
+      <view class="chart">{{air.aqi}}</view>
+      <view class="title">{{air.category}}</view>
+    </view>
+    <view class="weather-air-grid">
+      <view class="row">
+        <view class="col">
+          <view class="value">{{air.pm2p5}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.pm2p5}}" active stroke-width="3" />
+          <view class="label">
+            <text class="title">PM</text>
+            <text class="unit">2.5</text>
+          </view>
+        </view>
+        <view class="col">
+          <view class="value">{{air.pm10}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.pm10}}" active stroke-width="3" />
+          <view class="label">
+            <text class="title">PM</text>
+            <text class="unit">10</text>
+          </view>
+        </view>
+        <view class="col">
+          <view class="value">{{air.o3}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.o3}}" active stroke-width="3" />
+          <view class="label">
+            <text class="title">O</text>
+            <text class="unit">3</text>
+          </view>
+        </view>
+      </view>
+      <view class="row">
+        <view class="col">
+          <view class="value">{{air.co}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.co}}" active stroke-width="3" />
+          <view class="label">
+            <text class="title">CO</text>
+            <text class="unit"></text>
+          </view>
+        </view>
+        <view class="col">
+          <view class="value">{{air.so2}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.so2}}" active stroke-width="3" />
+          <view class="label">
+            <text class="title">SO</text>
+            <text class="unit">2</text>
+          </view>
+        </view>
+        <view class="col">
+          <view class="value">{{air.no2}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.no2}}" active stroke-width="3" />
+          <view class="label">
+            <text class="title">NO</text>
+            <text class="unit">2</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

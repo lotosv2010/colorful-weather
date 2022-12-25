@@ -1,0 +1,15 @@
+<!--components/hourly/index.wxml-->
+<view class="weather-hourly">
+  <view class="weather-hourly-main">
+    <view class="weather-hourly-item" wx:for="{{hourly}}" wx:key="fxTime">
+      <text class="weather-hourly-icon qi-{{item.icon}}-fill"></text>
+      <view class="weather-hourly-temp">
+        <text class="value">{{item.temp}}</text>
+        <text class="unit">o</text>
+      </view>
+      <text class="weather-hourly-windDir">{{item.windDir}}</text>
+      <text class="weather-hourly-windSpeed">{{item.windSpeed}}km/h</text>
+      <text class="weather-hourly-fxTime">{{item.hour}}时</text>
+    </view>
+  </view>
+</view>

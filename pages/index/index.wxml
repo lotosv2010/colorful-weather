@@ -1,0 +1,36 @@
+<!--index.wxml-->
+<view class="weather">
+  <view class="header">
+    <view class="weather-search" bindtap="showSelector">
+      <icon class="icon-small" type="search" color="#fff" size="24"></icon>
+      <view class="icon-title">搜索</view>
+    </view>
+    <view class="weather-location" bindtap="init">
+      <view class="icon-title">当前位置</view>
+    </view>
+  </view>
+  <view class="container">
+    <weather-temp 
+      weather="{{currentWeather}}" 
+      city="{{currentCity}}" 
+      date="{{dateNow}}"
+      desc="{{desc}}"
+      uv="{{uv}}"
+      bind:getnow="getWeather"
+      class="weather-temp"
+    />
+    <weather-hourly
+      hourly="{{hourly}}"
+    />
+    <weather-daily
+      daily="{{daily}}"
+    />
+    <weather-air
+      air="{{air}}"
+    />
+    <weather-life
+      indices="{{indices}}"
+    />
+  </view>
+  <selector-component show="{{selectorVisible}}" key="{{lbs.key}}" referer="{{lbs.referer}}" hotCitys="{{lbs.hotCitys}}" bindselect="onSelectCity" />
+</view>
