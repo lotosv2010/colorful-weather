@@ -5,25 +5,24 @@
     <text class="right">未来预报</text>
     <text class="left">7天预报</text>
   </view>
-  <view class="weather-daily-item" wx:for="{{daily}}" wx:key="fxDate">
+  <view class="weather-daily-item" wx:for="{{dailyList}}" wx:key="fxDate">
     <view class="weather-daily-date">
       <text class="week">{{item.week}}</text>
       <text class="time">{{item.month}}月{{item.day}}日</text>
     </view>
-    <view class="weather-daily-day">
-      <i class="weather-daily-icon icon-color-{{ic.category(item.iconDay)}} qi-{{item.iconDay}}-fill"></i>
-      <view class="weather-daily-day-temp">
-        <text class="value">{{item.tempMax}}</text>
-        <text class="unit">o</text>
+    <i class="weather-daily-icon icon-color-{{ic.category(item.iconDay)}} qi-{{item.iconDay}}-fill"></i>
+    <view class="weather-daily-temp-bar">
+      <view class="weather-daily-bar" style="left: {{item.barLeft}}%; width: {{item.barWidth}}%">
+        <view class="weather-daily-temp weather-daily-temp-max">
+          <text class="value">{{item.tempMax}}</text>
+          <text class="unit">°</text>
+        </view>
+        <view class="weather-daily-temp weather-daily-temp-min">
+          <text class="value">{{item.tempMin}}</text>
+          <text class="unit">°</text>
+        </view>
       </view>
     </view>
-    <view class="weather-daily-progress"></view>
-    <view class="weather-daily-night">
-      <view class="weather-daily-night-temp">
-        <text class="value">{{item.tempMin}}</text>
-        <text class="unit">o</text>
-      </view>
-      <i class="weather-daily-icon icon-color-{{ic.category(item.iconNight)}} qi-{{item.iconNight}}-fill"></i>
-    </view>
+    <i class="weather-daily-icon icon-color-{{ic.category(item.iconNight)}} qi-{{item.iconNight}}-fill"></i>
   </view>
 </view>

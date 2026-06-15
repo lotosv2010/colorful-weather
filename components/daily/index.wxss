@@ -32,7 +32,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 15px;
+  margin-right: 8px;
 }
 .weather-daily-date .week {
   font-size: 0.9rem;
@@ -40,37 +40,48 @@
 .weather-daily-date .time {
   font-size: 0.7rem;
 }
-.weather-daily-day, .weather-daily-night {
-  width: 3.4rem;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-.weather-daily-progress {
-  flex: 1;
-  height: 5px;
-  border-radius: 5px;
-  width: 100%;
-  margin: 0 5px;
-  background: linear-gradient(to right,rgb(238, 141, 114), rgb(86, 110, 255));
-}
 .weather-daily-icon {
   font-size: 1.5rem;
+  flex-shrink: 0;
+  margin: 0 16px;
 }
-.weather-daily-night-temp, .weather-daily-day-temp {
-  width: 1.3rem;
+/* 进度条区域：两侧留 32px 给温度标签 */
+.weather-daily-temp-bar {
+  flex: 1;
   position: relative;
-  display: flex;
-  justify-content: space-between;
+  height: 4px;
+  min-width: 0;
+  margin: 0 32px;
+  overflow: visible;
 }
-.weather-daily-day-temp .unit, .weather-daily-night-temp .unit {
-  height: 0.5rem;
-  width: 0.5rem;
-  line-height: 0.5rem;
-  text-align: center;
-  font-size: 0.5rem;
+.weather-daily-bar {
   position: absolute;
-  display: inline-block;
   top: 0;
-  right: 0;
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(to right, rgb(238, 141, 114), rgb(86, 110, 255));
+}
+/* 温度标签绝对定位贴 bar 两端 */
+.weather-daily-temp {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: flex-start;
+  white-space: nowrap;
+}
+.weather-daily-temp-max {
+  right: 100%;
+  margin-right: 4px;
+}
+.weather-daily-temp-min {
+  left: 100%;
+  margin-left: 4px;
+}
+.weather-daily-temp .value {
+  font-size: 0.75rem;
+}
+.weather-daily-temp .unit {
+  font-size: 0.65rem;
+  line-height: 0.75rem;
 }
