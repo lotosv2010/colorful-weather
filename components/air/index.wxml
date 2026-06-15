@@ -2,62 +2,58 @@
 <view class="weather-air">
   <view class="weather-air-header">
     <text class="right">空气质量</text>
+    <text class="action more" bindtap="gotoDetail">预报和更多 ›</text>
   </view>
   <view class="weather-air-main">
     <view class="weather-air-chart">
-      <view class="chart">{{air.aqi}}</view>
+      <view class="chart" style="border-color: {{air.colorHex || '#9BB365'}}">{{air.aqiDisplay || air.aqi}}</view>
       <view class="title">{{air.category}}</view>
+      <view class="subtitle" wx:if="{{air.primary}}">{{air.primary}}</view>
     </view>
     <view class="weather-air-grid">
       <view class="row">
         <view class="col">
-          <view class="value">{{air.pm2p5}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.pm2p5}}" active stroke-width="3" />
+          <view class="value">{{air.pm2p5.value}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.pm2p5.value}}" active stroke-width="3" />
           <view class="label">
-            <text class="title">PM</text>
-            <text class="unit">2.5</text>
+            <text class="title">{{air.pm2p5.name}}</text>
           </view>
         </view>
         <view class="col">
-          <view class="value">{{air.pm10}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.pm10}}" active stroke-width="3" />
+          <view class="value">{{air.pm10.value}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.pm10.value}}" active stroke-width="3" />
           <view class="label">
-            <text class="title">PM</text>
-            <text class="unit">10</text>
+            <text class="title">{{air.pm10.name}}</text>
           </view>
         </view>
         <view class="col">
-          <view class="value">{{air.o3}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.o3}}" active stroke-width="3" />
+          <view class="value">{{air.o3.value}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.o3.value}}" active stroke-width="3" />
           <view class="label">
-            <text class="title">O</text>
-            <text class="unit">3</text>
+            <text class="title">{{air.o3.name}}</text>
           </view>
         </view>
       </view>
       <view class="row">
         <view class="col">
-          <view class="value">{{air.co}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.co}}" active stroke-width="3" />
+          <view class="value">{{air.co.value}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.co.value}}" active stroke-width="3" />
           <view class="label">
-            <text class="title">CO</text>
-            <text class="unit"></text>
+            <text class="title">{{air.co.name}}</text>
           </view>
         </view>
         <view class="col">
-          <view class="value">{{air.so2}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.so2}}" active stroke-width="3" />
+          <view class="value">{{air.so2.value}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.so2.value}}" active stroke-width="3" />
           <view class="label">
-            <text class="title">SO</text>
-            <text class="unit">2</text>
+            <text class="title">{{air.so2.name}}</text>
           </view>
         </view>
         <view class="col">
-          <view class="value">{{air.no2}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.no2}}" active stroke-width="3" />
+          <view class="value">{{air.no2.value}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.no2.value}}" active stroke-width="3" />
           <view class="label">
-            <text class="title">NO</text>
-            <text class="unit">2</text>
+            <text class="title">{{air.no2.name}}</text>
           </view>
         </view>
       </view>

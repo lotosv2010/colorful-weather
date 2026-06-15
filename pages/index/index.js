@@ -86,6 +86,35 @@ Page({
       return res;
     });
   },
+  // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构
+  formatAir(res) {
+    if (!res || !res.indexes || !res.indexes.length) return {};
+    const idx = res.indexes[0];
+    const c = idx.color || {};
+    const colorHex = `#${(c.red << 16 | c.green << 8 | c.blue).toString(16).padStart(6, '0')}`;
+    // API pollutant code → 组件字段名映射
+    // const codeMap = { 'PM2.5': 'pm2p5', 'PM10': 'pm10', 'O3': 'o3', 'CO': 'co', 'SO2': 'so2', 'NO2': 'no2' };
+    const pollutants = {};
+    (res.pollutants || []).forEach(p => {
+      pollutants[p.code] = {
+        value: p?.concentration?.value,
+        name: p.name,
+        originData: p
+      };
+    });
+    return {
+      aqi: idx.aqi,
+      aqiDisplay: idx.aqiDisplay,
+      category: idx.category,
+      level: idx.level,
+      colorHex,
+      primary: idx.primaryPollutant ? idx.primaryPollutant.name : '',
+      healthEffect: idx.health ? idx.health.effect : '',
+      generalAdvice: idx.health && idx.health.advice ? idx.health.advice.generalPopulation : '',
+      sensitiveAdvice: idx.health && idx.health.advice ? idx.health.advice.sensitivePopulation : '',
+      ...pollutants
+    };
+  },
   async getWeather() {
     try {
       wx.showLoading({
@@ -94,16 +123,20 @@ Page({
       let location = '101010100';
       const {longitude, latitude} = this.data;
       location = `${longitude},${latitude}`;
+      const airLocation = `${latitude}/${longitude}`;
       const today = this.formatDateStr(new Date());
-      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, {now: airData}, sunData, moonData] = await Promise.all([
+      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData] = await Promise.all([
         now({location}),
         this.getIndices(location),
         hourly({location}),
         sevenDay({location}),
-        air({location}),
+        air(airLocation),
         sun({location, date: today}),
         moon({location, date: today})
       ]);
+
+      // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
+      const airData = this.formatAir(airRes);
 
       this.setData({
         currentWeather: weatherData?.now,

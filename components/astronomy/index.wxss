@@ -29,7 +29,7 @@
 }
 .astro-canvas {
   width: 100%;
-  height: 110px;
+  height: 118px;
   display: block;
 }
 /* 月相信息栏 */

@@ -2,6 +2,8 @@
 const BASE_URL = 'https://m97fbtc2ed.re.qweatherapi.com/v7';
 // GeoAPI 地址
 const GEO_URL = 'https://m97fbtc2ed.re.qweatherapi.com/geo/v2';
+// 空气质量预报地址
+const AIR_URL = 'https://m97fbtc2ed.re.qweatherapi.com/airquality/v1';
 // 应用key
 const KEY = '9f00952418204e51997981c77fc3192a';
 
@@ -39,7 +41,8 @@ module.exports = {
   // 生活指数 3 天预报（和风免费版上限）
   indices3d: (data) => request(`${BASE_URL}/indices/3d`, 'GET', data),
   hourly: (data) => request(`${BASE_URL}/weather/24h`, 'GET', data),
-  air: (data) => request(`${BASE_URL}/air/now`, 'GET', data),
+  // 空气质量实况（location 为 latitude/longitude 格式，嵌入 URL 路径）
+  air: (location) => request(`${AIR_URL}/current/${location}`, 'GET', {}),
   // 城市搜索：location 支持中文/拼音/ID/经纬度
   cityLookup: (data) => request(`${GEO_URL}/city/lookup`, 'GET', data),
   // 热门城市（默认 range=cn）
@@ -48,4 +51,8 @@ module.exports = {
   sun: (data) => request(`${BASE_URL}/astronomy/sun`, 'GET', data),
   // 天文：月升月落 + 月相
   moon: (data) => request(`${BASE_URL}/astronomy/moon`, 'GET', data),
+  // 空气质量小时预报（location 为 latitude,longitude 格式，嵌入 URL 路径）
+  airHourly: (location) => request(`${AIR_URL}/hourly/${location}`, 'GET', {}),
+  // 空气质量每日预报
+  airDaily: (location) => request(`${AIR_URL}/daily/${location}`, 'GET', {}),
 }

@@ -1,0 +1,77 @@
+<!--pages/air/index.wxml-->
+<view class="air-page">
+
+  <!-- 加载与错误状态 -->
+  <view wx:if="{{loading}}" class="tip">加载中...</view>
+  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+
+  <block wx:else>
+    <!-- 概览信息 -->
+    <view class="air-overview">
+      <view class="air-ring" style="border-color: {{levelColor}}">
+        <text class="aqi-value">{{aqiDisplay || aqi}}</text>
+      </view>
+      <text class="aqi-category" style="color: {{levelColor}}">{{category}}</text>
+      <text class="aqi-desc" wx:if="{{healthEffect}}">{{healthEffect}}</text>
+      <view class="aqi-primary" wx:if="{{primary}}">
+        <text class="primary-label">首要污染物：</text>
+        <text class="primary-value">{{primary}}</text>
+      </view>
+    </view>
+
+    <!-- 健康建议 -->
+    <view class="air-card" wx:if="{{generalAdvice || sensitiveAdvice}}">
+      <view class="card-title">健康建议</view>
+      <view class="advice-item" wx:if="{{generalAdvice}}">
+        <text class="advice-label">一般人群：</text>
+        <text class="advice-text">{{generalAdvice}}</text>
+      </view>
+      <view class="advice-item" wx:if="{{sensitiveAdvice}}">
+        <text class="advice-label">敏感人群：</text>
+        <text class="advice-text">{{sensitiveAdvice}}</text>
+      </view>
+    </view>
+
+    <!-- 污染物指标 -->
+    <view class="air-card">
+      <view class="card-title">污染物指标</view>
+      <view class="pollutant-grid">
+        <view class="pollutant-item" wx:for="{{pollutants}}" wx:key="key">
+          <view class="pollutant-name">{{item.name}}</view>
+          <view class="pollutant-value">{{item.value}}</view>
+          <view class="pollutant-unit">{{item.unit}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 小时预报 -->
+    <view class="air-card" wx:if="{{hourly.length}}">
+      <view class="card-title">小时预报</view>
+      <scroll-view class="hourly-scroll" scroll-x>
+        <view class="hourly-item" wx:for="{{hourly}}" wx:key="time">
+          <text class="hourly-time">{{item.time}}</text>
+          <view class="hourly-aqi" style="color: {{item.aqi > 100 ? '#ff9800' : '#4caf50'}}">{{item.aqi}}</view>
+          <text class="hourly-cat">{{item.category}}</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 每日预报 -->
+    <view class="air-card" wx:if="{{daily.length}}">
+      <view class="card-title">每日预报</view>
+      <view class="daily-item" wx:for="{{daily}}" wx:key="date">
+        <view class="daily-date">
+          <text class="daily-week">{{item.week}}</text>
+          <text class="daily-day">{{item.dateLabel}}</text>
+        </view>
+        <view class="daily-info">
+          <view class="daily-aqi-badge" style="background: {{item.color}}">
+            <text class="daily-aqi">{{item.aqi}}</text>
+          </view>
+          <text class="daily-cat">{{item.category}}</text>
+          <text class="daily-primary">{{item.primary}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

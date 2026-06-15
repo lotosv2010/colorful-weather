@@ -37,6 +37,11 @@
 .weather-air-chart .title {
   font-size: 1.2rem;
 }
+.weather-air-chart .subtitle {
+  font-size: 0.65rem;
+  color: #A6A9AD;
+  margin-top: 4px;
+}
 .weather-air-grid {
   height: 9rem;
   flex: 1;
@@ -52,7 +57,7 @@
 }
 .weather-air-grid .col {
   height: 90%;
-  width: 2rem;
+  width: 2.4rem;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -78,4 +83,7 @@
   position: absolute;
   bottom: -4px;
   margin-left: 1px;
+}
+.weather-air-header .action.more {
+  color: rgb(68, 179, 255);
 }
