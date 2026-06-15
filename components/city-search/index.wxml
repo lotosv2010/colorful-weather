@@ -1,7 +1,7 @@
 <wxs src="../../utils/iconColor.wxs" module="ic" />
 <view class="city-search {{show ? 'show' : ''}}" catchtap="onClose">
   <view class="panel" catchtap="noop">
-    <view class="search-bar">
+    <view wx:if="{{show}}" class="search-bar">
       <view class="input-wrap">
         <icon type="search" size="16" color="#999" />
         <input
