@@ -1,30 +1,23 @@
 // components/life/index.js
 Component({
-  /**
-   * 组件的属性列表
-   */
   properties: {
     indices: {
       type: Array,
       value: []
+    },
+    location: {
+      type: String,
+      value: ''
     }
   },
-
-  /**
-   * 组件的初始数据
-   */
-  data: {
-
-  },
-
-  /**
-   * 组件的方法列表
-   */
+  data: {},
   methods: {
-    gotoDetail() {
+    gotoDetail(e) {
+      const type = e.currentTarget.dataset.type || '';
+      const { location } = this.data;
       wx.navigateTo({
-        url: '/pages/life/index',
-      })
+        url: `/pages/life/index?location=${location}&type=${type}`,
+      });
     }
   }
 })

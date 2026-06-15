@@ -1,3 +1,6 @@
 {
-  "usingComponents": {}
+  "navigationBarTitleText": "生活预报",
+  "usingComponents": {
+    "weather-icon": "/components/icon/index"
+  }
 }

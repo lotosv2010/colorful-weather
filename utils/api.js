@@ -36,6 +36,8 @@ module.exports = {
   now: (data) => request(`${BASE_URL}/weather/now`, 'GET', data),
   sevenDay: (data) => request(`${BASE_URL}/weather/7d`, 'GET', data),
   indices: (data) => request(`${BASE_URL}/indices/1d`, 'GET', data),
+  // 生活指数 3 天预报（和风免费版上限）
+  indices3d: (data) => request(`${BASE_URL}/indices/3d`, 'GET', data),
   hourly: (data) => request(`${BASE_URL}/weather/24h`, 'GET', data),
   air: (data) => request(`${BASE_URL}/air/now`, 'GET', data),
   // 城市搜索：location 支持中文/拼音/ID/经纬度

@@ -13,6 +13,21 @@
   align-items: center;
   margin-bottom: 10px;
 }
+.weather-life-header .title {
+  color: rgb(181, 187, 204);
+}
+.weather-life-header .actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.weather-life-header .action {
+  color: rgb(68, 179, 255);
+  padding: 4rpx 8rpx;
+}
+.weather-life-header .action.more {
+  color: rgb(68, 179, 255);
+}
 .weather-life-main{
   display: flex;
   justify-content: center;

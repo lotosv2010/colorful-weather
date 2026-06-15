@@ -20,7 +20,7 @@
     <view class="weather-header-desc">{{desc}}</view>
     <view class="weather-header-other">
       <view class="weather-header-other-left">
-        <image src="../../static/icons/fxd.svg"></image>
+        <weather-icon class="weather-header-fxd" colors="{{['#b5bbcc']}}" src="/static/icons/fxd.svg" />
         <text>{{weather.windDir}} {{weather.windScale}}级</text>
         <text>{{weather.windSpeed}}km/h</text>
       </view>

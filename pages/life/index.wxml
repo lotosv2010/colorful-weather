@@ -1,2 +1,51 @@
 <!--pages/life/index.wxml-->
-<text>pages/life/index.wxml</text>
+<view class="life-page">
+  <!-- 类型切换：横向滑动 -->
+  <scroll-view class="tabs" scroll-x scroll-into-view="tab-{{activeType}}" scroll-with-animation>
+    <view
+      wx:for="{{tabs}}"
+      wx:key="type"
+      id="tab-{{item.type}}"
+      class="tab {{activeType === item.type ? 'active' : ''}}"
+      data-type="{{item.type}}"
+      bindtap="onTabTap"
+    >
+      <view class="tab-circle">
+        <weather-icon
+          wx:if="{{item.icon}}"
+          class="tab-icon"
+          src="{{item.icon}}"
+          colors="{{[activeType === item.type ? '#ffffff' : '#8C9AA5']}}"
+        />
+        <text wx:else class="tab-text">{{item.text}}</text>
+      </view>
+      <text class="tab-label">{{item.name}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 定义说明卡 -->
+  <view class="def-card">
+    <view class="def-name">{{definition.name}}</view>
+    <view class="def-desc">{{definition.desc}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="tip">加载中…</view>
+  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+  <view wx:elif="{{!list.length}}" class="tip">暂无该指数数据</view>
+
+  <!-- 时间线 -->
+  <view wx:else class="timeline">
+    <view class="timeline-item" wx:for="{{list}}" wx:key="date">
+      <view class="timeline-date">
+        <text class="week">{{item.week}}</text>
+        <text class="day">{{item.dateLabel}}</text>
+      </view>
+      <view class="timeline-card">
+        <view class="card-head" style="background:{{item.categoryColor}}">
+          <text class="head-cat">{{item.category}}</text>
+        </view>
+        <view class="card-body">{{item.text}}</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -30,6 +30,7 @@
     />
     <weather-life
       indices="{{indices}}"
+      location="{{longitude}},{{latitude}}"
     />
   </view>
   <city-search show="{{selectorVisible}}" bind:select="onSelectCity" bind:close="hideSelector" />
