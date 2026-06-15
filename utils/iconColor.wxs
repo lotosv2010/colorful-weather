@@ -1,0 +1,34 @@
+// 和风天气 icon code → 颜色分类
+// 与 app.wxss 中的 .icon-color-{cat} 类一一对应
+// 颜色标准参考：WMO + 用户提供的设计规范
+var category = function (code) {
+  var c = parseInt(code, 10);
+  if (isNaN(c)) return 'default';
+  // 晴
+  if (c === 100 || c === 150) return 'sunny';
+  // 多云 / 阴
+  if (c === 101 || c === 102 || c === 103 || c === 151 || c === 152 || c === 153) return 'cloudy';
+  if (c === 104 || c === 154) return 'overcast';
+  // 雷阵雨
+  if (c === 302 || c === 303 || c === 304) return 'thunder';
+  // 小雨 / 阵雨 / 毛毛雨 / 冻雨
+  if (c === 300 || c === 305 || c === 309 || c === 313 || c === 399 || c === 350 || c === 351) return 'rainLight';
+  // 中雨 / 大雨 / 暴雨
+  if (c >= 301 && c <= 318) return 'rainHeavy';
+  // 雨夹雪 / 阵雪 / 小雪
+  if (c === 400 || c === 404 || c === 405 || c === 406 || c === 407 || c === 408 || c === 499) return 'snow';
+  // 中雪 / 大雪 / 暴雪
+  if (c === 401 || c === 402 || c === 403 || c === 409 || c === 410) return 'snowHeavy';
+  // 沙尘
+  if (c === 503 || c === 504 || c === 507 || c === 508) return 'sand';
+  // 雾 / 霾
+  if (c >= 500 && c <= 515) return 'fog';
+  // 极端温度
+  if (c === 900) return 'hot';
+  if (c === 901) return 'cold';
+  return 'default';
+};
+
+module.exports = {
+  category: category
+};

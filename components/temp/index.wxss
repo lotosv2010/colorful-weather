@@ -35,7 +35,6 @@
 }
 .weather-header-svg {
   font-size: 4.5rem;
-  color: rgb(68, 179, 255)
 }
 .weather-header-left {
   height: 100%;

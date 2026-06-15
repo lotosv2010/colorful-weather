@@ -35,7 +35,6 @@
   margin-right: 10px;
 }
 .weather-hourly-icon {
-  color: rgb(68, 179, 255);
   font-size: 1.25rem;
 }
 .weather-hourly-temp {

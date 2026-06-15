@@ -79,6 +79,58 @@
   color: #999;
   margin: 16rpx 0 12rpx;
 }
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24rpx 0 12rpx;
+}
+.section-head .section-title {
+  margin: 0;
+}
+.section-action {
+  font-size: 24rpx;
+  color: #4a90e2;
+  padding: 4rpx 8rpx;
+}
+
+/* 搜索历史 */
+.history-list {
+  display: flex;
+  flex-direction: column;
+}
+.history-item {
+  padding: 20rpx 8rpx;
+  border-bottom: 1rpx solid #2a2a2a;
+}
+.history-item .row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.history-item .row.sub {
+  margin-top: 8rpx;
+}
+.history-item .weather-icon {
+  font-size: 36rpx;
+}
+.history-item .weather-temp {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: 500;
+}
+.history-item .weather-text {
+  font-size: 26rpx;
+  color: #aaa;
+}
+.history-item .city-name {
+  font-size: 28rpx;
+  color: #fff;
+}
+.history-item .city-path {
+  font-size: 22rpx;
+  color: #888;
+}
 
 .result-item {
   padding: 20rpx 8rpx;

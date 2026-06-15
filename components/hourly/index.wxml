@@ -1,8 +1,9 @@
 <!--components/hourly/index.wxml-->
+<wxs src="../../utils/iconColor.wxs" module="ic" />
 <view class="weather-hourly">
   <view class="weather-hourly-main">
     <view class="weather-hourly-item" wx:for="{{hourly}}" wx:key="fxTime">
-      <text class="weather-hourly-icon qi-{{item.icon}}-fill"></text>
+      <text class="weather-hourly-icon icon-color-{{ic.category(item.icon)}} qi-{{item.icon}}-fill"></text>
       <view class="weather-hourly-temp">
         <text class="value">{{item.temp}}</text>
         <text class="unit">o</text>

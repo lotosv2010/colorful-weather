@@ -55,7 +55,6 @@
   background: linear-gradient(to right,rgb(238, 141, 114), rgb(86, 110, 255));
 }
 .weather-daily-icon {
-  color: rgb(68, 179, 255);
   font-size: 1.5rem;
 }
 .weather-daily-night-temp, .weather-daily-day-temp {

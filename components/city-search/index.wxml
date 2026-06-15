@@ -1,3 +1,4 @@
+<wxs src="../../utils/iconColor.wxs" module="ic" />
 <view class="city-search {{show ? 'show' : ''}}" catchtap="onClose">
   <view class="panel" catchtap="noop">
     <view class="search-bar">
@@ -48,6 +49,32 @@
             data-city="{{item}}"
             catchtap="onPick"
           >{{item.name}}</view>
+        </view>
+      </block>
+
+      <!-- 搜索历史 -->
+      <block wx:if="{{!keyword && historyList.length}}">
+        <view class="section-head">
+          <view class="section-title">最近</view>
+          <view class="section-action" catchtap="onClearHistory">清除</view>
+        </view>
+        <view class="history-list">
+          <view
+            wx:for="{{historyList}}"
+            wx:key="id"
+            class="history-item"
+            data-city="{{item}}"
+            catchtap="onPick"
+          >
+            <view class="row">
+              <text class="weather-icon icon-color-{{ic.category(item.weather.icon || 100)}} qi-{{item.weather.icon || 100}}-fill"></text>
+              <text class="city-name">{{item.name}}</text>
+            </view>
+            <view class="row sub">
+              <text class="weather-temp">{{item.weather.temp || '--'}}°</text>
+              <text class="city-path">{{item.adm1}} · {{item.country}}</text>
+            </view>
+          </view>
         </view>
       </block>
     </scroll-view>
