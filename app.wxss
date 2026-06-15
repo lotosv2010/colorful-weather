@@ -2,34 +2,42 @@
 @import 'static/qweather-icons.wxss';
 @import 'weui.wxss';
 
-/* 天气图标颜色统一规范（参考 WMO + 设计规范） */
+/* 天气图标颜色统一规范（参考 WMO 气象符号标准 + 中国气象局预警色标准） */
 page {
-  --icon-sunny: #FDB813;
-  --icon-cloudy: #8C9AA5;
-  --icon-overcast: #8C9AA5;
-  --icon-rainLight: #4A90E2;
-  --icon-rainHeavy: #2E5C8A;
-  --icon-thunder: #6B5B95;
-  --icon-snow: #B8E6F5;
-  --icon-snowHeavy: #E8F4F8;
-  --icon-fog: #A8A39D;
-  --icon-sand: #C4A35A;
-  --icon-hot: #DC143C;
-  --icon-cold: #B8E6F5;
-  --icon-default: #8C9AA5;
+  --icon-sunny:        #FDB813; /* 晴：金黄 */
+  --icon-partlyCloudy: #F0A500; /* 少云/晴间多云：暖橙黄 */
+  --icon-cloudy:       #7B9BB5; /* 多云：灰蓝 */
+  --icon-overcast:     #5A7080; /* 阴：深灰蓝 */
+  --icon-rainLight:    #5BA3D9; /* 小雨/阵雨：浅蓝 */
+  --icon-rainHeavy:    #1E4D8C; /* 中雨-暴雨：深蓝 */
+  --icon-thunder:      #7B3FA0; /* 雷暴：紫（WMO 警示色） */
+  --icon-sleet:        #6AAFD6; /* 雨夹雪：青蓝 */
+  --icon-snow:         #A8D8EA; /* 小雪/阵雪：浅青 */
+  --icon-snowHeavy:    #D0EEF8; /* 中雪-暴雪：冷白青 */
+  --icon-fog:          #9E9E9E; /* 雾：中灰 */
+  --icon-haze:         #B5854A; /* 霾：棕黄（AQI 色标） */
+  --icon-sand:         #C49A3C; /* 沙尘：土黄 */
+  --icon-typhoon:      #E53935; /* 台风：红（WMO 热带气旋警示色） */
+  --icon-hot:          #DC143C; /* 高温：深红 */
+  --icon-cold:         #81D4FA; /* 低温：冰蓝 */
+  --icon-default:      #8C9AA5;
 }
 
-.icon-color-sunny { color: var(--icon-sunny); }
-.icon-color-cloudy { color: var(--icon-cloudy); }
-.icon-color-overcast { color: var(--icon-overcast); }
-.icon-color-rainLight { color: var(--icon-rainLight); }
-.icon-color-rainHeavy { color: var(--icon-rainHeavy); }
-.icon-color-thunder { color: var(--icon-thunder); }
-.icon-color-snow { color: var(--icon-snow); }
-.icon-color-snowHeavy { color: var(--icon-snowHeavy); }
-.icon-color-fog { color: var(--icon-fog); }
-.icon-color-sand { color: var(--icon-sand); }
-.icon-color-hot { color: var(--icon-hot); }
-.icon-color-cold { color: var(--icon-cold); }
-.icon-color-default { color: var(--icon-default); }
+.icon-color-sunny        { color: var(--icon-sunny); }
+.icon-color-partlyCloudy { color: var(--icon-partlyCloudy); }
+.icon-color-cloudy       { color: var(--icon-cloudy); }
+.icon-color-overcast     { color: var(--icon-overcast); }
+.icon-color-rainLight    { color: var(--icon-rainLight); }
+.icon-color-rainHeavy    { color: var(--icon-rainHeavy); }
+.icon-color-thunder      { color: var(--icon-thunder); }
+.icon-color-sleet        { color: var(--icon-sleet); }
+.icon-color-snow         { color: var(--icon-snow); }
+.icon-color-snowHeavy    { color: var(--icon-snowHeavy); }
+.icon-color-fog          { color: var(--icon-fog); }
+.icon-color-haze         { color: var(--icon-haze); }
+.icon-color-sand         { color: var(--icon-sand); }
+.icon-color-typhoon      { color: var(--icon-typhoon); }
+.icon-color-hot          { color: var(--icon-hot); }
+.icon-color-cold         { color: var(--icon-cold); }
+.icon-color-default      { color: var(--icon-default); }
 
