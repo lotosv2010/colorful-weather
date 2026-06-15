@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
@@ -20,6 +20,8 @@ Page({
     daily: [],
     air: {},
     indices: [],
+    astronomySun: {},
+    astronomyMoon: {},
     latitude: '',
     longitude: ''
   },
@@ -92,12 +94,15 @@ Page({
       let location = '101010100';
       const {longitude, latitude} = this.data;
       location = `${longitude},${latitude}`;
-      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData},  {now: airData}] = await Promise.all([
+      const today = this.formatDateStr(new Date());
+      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, {now: airData}, sunData, moonData] = await Promise.all([
         now({location}),
         this.getIndices(location),
         hourly({location}),
         sevenDay({location}),
-        air({location})
+        air({location}),
+        sun({location, date: today}),
+        moon({location, date: today})
       ]);
 
       this.setData({
@@ -107,7 +112,9 @@ Page({
         hourly: this.formatHourly(hourlyData),
         daily: this.formatDaily(dailyData),
         air: airData,
-        indices: daily
+        indices: daily,
+        astronomySun: sunData,
+        astronomyMoon: moonData
       });
     } catch (error) {
       console.log(error)
@@ -115,6 +122,13 @@ Page({
     } finally {
       wx.hideLoading();
     }
+  },
+  // 格式化日期为 yyyyMMdd（天文 API 要求）
+  formatDateStr(date) {
+    const y = date.getFullYear();
+    const m = `${date.getMonth() + 1}`.padStart(2, '0');
+    const d = `${date.getDate()}`.padStart(2, '0');
+    return `${y}${m}${d}`;
   },
   async getLocation(){
     const { latitude, longitude } = await wx.getLocation({

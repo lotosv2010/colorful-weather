@@ -1,0 +1,22 @@
+<!--components/astronomy/index.wxml-->
+<view class="weather-astronomy">
+  <view class="weather-astronomy-header">
+    <text class="title">太阳和月亮</text>
+  </view>
+  <view class="weather-astronomy-main">
+    <!-- 太阳折线图 -->
+    <view class="astro-chart-section">
+      <canvas type="2d" id="sunCanvas" class="astro-canvas"></canvas>
+    </view>
+    <!-- 月亮折线图 -->
+    <view class="astro-chart-section">
+      <canvas type="2d" id="moonCanvas" class="astro-canvas"></canvas>
+    </view>
+    <!-- 月相信息 -->
+    <view class="astro-moon-phase" wx:if="{{moonPhaseName}}">
+      <text class="qi-{{moonPhaseIcon}} moon-phase-icon"></text>
+      <text class="phase-name">{{moonPhaseName}}</text>
+      <text class="phase-illum">照明度 {{moonIllumination}}%</text>
+    </view>
+  </view>
+</view>

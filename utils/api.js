@@ -44,4 +44,8 @@ module.exports = {
   cityLookup: (data) => request(`${GEO_URL}/city/lookup`, 'GET', data),
   // 热门城市（默认 range=cn）
   topCity: (data = {}) => request(`${GEO_URL}/city/top`, 'GET', data),
+  // 天文：日出日落
+  sun: (data) => request(`${BASE_URL}/astronomy/sun`, 'GET', data),
+  // 天文：月升月落 + 月相
+  moon: (data) => request(`${BASE_URL}/astronomy/moon`, 'GET', data),
 }

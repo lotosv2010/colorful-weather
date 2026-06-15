@@ -28,6 +28,10 @@
     <weather-air
       air="{{air}}"
     />
+    <weather-astronomy
+      sun="{{astronomySun}}"
+      moon="{{astronomyMoon}}"
+    />
     <weather-life
       indices="{{indices}}"
       location="{{longitude}},{{latitude}}"
