@@ -3,7 +3,7 @@
 <view class="weather-hourly">
   <view class="weather-hourly-main">
     <view class="weather-hourly-item" wx:for="{{hourly}}" wx:key="fxTime">
-      <text class="weather-hourly-icon icon-color-{{ic.category(item.icon)}} qi-{{item.icon}}-fill"></text>
+      <i class="weather-hourly-icon icon-color-{{ic.category(item.icon)}} qi-{{item.icon}}-fill"></i>
       <view class="weather-hourly-temp">
         <text class="value">{{item.temp}}</text>
         <text class="unit">o</text>

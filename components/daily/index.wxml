@@ -11,7 +11,7 @@
       <text class="time">{{item.month}}月{{item.day}}日</text>
     </view>
     <view class="weather-daily-day">
-      <text class="weather-daily-icon icon-color-{{ic.category(item.iconDay)}} qi-{{item.iconDay}}-fill"></text>
+      <i class="weather-daily-icon icon-color-{{ic.category(item.iconDay)}} qi-{{item.iconDay}}-fill"></i>
       <view class="weather-daily-day-temp">
         <text class="value">{{item.tempMax}}</text>
         <text class="unit">o</text>
@@ -23,7 +23,7 @@
         <text class="value">{{item.tempMin}}</text>
         <text class="unit">o</text>
       </view>
-      <text class="weather-daily-icon icon-color-{{ic.category(item.iconNight)}} qi-{{item.iconNight}}-fill"></text>
+      <i class="weather-daily-icon icon-color-{{ic.category(item.iconNight)}} qi-{{item.iconNight}}-fill"></i>
     </view>
   </view>
 </view>

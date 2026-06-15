@@ -43,8 +43,7 @@
   border-radius: 8px;
 }
 .moon-phase-icon {
-  font-size: 22px;
-  color: #6CB4EE;
+  font-size: 1rem;
 }
 .phase-name {
   font-size: 0.75rem;

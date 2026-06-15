@@ -67,7 +67,7 @@
             catchtap="onPick"
           >
             <view class="row">
-              <text class="weather-icon icon-color-{{ic.category(item.weather.icon || 100)}} qi-{{item.weather.icon || 100}}-fill"></text>
+              <i class="weather-icon icon-color-{{ic.category(item.weather.icon || 100)}} qi-{{item.weather.icon || 100}}-fill"></i>
               <text class="city-name">{{item.name}}</text>
             </view>
             <view class="row sub">

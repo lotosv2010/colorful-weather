@@ -3,17 +3,33 @@
 @import 'weui.wxss';
 
 /* 天气图标颜色统一规范（参考 WMO + 设计规范） */
-.icon-color-sunny { color: #FDB813; }
-.icon-color-cloudy { color: #8C9AA5; }
-.icon-color-overcast { color: #8C9AA5; }
-.icon-color-rainLight { color: #4A90E2; }
-.icon-color-rainHeavy { color: #2E5C8A; }
-.icon-color-thunder { color: #6B5B95; }
-.icon-color-snow { color: #B8E6F5; }
-.icon-color-snowHeavy { color: #E8F4F8; }
-.icon-color-fog { color: #A8A39D; }
-.icon-color-sand { color: #C4A35A; }
-.icon-color-hot { color: #DC143C; }
-.icon-color-cold { color: #B8E6F5; }
-.icon-color-default { color: #8C9AA5; }
+page {
+  --icon-sunny: #FDB813;
+  --icon-cloudy: #8C9AA5;
+  --icon-overcast: #8C9AA5;
+  --icon-rainLight: #4A90E2;
+  --icon-rainHeavy: #2E5C8A;
+  --icon-thunder: #6B5B95;
+  --icon-snow: #B8E6F5;
+  --icon-snowHeavy: #E8F4F8;
+  --icon-fog: #A8A39D;
+  --icon-sand: #C4A35A;
+  --icon-hot: #DC143C;
+  --icon-cold: #B8E6F5;
+  --icon-default: #8C9AA5;
+}
+
+.icon-color-sunny { color: var(--icon-sunny); }
+.icon-color-cloudy { color: var(--icon-cloudy); }
+.icon-color-overcast { color: var(--icon-overcast); }
+.icon-color-rainLight { color: var(--icon-rainLight); }
+.icon-color-rainHeavy { color: var(--icon-rainHeavy); }
+.icon-color-thunder { color: var(--icon-thunder); }
+.icon-color-snow { color: var(--icon-snow); }
+.icon-color-snowHeavy { color: var(--icon-snowHeavy); }
+.icon-color-fog { color: var(--icon-fog); }
+.icon-color-sand { color: var(--icon-sand); }
+.icon-color-hot { color: var(--icon-hot); }
+.icon-color-cold { color: var(--icon-cold); }
+.icon-color-default { color: var(--icon-default); }
 

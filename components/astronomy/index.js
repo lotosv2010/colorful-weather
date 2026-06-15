@@ -1,5 +1,8 @@
 // components/astronomy/index.js
 Component({
+  options: {
+    addGlobalClass: true
+  },
   properties: {
     sun: {
       type: Object,

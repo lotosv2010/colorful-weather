@@ -1,3 +1,6 @@
 {
-  "component": true
+  "component": true,
+  "usingComponents": {
+    "weather-icon": "/components/icon/index"
+  }
 }

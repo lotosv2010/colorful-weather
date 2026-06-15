@@ -8,7 +8,7 @@
   <view class="weather-header-container">
     <view class="weather-header-city">{{ city }}</view>
     <view class="weather-header-main">
-      <text class="weather-header-svg icon-color-{{ic.category(weather.icon || 100)}} qi-{{weather.icon || 100}}-fill"></text>
+      <i class="weather-header-svg icon-color-{{ic.category(weather.icon || 100)}} qi-{{weather.icon || 100}}-fill"></i>
       <view class="weather-header-left">
         <view class="weather-header-temp">
           {{ weather.temp }}
