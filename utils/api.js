@@ -34,6 +34,12 @@ const request = (url, method, data) => {
   });
 }
 
+// 将 "lon,lat" 转为 airquality v1 URL 路径所需的 "lat/lon"
+const toAirPath = (lonLat) => {
+  const [lon, lat] = lonLat.split(',');
+  return `${lat}/${lon}`;
+};
+
 module.exports = {
   now: (data) => request(`${BASE_URL}/weather/now`, 'GET', data),
   sevenDay: (data) => request(`${BASE_URL}/weather/7d`, 'GET', data),
@@ -41,8 +47,8 @@ module.exports = {
   // 生活指数 3 天预报（和风免费版上限）
   indices3d: (data) => request(`${BASE_URL}/indices/3d`, 'GET', data),
   hourly: (data) => request(`${BASE_URL}/weather/24h`, 'GET', data),
-  // 空气质量实况（location 为 latitude/longitude 格式，嵌入 URL 路径）
-  air: (location) => request(`${AIR_URL}/current/${location}`, 'GET', {}),
+  // 空气质量实况（location 为 "lon,lat" 格式，内部转换为 URL 路径）
+  air: (location) => request(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {}),
   // 城市搜索：location 支持中文/拼音/ID/经纬度
   cityLookup: (data) => request(`${GEO_URL}/city/lookup`, 'GET', data),
   // 热门城市（默认 range=cn）
@@ -51,8 +57,8 @@ module.exports = {
   sun: (data) => request(`${BASE_URL}/astronomy/sun`, 'GET', data),
   // 天文：月升月落 + 月相
   moon: (data) => request(`${BASE_URL}/astronomy/moon`, 'GET', data),
-  // 空气质量小时预报（location 为 latitude,longitude 格式，嵌入 URL 路径）
-  airHourly: (location) => request(`${AIR_URL}/hourly/${location}`, 'GET', {}),
+  // 空气质量小时预报（location 为 "lon,lat" 格式，内部转换为 URL 路径）
+  airHourly: (location) => request(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', {}),
   // 空气质量每日预报
-  airDaily: (location) => request(`${AIR_URL}/daily/${location}`, 'GET', {}),
+  airDaily: (location) => request(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', {}),
 }

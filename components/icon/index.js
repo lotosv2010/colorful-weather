@@ -1,3 +1,24 @@
+// SVG 文件内容缓存，避免相同路径重复读取
+const svgCache = new Map();
+
+const readSvg = (filePath, callback) => {
+  if (svgCache.has(filePath)) {
+    callback(svgCache.get(filePath));
+    return;
+  }
+  wx.getFileSystemManager().readFile({
+    filePath,
+    encoding: 'binary',
+    success: res => {
+      svgCache.set(filePath, res.data);
+      callback(res.data);
+    },
+    fail(err) {
+      console.log(err);
+    }
+  });
+};
+
 Component({
   properties: {
     src: String,
@@ -5,43 +26,32 @@ Component({
   },
   observers: {
     'src, colors': function(src, colors) {
-      // 读取 src 链接资源
-      wx.getFileSystemManager().readFile({
-        filePath: src,
-        encoding: 'binary',
-        success: res => {
-          let basestr
-          if (colors && colors.length) {
-            const target = colors[0]
-            const reColor = /#[a-zA-Z0-9]{3,6}|currentColor/g
-            if (reColor.test(res.data)) {
-              // 路径自带 currentColor / hex，逐个替换
-              let a = 0
-              basestr = res.data.replace(reColor, (word) => {
-                const newColor = colors[a]
-                a = a + 1
-                return newColor ? newColor : word
-              })
-            } else {
-              // 路径无 fill 属性，注入到 <svg> 根标签
-              basestr = res.data.replace(/<svg\b([^>]*)>/, (m, attrs) => {
-                const cleaned = attrs.replace(/\sfill="[^"]*"/g, '')
-                return `<svg${cleaned} fill="${target}">`
-              })
-            }
+      if (!src) return;
+      readSvg(src, (raw) => {
+        let basestr;
+        if (colors && colors.length) {
+          const target = colors[0];
+          const reColor = /#[a-zA-Z0-9]{3,6}|currentColor/g;
+          if (reColor.test(raw)) {
+            let a = 0;
+            basestr = raw.replace(reColor, (word) => {
+              const newColor = colors[a];
+              a = a + 1;
+              return newColor ? newColor : word;
+            });
           } else {
-            basestr = res.data
+            basestr = raw.replace(/<svg\b([^>]*)>/, (m, attrs) => {
+              const cleaned = attrs.replace(/\sfill="[^"]*"/g, '');
+              return `<svg${cleaned} fill="${target}">`;
+            });
           }
-          // 将 svg 数据进行 URL 编码
-          basestr = encodeURIComponent(basestr)
-          this.setData({
-            svgStyle: `background-image: url("data:image/svg+xml,${basestr}");`
-          })
-        },
-        fail(err) {
-          console.log(err)
+        } else {
+          basestr = raw;
         }
-      })
+        this.setData({
+          svgStyle: `background-image: url("data:image/svg+xml,${encodeURIComponent(basestr)}");`
+        });
+      });
     }
   }
-})
+});

@@ -2,7 +2,7 @@
 const { air, airHourly, airDaily } = require('../../utils/api');
 
 // RGBA → hex
-const toHex = (c = {}) => `#${((c.red << 16) | (c.green << 8) | c.blue).toString(16).padStart(6, '0')}`;
+const toHex = (c = {}) => `#${c.red.toString(16).padStart(2, '0')}${c.green.toString(16).padStart(2, '0')}${c.blue.toString(16).padStart(2, '0')}`;
 
 // 根据背景色计算文字颜色（深色背景用白色，浅色背景用深色）
 const getTextColor = (hexColor) => {
@@ -97,21 +97,15 @@ Page({
     }
   },
 
-  // longitude,latitude → latitude/longitude（airquality v1 URL 路径格式）
-  formatLocation(loc) {
-    const parts = loc.split(',');
-    return parts.length === 2 ? `${parts[1]}/${parts[0]}` : loc;
-  },
-
   async loadData() {
     this.setData({ loading: true, errorMsg: '' });
     try {
-      const apiLoc = this.formatLocation(this.data.location);
+      const { location } = this.data;
 
       const [airRes, hourlyRes, dailyRes] = await Promise.all([
-        air(apiLoc),
-        airHourly(apiLoc),
-        airDaily(apiLoc)
+        air(location),
+        airHourly(location),
+        airDaily(location)
       ]);
 
       this.processAirNow(airRes);

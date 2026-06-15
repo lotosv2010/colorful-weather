@@ -15,9 +15,14 @@ Component({
   observers: {
     'daily'(list) {
       if (!list || !list.length) return;
-      const temps = list.flatMap(d => [Number(d.tempMin), Number(d.tempMax)]);
-      const globalMin = Math.min(...temps);
-      const globalMax = Math.max(...temps);
+      let globalMin = Infinity;
+      let globalMax = -Infinity;
+      list.forEach(d => {
+        const lo = Number(d.tempMin);
+        const hi = Number(d.tempMax);
+        if (lo < globalMin) globalMin = lo;
+        if (hi > globalMax) globalMax = hi;
+      });
       const range = globalMax - globalMin || 1;
 
       this.setData({

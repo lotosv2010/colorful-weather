@@ -39,7 +39,7 @@ Page({
   async init() {
     try {
       this.qqmapsdk = new QQMapWX({
-        key: 'LY2BZ-2PECQ-4VD5L-GS33R-VGQO5-RQB3Z'
+        key: app.globalData.lbs.key
       });
       await this.getLocation();
       await this.getNow();
@@ -91,7 +91,7 @@ Page({
     if (!res || !res.indexes || !res.indexes.length) return {};
     const idx = res.indexes[0];
     const c = idx.color || {};
-    const colorHex = `#${(c.red << 16 | c.green << 8 | c.blue).toString(16).padStart(6, '0')}`;
+    const colorHex = `#${c.red.toString(16).padStart(2, '0')}${c.green.toString(16).padStart(2, '0')}${c.blue.toString(16).padStart(2, '0')}`;
     const pollutants = (res.pollutants || []).map(p => ({
       name: p.name,
       value: p.concentration ? p.concentration.value : '-',
@@ -119,14 +119,13 @@ Page({
       let location = '101010100';
       const {longitude, latitude} = this.data;
       location = `${longitude},${latitude}`;
-      const airLocation = `${latitude}/${longitude}`;
       const today = this.formatDateStr(new Date());
       const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData] = await Promise.all([
         now({location}),
         this.getIndices(location),
         hourly({location}),
         sevenDay({location}),
-        air(airLocation),
+        air(location),
         sun({location, date: today}),
         moon({location, date: today})
       ]);
@@ -136,8 +135,8 @@ Page({
 
       this.setData({
         currentWeather: weatherData?.now,
-        uv: daily[4]?.category,
-        desc: daily[7]?.text,
+        uv: daily.find(d => d.type === '5')?.category,
+        desc: daily.find(d => d.type === '8')?.text,
         hourly: this.formatHourly(hourlyData),
         daily: this.formatDaily(dailyData),
         air: airData,

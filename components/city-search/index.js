@@ -1,7 +1,5 @@
 const { cityLookup, topCity, now } = require('../../utils/api');
 
-// 防抖定时器
-let debounceTimer = null;
 // 本地存储 key
 const HISTORY_KEY = 'city_search_history';
 // 最大历史条数
@@ -85,12 +83,12 @@ Component({
     onInput(e) {
       const keyword = e.detail.value.trim();
       this.setData({ keyword });
-      if (debounceTimer) clearTimeout(debounceTimer);
+      if (this._debounceTimer) clearTimeout(this._debounceTimer);
       if (!keyword) {
         this.setData({ results: [], errorMsg: '' });
         return;
       }
-      debounceTimer = setTimeout(() => this.search(keyword), 300);
+      this._debounceTimer = setTimeout(() => this.search(keyword), 300);
     },
 
     // 调用 cityLookup
