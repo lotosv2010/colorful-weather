@@ -5,6 +5,7 @@
     "weather-hourly": "../../components/hourly/index",
     "weather-daily": "../../components/daily/index",
     "weather-air": "../../components/air/index",
-    "weather-life": "../../components/life/index"
+    "weather-life": "../../components/life/index",
+    "city-search": "../../components/city-search/index"
   }
 }

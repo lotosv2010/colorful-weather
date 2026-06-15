@@ -20,13 +20,5 @@
   "requiredPrivateInfos": [
     "getLocation"
   ],
-  "plugins": {
-    "citySelector": {
-      "version": "1.0.1",
-      "provider": "wx63ffb7b7894e99ae"
-    }
-  },
-  "usingComponents": {
-    "selector-component": "plugin://citySelector/selector-component"
-  }
+  "usingComponents": {}
 }

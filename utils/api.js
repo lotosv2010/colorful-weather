@@ -1,5 +1,7 @@
 // 接口地址
-const BASE_URL = 'https://devapi.qweather.com/v7';
+const BASE_URL = 'https://m97fbtc2ed.re.qweatherapi.com/v7';
+// GeoAPI 地址
+const GEO_URL = 'https://m97fbtc2ed.re.qweatherapi.com/geo/v2';
 // 应用key
 const KEY = '9f00952418204e51997981c77fc3192a';
 
@@ -36,4 +38,8 @@ module.exports = {
   indices: (data) => request(`${BASE_URL}/indices/1d`, 'GET', data),
   hourly: (data) => request(`${BASE_URL}/weather/24h`, 'GET', data),
   air: (data) => request(`${BASE_URL}/air/now`, 'GET', data),
+  // 城市搜索：location 支持中文/拼音/ID/经纬度
+  cityLookup: (data) => request(`${GEO_URL}/city/lookup`, 'GET', data),
+  // 热门城市（默认 range=cn）
+  topCity: (data = {}) => request(`${GEO_URL}/city/top`, 'GET', data),
 }

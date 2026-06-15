@@ -1,0 +1,55 @@
+<view class="city-search {{show ? 'show' : ''}}" catchtap="onClose">
+  <view class="panel" catchtap="noop">
+    <view class="search-bar">
+      <view class="input-wrap">
+        <icon type="search" size="16" color="#999" />
+        <input
+          class="input"
+          placeholder="输入城市名/拼音"
+          placeholder-style="color:#999"
+          value="{{keyword}}"
+          bindinput="onInput"
+          confirm-type="search"
+          focus="{{show}}"
+        />
+        <view wx:if="{{keyword}}" class="clear" catchtap="onClear">×</view>
+      </view>
+      <view class="cancel" catchtap="onClose">取消</view>
+    </view>
+
+    <scroll-view class="body" scroll-y>
+      <!-- 搜索状态 -->
+      <view wx:if="{{loading}}" class="tip">搜索中…</view>
+      <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+
+      <!-- 搜索结果 -->
+      <block wx:if="{{keyword && results.length}}">
+        <view class="section-title">搜索结果</view>
+        <view
+          wx:for="{{results}}"
+          wx:key="id"
+          class="result-item"
+          data-city="{{item}}"
+          catchtap="onPick"
+        >
+          <view class="name">{{item.name}}</view>
+          <view class="path">{{item.adm2}} · {{item.adm1}} · {{item.country}}</view>
+        </view>
+      </block>
+
+      <!-- 热门城市 -->
+      <block wx:if="{{!keyword && hotList.length}}">
+        <view class="section-title">热门城市</view>
+        <view class="hot-grid">
+          <view
+            wx:for="{{hotList}}"
+            wx:key="id"
+            class="hot-item"
+            data-city="{{item}}"
+            catchtap="onPick"
+          >{{item.name}}</view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+</view>

@@ -151,13 +151,23 @@ Page({
     });
   },
 
+  // 关闭城市搜索弹层
+  hideSelector() {
+    this.setData({
+      selectorVisible: false,
+    });
+  },
+
   // 当用户选择了组件中的城市之后的回调函数
+  // GeoAPI 返回字段：name / lat / lon
   onSelectCity(e) {
     const { city } = e.detail;
+    if (!city) return;
     this.setData({
-      currentCity: city?.name,
-      latitude: city?.location?.latitude,
-      longitude: city?.location?.longitude,
+      currentCity: city.name,
+      latitude: city.lat,
+      longitude: city.lon,
+      selectorVisible: false,
     });
     this.getWeather();
   },

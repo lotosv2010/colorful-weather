@@ -32,5 +32,5 @@
       indices="{{indices}}"
     />
   </view>
-  <selector-component show="{{selectorVisible}}" key="{{lbs.key}}" referer="{{lbs.referer}}" hotCitys="{{lbs.hotCitys}}" bindselect="onSelectCity" />
+  <city-search show="{{selectorVisible}}" bind:select="onSelectCity" bind:close="hideSelector" />
 </view>
