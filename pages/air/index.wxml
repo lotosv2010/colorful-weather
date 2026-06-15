@@ -47,7 +47,11 @@
       <scroll-view class="hourly-scroll" scroll-x>
         <view class="hourly-item" wx:for="{{hourly}}" wx:key="time">
           <text class="hourly-time">{{item.time}}</text>
-          <view class="hourly-aqi" style="color: {{item.aqi > 100 ? '#ff9800' : '#4caf50'}}">{{item.aqi}}</view>
+          <view class="hourly-ring" style="background: conic-gradient({{item.color || '#4caf50'}} {{item.pct}}%, #3D3F4A 0)">
+            <view class="hourly-ring-inner">
+              <text class="hourly-aqi">{{item.aqiDisplay || item.aqi}}</text>
+            </view>
+          </view>
           <text class="hourly-cat">{{item.category}}</text>
         </view>
       </scroll-view>
@@ -61,12 +65,12 @@
           <text class="daily-week">{{item.week}}</text>
           <text class="daily-day">{{item.dateLabel}}</text>
         </view>
-        <view class="daily-info">
-          <view class="daily-aqi-badge" style="background: {{item.color}}">
-            <text class="daily-aqi">{{item.aqi}}</text>
-          </view>
-          <text class="daily-cat">{{item.category}}</text>
-          <text class="daily-primary">{{item.primary}}</text>
+        <view class="daily-aqi-info">
+          <text class="daily-aqi-name">{{item.name}}</text>
+          <text class="daily-aqi-value">{{item.aqiDisplay || item.aqi}}</text>
+        </view>
+        <view class="daily-tag" style="background: {{item.color}}">
+          <text class="daily-tag-text" style="color: {{item.textColor}}">{{item.category}}</text>
         </view>
       </view>
     </view>

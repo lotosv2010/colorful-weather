@@ -4,6 +4,15 @@ const { air, airHourly, airDaily } = require('../../utils/api');
 // RGBA → hex
 const toHex = (c = {}) => `#${((c.red << 16) | (c.green << 8) | c.blue).toString(16).padStart(6, '0')}`;
 
+// 根据背景色计算文字颜色（深色背景用白色，浅色背景用深色）
+const getTextColor = (hexColor) => {
+  const r = parseInt(hexColor.substr(1, 2), 16);
+  const g = parseInt(hexColor.substr(3, 2), 16);
+  const b = parseInt(hexColor.substr(5, 2), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 128 ? '#333' : '#fff';
+};
+
 Page({
   data: {
     location: '',
@@ -106,11 +115,11 @@ Page({
       ]);
 
       this.processAirNow(airRes);
-      if (hourlyRes && hourlyRes.hourly) {
-        this.processHourly(hourlyRes.hourly);
+      if (hourlyRes && hourlyRes.hours) {
+        this.processHourly(hourlyRes.hours);
       }
-      if (dailyRes && dailyRes.daily) {
-        this.processDaily(dailyRes.daily);
+      if (dailyRes && dailyRes.days) {
+        this.processDaily(dailyRes.days);
       }
     } catch (e) {
       console.log(e);
@@ -154,28 +163,43 @@ Page({
   },
 
   processHourly(list) {
-    const hourly = list.map(item => ({
-      time: (item.fxTime || '').substr(11, 5),
-      aqi: item.aqi,
-      category: item.category,
-      primary: item.primary || ''
-    }));
+    const hourly = list.map(item => {
+      const idx = (item.indexes && item.indexes[0]) || {};
+      const aqi = idx.aqi || 0;
+      return {
+        time: (item.forecastTime || '').substr(11, 5),
+        aqi,
+        aqiDisplay: idx.aqiDisplay || aqi,
+        pct: Math.min(aqi / 500 * 100, 100).toFixed(1),
+        category: idx.category || '',
+        level: idx.level || '',
+        color: idx.color ? toHex(idx.color) : '',
+        primary: idx.primaryPollutant ? idx.primaryPollutant.name : ''
+      };
+    });
     this.setData({ hourly });
   },
 
   processDaily(list) {
     const weekArr = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
     const daily = list.map(item => {
-      const parts = (item.fxDate || '').split('-');
+      const idx = (item.indexes && item.indexes[0]) || {};
+      const dateStr = (item.forecastStartTime || '').substr(0, 10);
+      const parts = dateStr.split('-');
       const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+      const bgColor = idx.color ? toHex(idx.color) : '#9BB365';
       return {
-        date: item.fxDate,
+        date: dateStr,
         week: weekArr[dateObj.getDay()],
         dateLabel: `${parseInt(parts[1])}月${parseInt(parts[2])}日`,
-        aqi: item.aqi,
-        category: item.category,
-        primary: item.primary || '',
-        color: '#9BB365'
+        name: idx.name || 'AQI',
+        aqi: idx.aqi,
+        aqiDisplay: idx.aqiDisplay || idx.aqi,
+        category: idx.category || '',
+        level: idx.level || '',
+        color: bgColor,
+        textColor: getTextColor(bgColor),
+        primary: idx.primaryPollutant ? idx.primaryPollutant.name : ''
       };
     });
     this.setData({ daily });

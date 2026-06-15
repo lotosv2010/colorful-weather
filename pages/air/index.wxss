@@ -197,10 +197,29 @@ page {
   margin-bottom: 12rpx;
 }
 
-.hourly-aqi {
-  font-size: 32rpx;
-  font-weight: 500;
+.hourly-ring {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 8rpx;
+}
+
+.hourly-ring-inner {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: rgb(17, 17, 21);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hourly-aqi {
+  font-size: 24rpx;
+  font-weight: 500;
 }
 
 .hourly-cat {
@@ -236,34 +255,32 @@ page {
   margin-top: 4rpx;
 }
 
-.daily-info {
+.daily-aqi-info {
   flex: 1;
   display: flex;
   align-items: center;
-}
-
-.daily-aqi-badge {
-  width: 80rpx;
-  height: 48rpx;
-  border-radius: 24rpx;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  margin-right: 16rpx;
+  gap: 8rpx;
 }
 
-.daily-aqi {
-  font-size: 26rpx;
-  color: #fff;
+.daily-aqi-name {
+  font-size: 24rpx;
+  color: #A6A9AD;
+}
+
+.daily-aqi-value {
+  font-size: 32rpx;
   font-weight: 500;
 }
 
-.daily-cat {
-  font-size: 26rpx;
-  margin-right: 16rpx;
+.daily-tag {
+  padding: 4rpx 24rpx;
+  border-radius: 16rpx;
+  min-width: 100rpx;
+  text-align: center;
 }
 
-.daily-primary {
-  font-size: 22rpx;
-  color: #A6A9AD;
+.daily-tag-text {
+  font-size: 24rpx;
+  font-weight: 500;
 }
