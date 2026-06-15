@@ -8,7 +8,8 @@
   <block wx:else>
     <!-- 概览信息 -->
     <view class="air-overview">
-      <view class="air-ring" style="border-color: {{levelColor}}">
+      <view class="air-ring">
+        <canvas type="2d" id="aqiCanvas" class="aqi-canvas"></canvas>
         <text class="aqi-value">{{aqiDisplay || aqi}}</text>
       </view>
       <text class="aqi-category" style="color: {{levelColor}}">{{category}}</text>
@@ -16,6 +17,14 @@
       <view class="aqi-primary" wx:if="{{primary}}">
         <text class="primary-label">首要污染物：</text>
         <text class="primary-value">{{primary}}</text>
+      </view>
+      <!-- 污染物指标网格 -->
+      <view class="overview-grid">
+        <view class="overview-col" wx:for="{{pollutants}}" wx:key="key">
+          <view class="overview-val">{{item.value}}</view>
+          <progress class="overview-progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="{{levelColor}}" percent="{{item.value}}" active stroke-width="3" />
+          <view class="overview-label">{{item.name}}</view>
+        </view>
       </view>
     </view>
 
@@ -29,18 +38,6 @@
       <view class="advice-item" wx:if="{{sensitiveAdvice}}">
         <text class="advice-label">敏感人群：</text>
         <text class="advice-text">{{sensitiveAdvice}}</text>
-      </view>
-    </view>
-
-    <!-- 污染物指标 -->
-    <view class="air-card">
-      <view class="card-title">污染物指标</view>
-      <view class="pollutant-grid">
-        <view class="pollutant-item" wx:for="{{pollutants}}" wx:key="key">
-          <view class="pollutant-name">{{item.name}}</view>
-          <view class="pollutant-value">{{item.value}}</view>
-          <view class="pollutant-unit">{{item.unit}}</view>
-        </view>
       </view>
     </view>
 

@@ -27,7 +27,7 @@
     />
     <weather-air
       air="{{air}}"
-      location="{{longitude}}/{{latitude}}"
+      location="{{latitude}}/{{longitude}}"
     />
     <weather-astronomy
       sun="{{astronomySun}}"

@@ -28,18 +28,23 @@ page {
 }
 
 .air-ring {
+  position: relative;
   width: 200rpx;
   height: 200rpx;
-  border-radius: 50%;
-  border: 12rpx solid #9BB365;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin-bottom: 20rpx;
 }
 
+.aqi-canvas {
+  width: 100%;
+  height: 100%;
+}
+
 .aqi-value {
-  font-size: 72rpx;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 56rpx;
   font-weight: 300;
 }
 
@@ -64,6 +69,39 @@ page {
 
 .primary-value {
   color: #fff;
+}
+
+/* 概览内污染物网格 */
+.overview-grid {
+  width: 100%;
+  margin-top: 30rpx;
+  display: flex;
+  justify-content: space-between;
+}
+
+.overview-col {
+  width: 14%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.overview-val {
+  font-size: 28rpx;
+  font-weight: 300;
+  margin-bottom: 8rpx;
+}
+
+.overview-progress {
+  height: 5px;
+  width: 100%;
+  border-radius: 5px;
+  margin-bottom: 8rpx;
+}
+
+.overview-label {
+  font-size: 22rpx;
+  color: #A6A9AD;
 }
 
 /* 通用卡片 */

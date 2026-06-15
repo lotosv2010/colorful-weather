@@ -6,54 +6,29 @@
   </view>
   <view class="weather-air-main">
     <view class="weather-air-chart">
-      <view class="chart" style="border-color: {{air.colorHex || '#9BB365'}}">{{air.aqiDisplay || air.aqi}}</view>
+      <view class="chart">
+        <canvas type="2d" id="aqiCanvas" class="aqi-canvas"></canvas>
+        <text class="chart-text">{{air.aqiDisplay || air.aqi}}</text>
+      </view>
       <view class="title">{{air.category}}</view>
       <view class="subtitle" wx:if="{{air.primary}}">{{air.primary}}</view>
     </view>
     <view class="weather-air-grid">
       <view class="row">
-        <view class="col">
-          <view class="value">{{air.pm2p5.value}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.pm2p5.value}}" active stroke-width="3" />
+        <view class="col" wx:for="{{air.pollutants}}" wx:key="name" wx:if="{{index < 3}}">
+          <view class="value">{{item.value}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="{{air.colorHex || '#9BB365'}}" percent="{{item.value}}" active stroke-width="3" />
           <view class="label">
-            <text class="title">{{air.pm2p5.name}}</text>
-          </view>
-        </view>
-        <view class="col">
-          <view class="value">{{air.pm10.value}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.pm10.value}}" active stroke-width="3" />
-          <view class="label">
-            <text class="title">{{air.pm10.name}}</text>
-          </view>
-        </view>
-        <view class="col">
-          <view class="value">{{air.o3.value}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.o3.value}}" active stroke-width="3" />
-          <view class="label">
-            <text class="title">{{air.o3.name}}</text>
+            <text class="title">{{item.name}}</text>
           </view>
         </view>
       </view>
       <view class="row">
-        <view class="col">
-          <view class="value">{{air.co.value}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.co.value}}" active stroke-width="3" />
+        <view class="col" wx:for="{{air.pollutants}}" wx:key="name" wx:if="{{index >= 3}}">
+          <view class="value">{{item.value}}</view>
+          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="{{air.colorHex || '#9BB365'}}" percent="{{item.value}}" active stroke-width="3" />
           <view class="label">
-            <text class="title">{{air.co.name}}</text>
-          </view>
-        </view>
-        <view class="col">
-          <view class="value">{{air.so2.value}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.so2.value}}" active stroke-width="3" />
-          <view class="label">
-            <text class="title">{{air.so2.name}}</text>
-          </view>
-        </view>
-        <view class="col">
-          <view class="value">{{air.no2.value}}</view>
-          <progress class="progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="#9BB365" percent="{{air.no2.value}}" active stroke-width="3" />
-          <view class="label">
-            <text class="title">{{air.no2.name}}</text>
+            <text class="title">{{item.name}}</text>
           </view>
         </view>
       </view>

@@ -1,11 +1,6 @@
 // pages/air/index.js
 const { air, airHourly, airDaily } = require('../../utils/api');
 
-// API pollutant code → 内部字段名映射
-const CODE_MAP = { 'PM2.5': 'pm2p5', 'PM10': 'pm10', 'O3': 'o3', 'CO': 'co', 'SO2': 'so2', 'NO2': 'no2' };
-const POLLUTANT_NAMES = { pm2p5: 'PM2.5', pm10: 'PM10', o3: 'O₃', co: 'CO', so2: 'SO₂', no2: 'NO₂' };
-const POLLUTANT_UNITS = { pm2p5: 'μg/m³', pm10: 'μg/m³', o3: 'μg/m³', co: 'mg/m³', so2: 'μg/m³', no2: 'μg/m³' };
-
 // RGBA → hex
 const toHex = (c = {}) => `#${((c.red << 16) | (c.green << 8) | c.blue).toString(16).padStart(6, '0')}`;
 
@@ -29,11 +24,67 @@ Page({
 
   onLoad(options = {}) {
     const location = options.location || '';
+    console.log('onLoad', location);
     this.setData({ location });
     if (location) {
       this.loadData();
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
+    }
+  },
+
+  initCanvas(cb) {
+    if (this._ctx) { cb && cb(); return; }
+    const query = wx.createSelectorQuery();
+    query.select('#aqiCanvas')
+      .fields({ node: true, size: true })
+      .exec((res) => {
+        if (!res || !res[0]) return;
+        const canvas = res[0].node;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const dpr = wx.getSystemInfoSync().pixelRatio;
+        canvas.width = res[0].width * dpr;
+        canvas.height = res[0].height * dpr;
+        ctx.scale(dpr, dpr);
+        this._ctx = ctx;
+        this._w = res[0].width;
+        this._h = res[0].height;
+        cb && cb();
+      });
+  },
+
+  drawRing() {
+    if (!this._ctx) return;
+    const { aqi, levelColor } = this.data;
+    if (!aqi && aqi !== 0) return;
+    const ctx = this._ctx;
+    const w = this._w;
+    const h = this._h;
+    const cx = w / 2;
+    const cy = h / 2;
+    const r = Math.min(cx, cy) - 8;
+    const lineWidth = 10;
+    const pct = Math.min(aqi / 500, 1);
+
+    ctx.clearRect(0, 0, w, h);
+
+    // 背景环
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = '#3D3F4A';
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // 进度弧
+    if (pct > 0) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + pct * Math.PI * 2);
+      ctx.strokeStyle = levelColor || '#9BB365';
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = 'round';
+      ctx.stroke();
     }
   },
 
@@ -75,20 +126,12 @@ Page({
     const idx = res.indexes[0];
     const colorHex = toHex(idx.color);
 
-    // 从 pollutants 数组提取各污染物浓度
-    const pollutantMap = {};
-    (res.pollutants || []).forEach(p => {
-      const key = CODE_MAP[p.code];
-      if (key) {
-        pollutantMap[key] = p.concentration ? p.concentration.value : '-';
-      }
-    });
-
-    const pollutants = Object.keys(POLLUTANT_NAMES).map(key => ({
-      name: POLLUTANT_NAMES[key],
-      key,
-      value: pollutantMap[key] || '-',
-      unit: POLLUTANT_UNITS[key]
+    // 直接从 API 响应解析污染物数据
+    const pollutants = (res.pollutants || []).map(p => ({
+      name: p.name,
+      key: p.code,
+      value: p.concentration ? p.concentration.value : '-',
+      unit: p.concentration ? p.concentration.unit : ''
     }));
 
     const health = idx.health || {};
@@ -106,6 +149,8 @@ Page({
       primary: idx.primaryPollutant ? idx.primaryPollutant.name : '',
       pollutants
     });
+    // 等 wx:else 渲染出 canvas 后再初始化并绘制
+    wx.nextTick(() => this.initCanvas(() => this.drawRing()));
   },
 
   processHourly(list) {
