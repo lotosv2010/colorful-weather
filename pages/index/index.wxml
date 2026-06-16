@@ -12,6 +12,7 @@
   <view class="container">
     <view class="minutely-entry" bindtap="onMinutelyTap">
       <i class="qi-{{minutelyType === 'snow' ? 499 : 399}}-fill minutely-entry-icon"></i>
+      <i class="qi-1803 typhoon-entry-icon" catchtap="onTyphoonTap"></i>
     </view>
     <weather-temp
       weather="{{currentWeather}}"

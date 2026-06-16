@@ -49,6 +49,12 @@ module.exports = {
   hourly: (data) => request(`${BASE_URL}/weather/24h`, 'GET', data),
   // 分钟级降水（未来2小时逐5分钟）
   minutely: (data) => request(`${BASE_URL}/minutely/5m`, 'GET', data),
+  // 台风列表（当年西北太平洋）
+  stormList: (data) => request(`${BASE_URL}/tropical/storm-list`, 'GET', data),
+  // 台风预报路径
+  stormForecast: (data) => request(`${BASE_URL}/tropical/storm-forecast`, 'GET', data),
+  // 台风实况与历史路径
+  stormTrack: (data) => request(`${BASE_URL}/tropical/storm-track`, 'GET', data),
   // 30天预报
   weather30d: (data) => request(`${BASE_URL}/weather/30d`, 'GET', data),
   // 空气质量实况（location 为 "lon,lat" 格式，内部转换为 URL 路径）

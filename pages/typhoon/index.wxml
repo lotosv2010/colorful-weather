@@ -1,0 +1,82 @@
+<!--pages/typhoon/index.wxml-->
+<view class="typhoon-page">
+  <view wx:if="{{loading}}" class="tip">加载中...</view>
+  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+
+  <block wx:if="{{!loading && !errorMsg}}">
+    <!-- 台风列表 -->
+    <view class="storm-list-card">
+      <view class="card-title">台风列表</view>
+      <scroll-view scroll-x class="storm-list-scroll">
+        <view
+          wx:for="{{stormList}}"
+          wx:key="id"
+          class="storm-chip {{selectedStorm.id === item.id ? 'active' : ''}} {{item.isActive === '1' ? '' : 'inactive'}}"
+          data-id="{{item.id}}"
+          bindtap="onSelectStorm"
+        >
+          <text class="storm-chip-name">{{item.name}}</text>
+          <text wx:if="{{item.isActive === '1'}}" class="storm-chip-tag">活跃</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 选中台风信息 -->
+    <block wx:if="{{selectedStorm}}">
+      <!-- 最新实况 -->
+      <view wx:if="{{track.length}}" class="info-card">
+        <view class="card-title">
+          {{selectedStorm.name}}
+          <text class="storm-type-tag" style="background-color: {{track[track.length - 1].color}}">
+            {{track[track.length - 1].typeName}}
+          </text>
+        </view>
+        <view class="info-grid">
+          <view class="info-cell">
+            <text class="info-value">{{track[track.length - 1].pressure}}</text>
+            <text class="info-label">中心气压 hPa</text>
+          </view>
+          <view class="info-cell">
+            <text class="info-value">{{track[track.length - 1].windSpeed}}</text>
+            <text class="info-label">最大风速 m/s</text>
+          </view>
+          <view class="info-cell">
+            <text class="info-value">{{track[track.length - 1].lat}}°, {{track[track.length - 1].lon}}°</text>
+            <text class="info-label">当前位置</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 路径图 -->
+      <view class="chart-card">
+        <view class="card-title">
+          路径图
+          <text class="card-subtitle">{{isActive ? '实线为历史路径，虚线为预报' : '该台风已停编'}}</text>
+        </view>
+        <canvas type="2d" id="trackCanvas" class="track-canvas"></canvas>
+      </view>
+
+      <!-- 预报数据 -->
+      <view wx:if="{{forecast.length}}" class="forecast-card">
+        <view class="card-title">预报路径</view>
+        <view class="forecast-table">
+          <view class="forecast-row header">
+            <text class="forecast-cell time">时间</text>
+            <text class="forecast-cell">类型</text>
+            <text class="forecast-cell">气压</text>
+            <text class="forecast-cell">风速</text>
+          </view>
+          <view wx:for="{{forecast}}" wx:key="fxTime" class="forecast-row">
+            <text class="forecast-cell time">{{item.timeLabel}}</text>
+            <text class="forecast-cell">
+              <text class="type-dot" style="background-color: {{item.color}};"></text>
+              {{item.typeName}}
+            </text>
+            <text class="forecast-cell">{{item.pressure}} hPa</text>
+            <text class="forecast-cell">{{item.windSpeed}} m/s</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+</view>

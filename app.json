@@ -6,7 +6,8 @@
     "pages/warning/index",
     "pages/weather30/index",
     "pages/hourly/index",
-    "pages/minutely/index"
+    "pages/minutely/index",
+    "pages/typhoon/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

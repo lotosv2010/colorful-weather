@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "台风",
+  "usingComponents": {
+    "page-header": "/components/page-header/index"
+  }
+}

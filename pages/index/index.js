@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, stormList } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
@@ -25,6 +25,7 @@ Page({
     alerts: [],
     showMinutely: false,
     minutelySummary: '',
+    hasActiveStorm: false,
     latitude: '',
     longitude: '',
     province: '',
@@ -127,7 +128,7 @@ Page({
       const {longitude, latitude} = this.data;
       location = `${longitude},${latitude}`;
       const today = this.formatDateStr(new Date());
-      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes] = await Promise.all([
+      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes, stormListRes] = await Promise.all([
         now({location}),
         this.getIndices(location),
         hourly({location}),
@@ -136,7 +137,8 @@ Page({
         sun({location, date: today}),
         moon({location, date: today}),
         warning(location).catch(() => null),
-        minutely({location}).catch(() => null)
+        minutely({location}).catch(() => null),
+        stormList({ basin: 'NP', year: new Date().getFullYear() }).catch(() => null)
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
@@ -151,6 +153,10 @@ Page({
       const showMinutely = hasPrecip || !!minutelyRes?.summary;
       const minutelyType = minutelyData.some(m => Number(m.precip) > 0 && m.type === 'snow') ? 'snow' : 'rain';
 
+      // 台风：筛选活跃台风
+      const storms = stormListRes?.storm || [];
+      const hasActiveStorm = storms.some(s => s.isActive === '1');
+
       this.setData({
         currentWeather: weatherData?.now,
         uv: daily.find(d => d.type === '5')?.category,
@@ -164,7 +170,8 @@ Page({
         alerts,
         showMinutely,
         minutelySummary: minutelyRes?.summary || '',
-        minutelyType
+        minutelyType,
+        hasActiveStorm
       });
     } catch (error) {
       console.log(error)
@@ -257,6 +264,11 @@ Page({
     const { longitude, latitude, currentCity, province, district } = this.data;
     wx.navigateTo({
       url: `/pages/minutely/index?location=${longitude},${latitude}&city=${encodeURIComponent(currentCity)}&province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`
+    });
+  },
+  onTyphoonTap() {
+    wx.navigateTo({
+      url: '/pages/typhoon/index'
     });
   },
 })
