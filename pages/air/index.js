@@ -45,7 +45,7 @@ Page({
         const canvas = res[0].node;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        const dpr = wx.getDeviceInfo().devicePixelRatio;
+        const dpr = (wx.getDeviceInfo && wx.getDeviceInfo().devicePixelRatio) || wx.getSystemInfoSync().pixelRatio || 2;
         canvas.width = res[0].width * dpr;
         canvas.height = res[0].height * dpr;
         ctx.scale(dpr, dpr);
