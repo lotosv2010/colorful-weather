@@ -31,7 +31,8 @@ Component({
     selectedIndex: 0,
     itemWidth: 0,
     totalWidth: 0,
-    canvasHeight: 120
+    canvasHeight: 150,
+    canvasTop: 0
   },
   lifetimes: {
     ready() {
@@ -50,9 +51,11 @@ Component({
     initSize() {
       const sys = wx.getSystemInfoSync();
       const rpx2px = sys.screenWidth / 750;
-      const itemWidth = Math.round(120 * rpx2px);
+      const itemWidth = Math.round(140 * rpx2px);
       const totalWidth = itemWidth * (this.data.daily.length || 30);
-      this.setData({ itemWidth, totalWidth });
+      // 计算 canvasTop: padding(16rpx) + chart-week(22rpx) + chart-day(20rpx+4rpx) + chart-icon(40rpx+16rpx) + chart-temp-max(24rpx)
+      const canvasTop = Math.round((16 + 22 + 24 + 56 + 24) * rpx2px);
+      this.setData({ itemWidth, totalWidth, canvasTop });
     },
     initCanvas(cb) {
       if (this._ctx) { cb && cb(); return; }
@@ -60,7 +63,10 @@ Component({
       query.select('#tempCanvas')
         .fields({ node: true, size: true })
         .exec((res) => {
-          if (!res || !res[0] || !res[0].node) return;
+          if (!res || !res[0] || !res[0].node) {
+            console.error('Canvas not found');
+            return;
+          }
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
           const dpr = wx.getSystemInfoSync().pixelRatio;
@@ -98,30 +104,36 @@ Component({
       });
       const range = globalMax - globalMin || 1;
 
-      const tempToY = (temp) => padT + (1 - (temp - globalMin) / range) * chartH;
+      // 温度转换为Y坐标，确保在canvas有效区域内
+      const tempToY = (temp) => {
+        const normalized = (temp - globalMin) / range;
+        const y = padT + (1 - normalized) * chartH;
+        // 确保y坐标在canvas范围内
+        return Math.max(padT, Math.min(h - padB, y));
+      };
       const pointX = (index) => index * itemW + itemW / 2;
 
       ctx.clearRect(0, 0, w, h);
 
       // 最高温折线
       const maxPoints = daily.map((d, i) => ({ x: pointX(i), y: tempToY(safeNum(d.tempMax)) }));
-      this.drawLine(ctx, maxPoints, '#FF8C00', 1.5);
+      this.drawLine(ctx, maxPoints, '#FF8C00', 2);
 
       // 最低温折线
       const minPoints = daily.map((d, i) => ({ x: pointX(i), y: tempToY(safeNum(d.tempMin)) }));
-      this.drawLine(ctx, minPoints, '#6CB4EE', 1.5);
+      this.drawLine(ctx, minPoints, '#6CB4EE', 2);
 
       // 圆点
       maxPoints.forEach(p => {
         ctx.fillStyle = '#FF8C00';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
         ctx.fill();
       });
       minPoints.forEach(p => {
         ctx.fillStyle = '#6CB4EE';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
         ctx.fill();
       });
     },

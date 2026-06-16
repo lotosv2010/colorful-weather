@@ -1,32 +1,7 @@
 <!--components/weather30-card/index.wxml-->
 <wxs src="../../utils/iconColor.wxs" module="ic" />
 <wxs src="../../utils/moonPhase.wxs" module="mp" />
-<wxs module="fmt">
-module.exports.safe = function(val) {
-  if (val == null) return '';
-  if (typeof val !== 'object') return '' + val;
-  if (Array.isArray(val)) return val.length ? module.exports.safe(val[0]) : '';
-  if (val.value != null) return '' + val.value;
-  if (val.text != null) return '' + val.text;
-  if (val.name != null) return '' + val.name;
-  if (val.desc != null) return '' + val.desc;
-  var keys = Object.keys(val);
-  for (var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    if (typeof val[k] !== 'object' && val[k] != null) return '' + val[k];
-  }
-  return '';
-};
-module.exports.uvText = function(val) {
-  var n = +val;
-  if (isNaN(n)) return '' + val;
-  if (n <= 2) return '最弱';
-  if (n <= 4) return '弱';
-  if (n <= 6) return '中等';
-  if (n <= 9) return '强';
-  return '很强';
-};
-</wxs>
+<wxs src="../../utils/fmt.wxs" module="fmt" />
 
 <view class="detail-card">
   <!-- 第1行: 周 + 日期 -->
