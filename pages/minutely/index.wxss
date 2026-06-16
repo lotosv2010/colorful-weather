@@ -1,0 +1,87 @@
+/* pages/minutely/index.wxss */
+page {
+  background-color: #000;
+}
+
+.minutely-page {
+  padding: 20rpx 24rpx;
+  color: #fff;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.tip {
+  text-align: center;
+  color: #8C9AA5;
+  font-size: 28rpx;
+  padding: 60rpx 0;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  background-color: rgba(91, 163, 217, 0.12);
+  border-radius: 15px;
+  padding: 24rpx 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.summary-icon {
+  font-size: 1.1rem;
+  color: #5BA3D9;
+  margin-right: 16rpx;
+}
+
+.summary-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #5BA3D9;
+  line-height: 1.5;
+}
+
+.chart-card {
+  background-color: rgb(34, 37, 48);
+  border-radius: 15px;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.chart-card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 26rpx;
+  color: #d5d5d5;
+  margin-bottom: 16rpx;
+}
+
+.chart-card-unit {
+  font-size: 22rpx;
+  color: #8C9AA5;
+}
+
+.chart-canvas {
+  display: block;
+  width: 100%;
+  height: 220px;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 40rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 22rpx;
+  color: #8C9AA5;
+}
+
+.legend-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: 8rpx;
+}

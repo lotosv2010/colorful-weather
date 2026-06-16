@@ -1,0 +1,36 @@
+<!--pages/minutely/index.wxml-->
+<view class="minutely-page">
+  <page-header province="{{province}}" district="{{city || district}}" />
+
+  <view wx:if="{{loading}}" class="tip">加载中...</view>
+  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+
+  <block wx:if="{{!loading && !errorMsg}}">
+    <!-- 摘要卡片 -->
+    <view wx:if="{{summary}}" class="summary-card">
+      <i class="qi-{{precipType === 'snow' ? 499 : 399}}-fill summary-icon"></i>
+      <text class="summary-text">{{summary}}</text>
+    </view>
+
+    <!-- 图表卡片 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text>逐5分钟降水量</text>
+        <text class="chart-card-unit">mm</text>
+      </view>
+      <canvas type="2d" id="minutelyCanvas" class="chart-canvas"></canvas>
+    </view>
+
+    <!-- 图例 -->
+    <view class="legend">
+      <view class="legend-item">
+        <view class="legend-dot" style="background-color: #5BA3D9;"></view>
+        <text>雨</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot" style="background-color: #A8D8EA;"></view>
+        <text>雪</text>
+      </view>
+    </view>
+  </block>
+</view>

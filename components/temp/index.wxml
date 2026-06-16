@@ -25,7 +25,7 @@
     </view>
     <view class="weather-header-other">
       <view class="weather-header-other-left">
-        <weather-icon class="weather-header-fxd" colors="{{['#b5bbcc']}}" src="/static/icons/fxd.svg" />
+        <i class="weather-header-fxd qi-2150"></i>
         <text>{{weather.windDir}} {{weather.windScale}}级</text>
         <text>{{weather.windSpeed}}km/h</text>
       </view>

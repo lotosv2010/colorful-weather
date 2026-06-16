@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
@@ -23,6 +23,8 @@ Page({
     astronomySun: {},
     astronomyMoon: {},
     alerts: [],
+    showMinutely: false,
+    minutelySummary: '',
     latitude: '',
     longitude: '',
     province: '',
@@ -125,7 +127,7 @@ Page({
       const {longitude, latitude} = this.data;
       location = `${longitude},${latitude}`;
       const today = this.formatDateStr(new Date());
-      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes] = await Promise.all([
+      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes] = await Promise.all([
         now({location}),
         this.getIndices(location),
         hourly({location}),
@@ -133,7 +135,8 @@ Page({
         air(location),
         sun({location, date: today}),
         moon({location, date: today}),
-        warning(location).catch(() => null)
+        warning(location).catch(() => null),
+        minutely({location}).catch(() => null)
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
@@ -141,6 +144,12 @@ Page({
 
       // 预警数据：metadata.zeroResult 为 true 时表示无预警
       const alerts = (warningRes && !warningRes.metadata?.zeroResult && warningRes.alerts) ? warningRes.alerts : [];
+
+      // 分钟级降水：取有降水的类型，默认 rain
+      const minutelyData = minutelyRes?.minutely || [];
+      const hasPrecip = minutelyData.some(m => Number(m.precip) > 0);
+      const showMinutely = hasPrecip || !!minutelyRes?.summary;
+      const minutelyType = minutelyData.some(m => Number(m.precip) > 0 && m.type === 'snow') ? 'snow' : 'rain';
 
       this.setData({
         currentWeather: weatherData?.now,
@@ -152,7 +161,10 @@ Page({
         indices: daily,
         astronomySun: sunData,
         astronomyMoon: moonData,
-        alerts
+        alerts,
+        showMinutely,
+        minutelySummary: minutelyRes?.summary || '',
+        minutelyType
       });
     } catch (error) {
       console.log(error)
@@ -214,12 +226,14 @@ Page({
   },
 
   // 当用户选择了组件中的城市之后的回调函数
-  // GeoAPI 返回字段：name / lat / lon
+  // GeoAPI 返回字段：name / id / lat / lon / adm1(省) / adm2(市)
   onSelectCity(e) {
     const { city } = e.detail;
     if (!city) return;
     this.setData({
       currentCity: city.name,
+      province: city.adm1 || '',
+      district: city.name || '',
       latitude: city.lat,
       longitude: city.lon,
       selectorVisible: false,
@@ -237,6 +251,12 @@ Page({
     const { index } = e.detail;
     wx.navigateTo({
       url: `/pages/hourly/index?location=${longitude},${latitude}&city=${encodeURIComponent(province + ',' + district)}&hour=${index}`
+    });
+  },
+  onMinutelyTap() {
+    const { longitude, latitude, currentCity, province, district } = this.data;
+    wx.navigateTo({
+      url: `/pages/minutely/index?location=${longitude},${latitude}&city=${encodeURIComponent(currentCity)}&province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`
     });
   },
 })

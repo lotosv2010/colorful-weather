@@ -10,6 +10,9 @@
     </view>
   </view>
   <view class="container">
+    <view class="minutely-entry" bindtap="onMinutelyTap">
+      <i class="qi-{{minutelyType === 'snow' ? 499 : 399}}-fill minutely-entry-icon"></i>
+    </view>
     <weather-temp
       weather="{{currentWeather}}"
       city="{{currentCity}}"

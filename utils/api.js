@@ -47,6 +47,8 @@ module.exports = {
   // 生活指数 3 天预报（和风免费版上限）
   indices3d: (data) => request(`${BASE_URL}/indices/3d`, 'GET', data),
   hourly: (data) => request(`${BASE_URL}/weather/24h`, 'GET', data),
+  // 分钟级降水（未来2小时逐5分钟）
+  minutely: (data) => request(`${BASE_URL}/minutely/5m`, 'GET', data),
   // 30天预报
   weather30d: (data) => request(`${BASE_URL}/weather/30d`, 'GET', data),
   // 空气质量实况（location 为 "lon,lat" 格式，内部转换为 URL 路径）
