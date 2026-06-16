@@ -1,4 +1,7 @@
 /**index.wxss**/
+page {
+  background-color: #000;
+}
 .weather {
   background-color: black;
   color: #ffffff;

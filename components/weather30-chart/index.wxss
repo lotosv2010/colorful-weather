@@ -1,0 +1,85 @@
+/* components/weather30-chart/index.wxss */
+.chart-wrapper {
+  background: rgb(34, 37, 48);
+  border-radius: 15px;
+  padding: 20rpx 0;
+  margin-bottom: 20rpx;
+}
+
+.chart-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.chart-content {
+  display: inline-flex;
+  position: relative;
+}
+
+.temp-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.chart-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx 0;
+  position: relative;
+  z-index: 2;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+.chart-item.active {
+  background: rgba(68, 179, 255, 0.15);
+}
+
+.chart-week {
+  font-size: 22rpx;
+  color: #8C9AA5;
+}
+
+.chart-day {
+  font-size: 20rpx;
+  color: #8C9AA5;
+  margin-top: 4rpx;
+}
+
+.chart-icon {
+  font-size: 32rpx;
+  margin: 8rpx 0;
+}
+
+.chart-temp-max {
+  font-size: 24rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+.chart-line-space {
+  width: 100%;
+}
+
+.chart-temp-min {
+  font-size: 24rpx;
+  color: #8C9AA5;
+}
+
+.chart-air-tag {
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+  margin-top: 8rpx;
+}
+
+.chart-air-tag text {
+  font-size: 20rpx;
+}
+
+.chart-detail {
+  padding: 0 24rpx;
+}

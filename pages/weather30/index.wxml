@@ -1,0 +1,39 @@
+<!--pages/weather30/index.wxml-->
+<view class="weather30-page">
+
+  <!-- 加载与错误状态 -->
+  <view wx:if="{{loading}}" class="tip">加载中...</view>
+  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+
+  <block wx:else>
+    <!-- 头部城市信息 -->
+    <view class="header-city" wx:if="{{city}}">
+      <text class="city-name">{{city}}</text>
+    </view>
+
+    <!-- 统计摘要 -->
+    <view class="summary-card">
+      <text class="summary-text">未来30天{{summary.rainDays ? '将有' + summary.rainDays + '天下雨' : ''}}{{summary.snowDays ? '，' + summary.snowDays + '天下雪' : ''}}，最高温度{{summary.maxTemp}}°（{{summary.maxDate}}），最低温度{{summary.minTemp}}°（{{summary.minDate}}）</text>
+    </view>
+
+    <!-- Tabs -->
+    <view class="tabs">
+      <view class="tab {{activeTab === 'list' ? 'active' : ''}}" bindtap="onTabChange" data-tab="list">
+        <text>列表</text>
+      </view>
+      <view class="tab {{activeTab === 'chart' ? 'active' : ''}}" bindtap="onTabChange" data-tab="chart">
+        <text>图表</text>
+      </view>
+    </view>
+
+    <!-- 列表模式 -->
+    <view wx:if="{{activeTab === 'list'}}" class="list-container">
+      <weather30-card wx:for="{{daily}}" wx:key="fxDate" item="{{item}}" />
+    </view>
+
+    <!-- 图表模式 -->
+    <view wx:if="{{activeTab === 'chart'}}" class="chart-container">
+      <weather30-chart id="weather30Chart" daily="{{daily}}" bind:select="onChartSelect" />
+    </view>
+  </block>
+</view>

@@ -7,6 +7,18 @@ Component({
     daily: {
       type: Array,
       value: []
+    },
+    location: {
+      type: String,
+      value: ''
+    },
+    province: {
+      type: String,
+      value: ''
+    },
+    district: {
+      type: String,
+      value: ''
     }
   },
   data: {

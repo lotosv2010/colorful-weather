@@ -1,0 +1,106 @@
+/* components/weather30-card/index.wxss */
+.detail-card {
+  background: rgb(46, 48, 61);
+  border-radius: 10px;
+  padding: 20rpx 36rpx;
+  margin-bottom: 16rpx;
+}
+
+.card-row {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+/* 周+日期 */
+.row-date {
+  padding-bottom: 8rpx;
+}
+
+.date-text {
+  font-size: 26rpx;
+  color: #fff;
+}
+
+/* icon + 天气 + 温度 */
+.row-main {
+  padding: 8rpx 0 12rpx;
+}
+
+.card-icon {
+  font-size: 56rpx;
+  margin-right: 16rpx;
+}
+
+.temp-max {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #fff;
+}
+
+.temp-sep {
+  font-size: 26rpx;
+  color: #8C9AA5;
+  margin: 0 6rpx;
+}
+
+.temp-min {
+  font-size: 32rpx;
+  color: #fff;
+}
+
+/* 升降温描述 */
+.row-desc {
+  flex-wrap: wrap;
+}
+
+.desc-text {
+  font-size: 24rpx;
+  color: #8C9AA5;
+  line-height: 1.6;
+}
+
+/* cell 垂直布局：上面白色值，下面灰色标签 */
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.cell-l { width: 40%; }
+.cell-c { width: 40%; }
+.cell-r { width: 20%; }
+
+.cell-val {
+  font-size: 26rpx;
+  color: #fff;
+}
+
+.cell-label {
+  font-size: 22rpx;
+  color: #8C9AA5;
+  margin-top: 4rpx;
+}
+
+.moon-emoji {
+  font-size: 36rpx;
+}
+
+/* 空气质量 tag */
+.air-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2rpx 16rpx;
+  border-radius: 8rpx;
+  margin: 0 12rpx;
+}
+
+.air-aqi {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.air-category {
+  font-size: 24rpx;
+  color: #d5d5d5;
+}

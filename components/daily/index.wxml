@@ -3,7 +3,7 @@
 <view class="weather-daily">
   <view class="weather-daily-header">
     <text class="right">未来预报</text>
-    <text class="left">7天预报</text>
+    <navigator class="action more" url="/pages/weather30/index?location={{location}}&city={{province}},{{district}}">30天预报 ›</navigator>
   </view>
   <view class="weather-daily-item" wx:for="{{dailyList}}" wx:key="fxDate">
     <view class="weather-daily-date">

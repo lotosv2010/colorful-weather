@@ -45,6 +45,9 @@
 .moon-phase-icon {
   font-size: 1rem;
 }
+.moon-emoji {
+  font-size: 1rem;
+}
 .phase-name {
   font-size: 0.75rem;
   color: rgb(181, 187, 204);

@@ -1,0 +1,50 @@
+<!--components/weather30-chart/index.wxml-->
+<wxs src="../../utils/iconColor.wxs" module="ic" />
+<wxs module="fmt">
+module.exports.safe = function(val) {
+  if (val == null) return '';
+  if (typeof val !== 'object') return '' + val;
+  if (Array.isArray(val)) return val.length ? module.exports.safe(val[0]) : '';
+  if (val.value != null) return '' + val.value;
+  if (val.text != null) return '' + val.text;
+  if (val.name != null) return '' + val.name;
+  var keys = Object.keys(val);
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    if (typeof val[k] !== 'object' && val[k] != null) return '' + val[k];
+  }
+  return '';
+};
+</wxs>
+<view class="chart-wrapper">
+  <scroll-view scroll-x class="chart-scroll" enhanced show-scrollbar="{{false}}">
+    <view class="chart-content" style="width: {{totalWidth}}px">
+      <!-- Canvas 折线层 -->
+      <canvas type="2d" id="tempCanvas" class="temp-canvas"
+        style="width: {{totalWidth}}px; height: {{canvasHeight}}px">
+      </canvas>
+      <!-- 每个 item -->
+      <view class="chart-item {{selectedIndex === index ? 'active' : ''}}"
+        wx:for="{{daily}}" wx:key="fxDate"
+        style="width: {{itemWidth}}px"
+        bindtap="onSelectItem" data-index="{{index}}">
+        <text class="chart-week">{{item.week}}</text>
+        <text class="chart-day">{{item.month}}/{{item.day}}</text>
+        <i class="qi-{{fmt.safe(item.iconDay)}}-fill icon-color-{{ic.category(fmt.safe(item.iconDay))}} chart-icon"></i>
+        <text class="chart-temp-max">{{fmt.safe(item.tempMax)}}°</text>
+        <view class="chart-line-space" style="height: {{canvasHeight}}px"></view>
+        <text class="chart-temp-min">{{fmt.safe(item.tempMin)}}°</text>
+        <i class="qi-{{fmt.safe(item.iconNight)}}-fill icon-color-{{ic.category(fmt.safe(item.iconNight))}} chart-icon"></i>
+        <view class="chart-air-tag" wx:if="{{item.air}}"
+          style="background: {{item.air.color}}">
+          <text style="color: {{item.air.textColor}}">{{item.air.category}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- 选中项详情卡片 -->
+<view class="chart-detail" wx:if="{{daily[selectedIndex]}}">
+  <weather30-card item="{{daily[selectedIndex]}}" />
+</view>

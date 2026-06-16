@@ -3,7 +3,8 @@
     "pages/index/index",
     "pages/life/index",
     "pages/air/index",
-    "pages/warning/index"
+    "pages/warning/index",
+    "pages/weather30/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

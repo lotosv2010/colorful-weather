@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "weather30-card": "../weather30-card/index"
+  }
+}

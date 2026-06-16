@@ -47,6 +47,8 @@ module.exports = {
   // 生活指数 3 天预报（和风免费版上限）
   indices3d: (data) => request(`${BASE_URL}/indices/3d`, 'GET', data),
   hourly: (data) => request(`${BASE_URL}/weather/24h`, 'GET', data),
+  // 30天预报
+  weather30d: (data) => request(`${BASE_URL}/weather/30d`, 'GET', data),
   // 空气质量实况（location 为 "lon,lat" 格式，内部转换为 URL 路径）
   air: (location) => request(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {}),
   // 城市搜索：location 支持中文/拼音/ID/经纬度
@@ -58,9 +60,9 @@ module.exports = {
   // 天文：月升月落 + 月相
   moon: (data) => request(`${BASE_URL}/astronomy/moon`, 'GET', data),
   // 空气质量小时预报（location 为 "lon,lat" 格式，内部转换为 URL 路径）
-  airHourly: (location) => request(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', {}),
+  airHourly: (location) => request(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', {'localTime': true}),
   // 空气质量每日预报
-  airDaily: (location) => request(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', {}),
+  airDaily: (location) => request(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', {'localTime': true}),
   // 天气预警（location 为 "lon,lat" 格式，内部转换为 URL 路径）
-  warning: (location) => request(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', {}),
+  warning: (location) => request(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', {'localTime': true}),
 }

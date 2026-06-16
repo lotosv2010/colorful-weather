@@ -26,6 +26,9 @@
     />
     <weather-daily
       daily="{{daily}}"
+      location="{{longitude}},{{latitude}}"
+      province="{{province}}"
+      district="{{district}}"
     />
     <weather-air
       air="{{air}}"

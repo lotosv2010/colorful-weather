@@ -24,7 +24,9 @@ Page({
     astronomyMoon: {},
     alerts: [],
     latitude: '',
-    longitude: ''
+    longitude: '',
+    province: '',
+    district: ''
   },
   // 事件处理函数
   onLoad() {
@@ -51,9 +53,11 @@ Page({
   async getNow() {
     try {
       const {longitude, latitude} = this.data;
-      const { city } = await this.getCity(`${latitude},${longitude}`);
+      const { city, province, district } = await this.getCity(`${latitude},${longitude}`);
       this.setData({
-        currentCity: city
+        currentCity: city,
+        province,
+        district
       });
       await this.getWeather();
     } catch (error) {
@@ -178,8 +182,11 @@ Page({
       this.qqmapsdk.reverseGeocoder({
         location,
         success: (res) => {
+          const ad = res?.result?.ad_info || {};
           resolve({
-            city: res?.result?.ad_info?.district
+            city: ad.district,
+            province: ad.province,
+            district: ad.district
           });
         },
         fail: function(error) {

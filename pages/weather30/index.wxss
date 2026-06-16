@@ -1,0 +1,76 @@
+/* pages/weather30/index.wxss */
+page {
+  background: #000;
+  color: #fff;
+}
+
+.weather30-page {
+  padding: 20rpx 24rpx 40rpx;
+}
+
+/* 加载/错误提示 */
+.tip {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 80rpx 0;
+}
+
+/* 头部城市 */
+.header-city {
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.city-name {
+  font-size: 36rpx;
+  font-weight: 500;
+}
+
+/* 统计摘要 */
+.summary-card {
+  background: rgb(34, 37, 48);
+  border-radius: 15px;
+  padding: 24rpx 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.summary-text {
+  font-size: 26rpx;
+  color: #d5d5d5;
+  line-height: 1.8;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  background: rgb(34, 37, 48);
+  border-radius: 15px;
+  padding: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  font-size: 28rpx;
+  color: #8C9AA5;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: rgb(46, 48, 61);
+  color: #fff;
+}
+
+/* 列表容器 */
+.list-container {
+  /* 无特殊样式 */
+}
+
+/* 图表容器 */
+.chart-container {
+  /* 无特殊样式 */
+}
