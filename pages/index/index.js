@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
@@ -22,6 +22,7 @@ Page({
     indices: [],
     astronomySun: {},
     astronomyMoon: {},
+    alerts: [],
     latitude: '',
     longitude: ''
   },
@@ -120,18 +121,22 @@ Page({
       const {longitude, latitude} = this.data;
       location = `${longitude},${latitude}`;
       const today = this.formatDateStr(new Date());
-      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData] = await Promise.all([
+      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes] = await Promise.all([
         now({location}),
         this.getIndices(location),
         hourly({location}),
         sevenDay({location}),
         air(location),
         sun({location, date: today}),
-        moon({location, date: today})
+        moon({location, date: today}),
+        warning(location).catch(() => null)
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
       const airData = this.formatAir(airRes);
+
+      // 预警数据：metadata.zeroResult 为 true 时表示无预警
+      const alerts = (warningRes && !warningRes.metadata?.zeroResult && warningRes.alerts) ? warningRes.alerts : [];
 
       this.setData({
         currentWeather: weatherData?.now,
@@ -142,7 +147,8 @@ Page({
         air: airData,
         indices: daily,
         astronomySun: sunData,
-        astronomyMoon: moonData
+        astronomyMoon: moonData,
+        alerts
       });
     } catch (error) {
       console.log(error)
@@ -212,5 +218,11 @@ Page({
       selectorVisible: false,
     });
     this.getWeather();
+  },
+  gotoWarning() {
+    const {longitude, latitude} = this.data;
+    wx.navigateTo({
+      url: `/pages/warning/index?location=${longitude},${latitude}`
+    });
   },
 })

@@ -27,6 +27,10 @@ Component({
       type: String,
       value: ''
     },
+    alerts: {
+      type: Array,
+      value: []
+    },
   },
 
   /**
@@ -42,6 +46,9 @@ Component({
   methods: {
     getNow() {
       this.triggerEvent('getnow');
+    },
+    gotoWarning() {
+      this.triggerEvent('gowarning');
     }
   }
 })

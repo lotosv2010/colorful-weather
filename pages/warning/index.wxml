@@ -1,0 +1,87 @@
+<!--pages/warning/index.wxml-->
+<view class="warning-page">
+
+  <!-- Loading & Error -->
+  <view wx:if="{{loading}}" class="tip">加载中...</view>
+  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+
+  <block wx:else>
+    <view class="alert-card" wx:for="{{alerts}}" wx:key="id">
+
+      <!-- 头部：icon + headline + 发布时间 -->
+      <view class="alert-header">
+        <view class="alert-header-icon" style="background-color: {{item.bgColor}};">
+          <i class="qi-{{item.icon}}" style="color: {{item.textColor}};"></i>
+        </view>
+        <view class="alert-header-info">
+          <text class="alert-headline" wx:if="{{item.headline}}">{{item.headline}}</text>
+          <text class="alert-headline" wx:elif="{{item.eventType.name}}">{{item.eventType.name}}</text>
+          <text class="alert-time" wx:if="{{item.issuedTimeFmt}}">发布于 {{item.issuedTimeFmt}}</text>
+        </view>
+      </view>
+
+      <!-- 详细描述 -->
+      <view class="alert-section" wx:if="{{item.description}}">
+        <view class="section-title">详细描述</view>
+        <text class="alert-desc">{{item.description}}</text>
+      </view>
+
+      <!-- 防御指南 -->
+      <view class="alert-section" wx:if="{{item.instruction}}">
+        <view class="section-title">防御指南</view>
+        <text class="alert-instruction">{{item.instruction}}</text>
+      </view>
+
+      <!-- 预警信息 -->
+      <view class="alert-section">
+        <view class="section-title">预警信息</view>
+        <view class="info-grid">
+          <view class="info-item" wx:if="{{item.senderDisplay}}">
+            <text class="info-label">发布机构</text>
+            <text class="info-value">{{item.senderDisplay}}</text>
+          </view>
+          <view class="info-item" wx:if="{{item.typeLabel}}">
+            <text class="info-label">信息类型</text>
+            <text class="info-value">{{item.typeLabel}}</text>
+          </view>
+          <view class="info-item" wx:if="{{item.urgencyDisplay}}">
+            <text class="info-label">紧迫程度</text>
+            <text class="info-value">{{item.urgencyDisplay}}</text>
+          </view>
+          <view class="info-item" wx:if="{{item.severityDisplay}}">
+            <text class="info-label">严重程度</text>
+            <text class="info-value">{{item.severityDisplay}}</text>
+          </view>
+          <view class="info-item" wx:if="{{item.certaintyDisplay}}">
+            <text class="info-label">确定性</text>
+            <text class="info-value">{{item.certaintyDisplay}}</text>
+          </view>
+          <view class="info-item" wx:if="{{item.effectiveTimeFmt}}">
+            <text class="info-label">生效时间</text>
+            <text class="info-value">{{item.effectiveTimeFmt}}</text>
+          </view>
+          <view class="info-item" wx:if="{{item.onsetTimeFmt}}">
+            <text class="info-label">预计开始</text>
+            <text class="info-value">{{item.onsetTimeFmt}}</text>
+          </view>
+          <view class="info-item" wx:if="{{item.expireTimeFmt}}">
+            <text class="info-label">失效时间</text>
+            <text class="info-value">{{item.expireTimeFmt}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 触发标准 -->
+      <view class="alert-section" wx:if="{{item.criteria}}">
+        <view class="section-title">触发标准</view>
+        <text class="alert-desc">{{item.criteria}}</text>
+      </view>
+
+    </view>
+
+    <!-- 数据来源声明 -->
+    <view class="attributions" wx:if="{{attributions}}">
+      <text>{{attributions}}</text>
+    </view>
+  </block>
+</view>

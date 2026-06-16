@@ -61,4 +61,6 @@ module.exports = {
   airHourly: (location) => request(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', {}),
   // 空气质量每日预报
   airDaily: (location) => request(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', {}),
+  // 天气预警（location 为 "lon,lat" 格式，内部转换为 URL 路径）
+  warning: (location) => request(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', {}),
 }

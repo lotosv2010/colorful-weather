@@ -10,13 +10,15 @@
     </view>
   </view>
   <view class="container">
-    <weather-temp 
-      weather="{{currentWeather}}" 
-      city="{{currentCity}}" 
+    <weather-temp
+      weather="{{currentWeather}}"
+      city="{{currentCity}}"
       date="{{dateNow}}"
       desc="{{desc}}"
       uv="{{uv}}"
+      alerts="{{alerts}}"
       bind:getnow="getWeather"
+      bind:gowarning="gotoWarning"
       class="weather-temp"
     />
     <weather-hourly
