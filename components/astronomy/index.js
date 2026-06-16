@@ -29,7 +29,11 @@ Component({
         sunrise: this.formatTime(sun.sunrise),
         sunset: this.formatTime(sun.sunset)
       });
-      this.drawSunChart();
+      if (this._sunReady) {
+        this.drawSunChart();
+      } else {
+        this.initSunCanvas();
+      }
     },
     'moon': function(moon) {
       if (!moon || !moon.moonPhase) return;
@@ -41,15 +45,22 @@ Component({
         moonIllumination: phase ? phase.illumination : 0,
         moonPhaseIcon: phase ? phase.icon : ''
       });
-      this.drawMoonChart();
+      if (this._moonReady) {
+        this.drawMoonChart();
+      } else {
+        this.initMoonCanvas();
+      }
     }
   },
   lifetimes: {
     ready() {
       this._sunReady = false;
       this._moonReady = false;
-      this.initSunCanvas();
-      this.initMoonCanvas();
+      // wx.nextTick 确保原生 canvas 节点在下一帧已挂载再查询
+      wx.nextTick(() => {
+        this.initSunCanvas();
+        this.initMoonCanvas();
+      });
     }
   },
   methods: {
@@ -77,14 +88,16 @@ Component({
       }
       return closest;
     },
-    initSunCanvas() {
+    initSunCanvas(retry = 0) {
       const query = this.createSelectorQuery();
       query.select('#sunCanvas')
         .fields({ node: true, size: true })
         .exec((res) => {
-          if (!res || !res[0]) return;
+          if (!res || !res[0] || !res[0].node) {
+            if (retry < 3) setTimeout(() => this.initSunCanvas(retry + 1), 100);
+            return;
+          }
           const canvas = res[0].node;
-          if (!canvas) return;
           const ctx = canvas.getContext('2d');
           const dpr = wx.getSystemInfoSync().pixelRatio;
           canvas.width = res[0].width * dpr;
@@ -97,14 +110,16 @@ Component({
           this.drawSunChart();
         });
     },
-    initMoonCanvas() {
+    initMoonCanvas(retry = 0) {
       const query = this.createSelectorQuery();
       query.select('#moonCanvas')
         .fields({ node: true, size: true })
         .exec((res) => {
-          if (!res || !res[0]) return;
+          if (!res || !res[0] || !res[0].node) {
+            if (retry < 3) setTimeout(() => this.initMoonCanvas(retry + 1), 100);
+            return;
+          }
           const canvas = res[0].node;
-          if (!canvas) return;
           const ctx = canvas.getContext('2d');
           const dpr = wx.getSystemInfoSync().pixelRatio;
           canvas.width = res[0].width * dpr;
