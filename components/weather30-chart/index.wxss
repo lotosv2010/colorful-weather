@@ -93,7 +93,7 @@
   text-align: center;
 }
 
-.chart-air-tag text {
+.chart-air-tag .air-tag-text {
   font-size: 20rpx;
 }
 

@@ -50,8 +50,8 @@ Component({
   },
   methods: {
     initSize() {
-      const sys = wx.getSystemInfoSync();
-      const rpx2px = sys.screenWidth / 750;
+      const { windowWidth } = wx.getWindowInfo();
+      const rpx2px = windowWidth / 750;
       const itemWidth = Math.round(140 * rpx2px);
       const totalWidth = itemWidth * (this.data.daily.length || 30);
       this.setData({ itemWidth, totalWidth });
@@ -84,7 +84,7 @@ Component({
           }
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
-          const dpr = wx.getSystemInfoSync().pixelRatio;
+          const dpr = wx.getDeviceInfo().devicePixelRatio;
           canvas.width = res[0].width * dpr;
           canvas.height = res[0].height * dpr;
           ctx.scale(dpr, dpr);
