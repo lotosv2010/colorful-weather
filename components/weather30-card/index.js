@@ -7,6 +7,10 @@ Component({
     item: {
       type: Object,
       value: {}
+    },
+    active: {
+      type: Boolean,
+      value: false
     }
   }
 })

@@ -43,11 +43,19 @@ Component({
           const max = Number(d.tempMax);
           return {
             ...d,
-            // 高温在左，低温在右
             barLeft: ((globalMax - max) / range * 100).toFixed(1),
             barWidth: ((max - min) / range * 100).toFixed(1)
           };
         })
+      });
+    }
+  },
+  methods: {
+    onItemTap(e) {
+      const { fxdate } = e.currentTarget.dataset;
+      const { location, province, district } = this.data;
+      wx.navigateTo({
+        url: `/pages/weather30/index?location=${location}&city=${encodeURIComponent(province + ',' + district)}&date=${fxdate}`
       });
     }
   }

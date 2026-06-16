@@ -2,7 +2,8 @@
 <wxs src="../../utils/iconColor.wxs" module="ic" />
 <wxs src="../../utils/fmt.wxs" module="fmt" />
 <view class="chart-wrapper">
-  <scroll-view scroll-x class="chart-scroll" enhanced show-scrollbar="{{false}}">
+  <scroll-view scroll-x class="chart-scroll" enhanced show-scrollbar="{{false}}"
+    scroll-into-view="{{scrollIntoItem}}" scroll-with-animation>
     <view class="chart-content" style="width: {{totalWidth}}px">
       <!-- Canvas 折线层 -->
       <canvas type="2d" id="tempCanvas" class="temp-canvas"
@@ -10,7 +11,7 @@
         style="width: {{totalWidth}}px; height: {{canvasHeight}}px; top: {{canvasTop}}px">
       </canvas>
       <!-- 每个 item -->
-      <view class="chart-item {{selectedIndex === index ? 'active' : ''}}"
+      <view id="chart-item-{{index}}" class="chart-item {{selectedIndex === index ? 'active' : ''}}"
         wx:for="{{daily}}" wx:key="fxDate"
         style="width: {{itemWidth}}px"
         bindtap="onSelectItem" data-index="{{index}}">

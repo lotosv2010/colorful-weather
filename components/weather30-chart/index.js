@@ -29,6 +29,7 @@ Component({
   },
   data: {
     selectedIndex: 0,
+    scrollIntoItem: '',
     itemWidth: 0,
     totalWidth: 0,
     canvasHeight: 150,
@@ -170,6 +171,9 @@ Component({
       const index = e.currentTarget.dataset.index;
       this.setData({ selectedIndex: index });
       this.triggerEvent('select', { index, item: this.data.daily[index] });
+    },
+    scrollToIndex(index) {
+      this.setData({ selectedIndex: index, scrollIntoItem: 'chart-item-' + index });
     }
   }
 })

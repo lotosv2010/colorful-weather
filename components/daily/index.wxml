@@ -5,7 +5,8 @@
     <text class="right">未来预报</text>
     <navigator class="action more" url="/pages/weather30/index?location={{location}}&city={{province}},{{district}}">30天预报 ›</navigator>
   </view>
-  <view class="weather-daily-item" wx:for="{{dailyList}}" wx:key="fxDate">
+  <view class="weather-daily-item" wx:for="{{dailyList}}" wx:key="fxDate"
+    bindtap="onItemTap" data-fxdate="{{item.fxDate}}">
     <view class="weather-daily-date">
       <text class="week">{{item.week}}</text>
       <text class="time">{{item.month}}月{{item.day}}日</text>

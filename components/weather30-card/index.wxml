@@ -3,7 +3,7 @@
 <wxs src="../../utils/moonPhase.wxs" module="mp" />
 <wxs src="../../utils/fmt.wxs" module="fmt" />
 
-<view class="detail-card">
+<view class="detail-card {{active ? 'detail-card-active' : ''}}">
   <!-- 第1行: 周 + 日期 -->
   <view class="card-row row-date">
     <text class="date-text">{{item.week}} {{item.dateLabel}}</text>

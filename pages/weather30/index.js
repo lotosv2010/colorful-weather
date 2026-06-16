@@ -35,6 +35,8 @@ Page({
     city: '',
     province: '',
     district: '',
+    activeDate: '',
+    scrollToDate: '',
     daily: [],
     summary: {},
     activeTab: 'list',
@@ -42,7 +44,7 @@ Page({
   },
 
   onLoad(options) {
-    const { location, city } = options;
+    const { location, city, date } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
       return;
@@ -55,6 +57,7 @@ Page({
       const district = parts[1] || '';
       this.setData({ city: decoded, province, district });
     }
+    if (date) this.setData({ activeDate: date });
     this.fetchData();
   },
 
@@ -97,6 +100,7 @@ Page({
       // 计算统计摘要
       const summary = this.computeSummary(daily);
 
+      const { activeDate } = this.data;
       this.setData({
         daily,
         summary,
@@ -104,6 +108,12 @@ Page({
         updateTime: weatherRes.updateTime
           ? formatDate(new Date(weatherRes.updateTime))
           : ''
+      }, () => {
+        if (activeDate) {
+          wx.nextTick(() => {
+            this.setData({ scrollToDate: 'card-' + activeDate });
+          });
+        }
       });
     } catch (err) {
       console.error('30天预报请求失败', err);
@@ -189,7 +199,14 @@ Page({
     if (tab === 'chart') {
       wx.nextTick(() => {
         const chartComp = this.selectComponent('#weather30Chart');
-        if (chartComp) chartComp.drawChart();
+        if (chartComp) {
+          chartComp.drawChart();
+          const { activeDate, daily } = this.data;
+          if (activeDate) {
+            const idx = daily.findIndex(d => d.fxDate === activeDate);
+            if (idx >= 0) chartComp.scrollToIndex(idx);
+          }
+        }
       });
     }
   },

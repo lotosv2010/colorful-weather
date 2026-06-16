@@ -59,6 +59,10 @@ page {
   /* 无特殊样式 */
 }
 
+.list-scroll {
+  height: 70vh;
+}
+
 /* 图表容器 */
 .chart-container {
   /* 无特殊样式 */

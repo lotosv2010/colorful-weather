@@ -26,7 +26,11 @@
 
     <!-- 列表模式 -->
     <view wx:if="{{activeTab === 'list'}}" class="list-container">
-      <weather30-card wx:for="{{daily}}" wx:key="fxDate" item="{{item}}" />
+      <scroll-view scroll-y scroll-into-view="{{scrollToDate}}" scroll-with-animation class="list-scroll">
+        <view id="card-{{item.fxDate}}" wx:for="{{daily}}" wx:key="fxDate">
+          <weather30-card item="{{item}}" active="{{activeDate === item.fxDate}}" />
+        </view>
+      </scroll-view>
     </view>
 
     <!-- 图表模式 -->
