@@ -60,8 +60,8 @@
 }
 
 .wind-arrow {
-  width: 0.8rem;
-  height: 0.8rem;
+  width: 1rem;
+  height: 1rem;
 }
 .weather-hourly-windSpeed {
   font-size: 0.6rem;

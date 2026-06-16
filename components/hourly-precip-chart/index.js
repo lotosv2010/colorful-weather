@@ -84,18 +84,20 @@ Component({
       if (this._ctx) { cb && cb(); return; }
       const query = this.createSelectorQuery();
       query.select('#precipCanvas')
-        .fields({ node: true, size: true })
+        .fields({ node: true })
         .exec((res) => {
           if (!res || !res[0] || !res[0].node) return;
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
-          const dpr = (wx.getDeviceInfo && wx.getDeviceInfo().devicePixelRatio) || 2;
-          canvas.width = res[0].width * dpr;
-          canvas.height = res[0].height * dpr;
+          const dpr = wx.getSystemInfoSync().pixelRatio || 2;
+          const cssW = this.data.chartContentWidth;
+          const cssH = this.data.canvasHeight;
+          canvas.width = cssW * dpr;
+          canvas.height = cssH * dpr;
           ctx.scale(dpr, dpr);
           this._ctx = ctx;
-          this._w = res[0].width;
-          this._h = res[0].height;
+          this._w = cssW;
+          this._h = cssH;
           cb && cb();
         });
     },
@@ -222,14 +224,20 @@ Component({
       const d = hourly[sel];
       if (d) {
         const cx = padL + sel * stepX;
+        const precipVal = Number(d.precip);
+        const popVal = Number(d.pop) || 0;
+        // 降水量 tip（左侧，白色）
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 11px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(d.precip + 'mm', cx, precipToY(Number(d.precip)) - 10);
+        ctx.textAlign = 'right';
+        const precipTipY = Math.max(padT + 14, precipToY(precipVal) - 24);
+        ctx.fillText(d.precip + 'mm', cx - 6, precipTipY);
+        // 概率 tip（右侧，浅蓝）
         ctx.font = '10px sans-serif';
-        ctx.fillStyle = '#1E4D8C';
-        const popVal = Number(d.pop) || 0;
-        ctx.fillText(popVal + '%', cx, popToY(popVal) - 10);
+        ctx.fillStyle = '#5BA3D9';
+        ctx.textAlign = 'left';
+        const popTipY = Math.max(padT + 14, popToY(popVal) - 24);
+        ctx.fillText(popVal + '%', cx + 6, popTipY);
       }
     },
     onTap(e) {

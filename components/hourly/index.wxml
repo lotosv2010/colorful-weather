@@ -2,15 +2,15 @@
 <wxs src="../../utils/iconColor.wxs" module="ic" />
 <view class="weather-hourly">
   <view class="weather-hourly-main">
-    <view class="weather-hourly-item" wx:for="{{hourly}}" wx:key="fxTime"
+    <view class="weather-hourly-item" wx:for="{{hourlyList}}" wx:key="fxTime"
       bindtap="onItemTap" data-index="{{index}}">
       <i class="weather-hourly-icon icon-color-{{ic.category(item.icon)}} qi-{{item.icon}}-fill"></i>
       <view class="weather-hourly-temp">
         <text class="value">{{item.temp}}</text>
         <text class="unit">o</text>
       </view>
-      <view class="weather-hourly-windDir" style="transform: rotate({{item.wind360 + 90}}deg)">
-        <image src="/static/icons/wind-arrow.svg" class="wind-arrow" mode="aspectFit" />
+      <view wx:if="{{item.windArrowVisible}}" class="weather-hourly-windDir" style="transform: rotate({{item.windArrowRotate}}deg)">
+        <weather-icon class="wind-arrow" colors="{{['rgb(68, 179, 255)']}}" src="/static/icons/fx.svg" />
       </view>
       <text class="weather-hourly-windSpeed">{{item.windSpeed}}km/h</text>
       <text class="weather-hourly-fxTime">{{item.hour}}时</text>

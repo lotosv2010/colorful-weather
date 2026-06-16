@@ -7,6 +7,11 @@
       style="width: {{chartContentWidth}}px; height: {{canvasHeight}}px"
       bindtap="onTap">
     </canvas>
+    <!-- 风向箭头叠加层 -->
+    <view wx:for="{{arrowPositions}}" wx:key="index" wx:if="{{item.visible}}" class="arrow-overlay"
+      style="left: {{item.x}}px; top: {{item.y}}px; transform: rotate({{item.angle}}deg)">
+      <weather-icon class="arrow-icon" colors="{{['#4ECDC4']}}" src="/static/icons/fx.svg" />
+    </view>
     <view wx:for="{{hourly}}" wx:key="fxTime" id="chart-item-{{index}}"
       class="hit-area" style="left: {{36 + index * (chartContentWidth - 52) / (hourly.length - 1)}}px">
     </view>

@@ -1,4 +1,6 @@
 // components/hourly/index.js
+const { windArrow } = require('../../utils/wind');
+
 Component({
   options: {
     addGlobalClass: true
@@ -14,10 +16,24 @@ Component({
   },
 
   /**
+   * 数据监听器
+   */
+  observers: {
+    'hourly': function (hourly) {
+      if (!hourly || !hourly.length) return;
+      const list = hourly.map(item => {
+        const arrow = windArrow(item.wind360);
+        return { ...item, windArrowVisible: arrow.visible, windArrowRotate: arrow.rotate };
+      });
+      this.setData({ hourlyList: list });
+    }
+  },
+
+  /**
    * 组件的初始数据
    */
   data: {
-    
+
   },
 
   /**

@@ -1,4 +1,6 @@
 // components/hourly-wind-chart/index.js
+const { windArrow } = require('../../utils/wind');
+
 Component({
   options: {
     addGlobalClass: true
@@ -26,7 +28,8 @@ Component({
     canvasHeight: 200,
     chartContentWidth: 0,
     scrollIntoItem: '',
-    currentScrollLeft: 0
+    currentScrollLeft: 0,
+    arrowPositions: []
   },
   lifetimes: {
     ready() {
@@ -41,11 +44,13 @@ Component({
     'hourly'(list) {
       if (list && list.length) {
         this.initSize();
+        this.computeArrowPositions();
         wx.nextTick(() => this.drawChart());
       }
     },
     'selectedIndex, hourly'(idx, list) {
       if (list && list.length) {
+        this.computeArrowPositions();
         wx.nextTick(() => this.drawChart());
       }
     },
@@ -84,37 +89,51 @@ Component({
       if (this._ctx) { cb && cb(); return; }
       const query = this.createSelectorQuery();
       query.select('#windCanvas')
-        .fields({ node: true, size: true })
+        .fields({ node: true })
         .exec((res) => {
           if (!res || !res[0] || !res[0].node) return;
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
-          const dpr = (wx.getDeviceInfo && wx.getDeviceInfo().devicePixelRatio) || 2;
-          canvas.width = res[0].width * dpr;
-          canvas.height = res[0].height * dpr;
+          const dpr = wx.getSystemInfoSync().pixelRatio || 2;
+          const cssW = this.data.chartContentWidth;
+          const cssH = this.data.canvasHeight;
+          canvas.width = cssW * dpr;
+          canvas.height = cssH * dpr;
           ctx.scale(dpr, dpr);
           this._ctx = ctx;
-          this._w = res[0].width;
-          this._h = res[0].height;
+          this._w = cssW;
+          this._h = cssH;
           cb && cb();
         });
     },
     drawChart() {
       this.initCanvas(() => this._drawChart());
     },
-    _drawArrow(ctx, x, y, angle, size) {
-      const rad = (angle - 90) * Math.PI / 180;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(rad);
-      ctx.beginPath();
-      ctx.moveTo(0, -size);
-      ctx.lineTo(-size * 0.4, size * 0.3);
-      ctx.lineTo(0, size * 0.1);
-      ctx.lineTo(size * 0.4, size * 0.3);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+    computeArrowPositions() {
+      const hourly = this.data.hourly;
+      if (!hourly.length) return;
+      const w = this._w || this.data.chartContentWidth;
+      if (!w) return;
+      const padL = 36, padR = 16, padT = 36, padB = 30;
+      const chartW = w - padL - padR;
+      const chartH = this.data.canvasHeight - padT - padB;
+      const stepX = chartW / (hourly.length - 1);
+
+      let maxS = 0;
+      hourly.forEach(d => { const s = Number(d.windSpeed); if (s > maxS) maxS = s; });
+      if (maxS === 0) maxS = 1;
+      const speedToY = (s) => padT + (1 - s / maxS) * chartH;
+
+      const positions = hourly.map((d, i) => {
+        const arrow = windArrow(d.wind360);
+        return {
+          x: padL + i * stepX - 8,
+          y: speedToY(Number(d.windSpeed)) - 36,
+          angle: arrow.rotate,
+          visible: arrow.visible
+        };
+      });
+      this.setData({ arrowPositions: positions });
     },
     _drawChart() {
       const ctx = this._ctx;
@@ -123,7 +142,7 @@ Component({
       const hourly = this.data.hourly;
       if (!ctx || !hourly.length) return;
 
-      const padL = 36, padR = 16, padT = 24, padB = 30;
+      const padL = 36, padR = 16, padT = 36, padB = 30;
       const chartW = w - padL - padR;
       const chartH = h - padT - padB;
       const count = hourly.length;
@@ -193,12 +212,10 @@ Component({
       for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
       ctx.stroke();
 
-      // 数据点 + 箭头
+      // 数据点
       const sel = this.data.selectedIndex;
       points.forEach((p, i) => {
         const d = hourly[i];
-        ctx.fillStyle = i === sel ? '#fff' : 'rgba(78, 205, 196, 0.7)';
-        this._drawArrow(ctx, p.x, p.y - 18, Number(d.wind360), 5);
 
         if (i === sel) {
           ctx.fillStyle = '#4ECDC4';
@@ -208,12 +225,19 @@ Component({
           ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
+          // 保证 tip 在点上方且不超出顶部
+          const tipLine1Y = Math.max(padT + 14, p.y - 48);
+          const tipLine2Y = tipLine1Y + 14;
+          // tip 背景框
+          ctx.fillStyle = 'rgba(0,0,0,0.45)';
+          ctx.fillRect(p.x - 38, tipLine1Y - 12, 76, 34);
+          // tip 文字
           ctx.fillStyle = '#fff';
-          ctx.font = 'bold 11px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(d.windSpeed + 'km/h', p.x, p.y - 10);
           ctx.font = '10px sans-serif';
-          ctx.fillText(d.windDir, p.x, p.y - 22);
+          ctx.textAlign = 'center';
+          ctx.fillText(d.windDir, p.x, tipLine1Y);
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillText(d.windSpeed + 'km/h', p.x, tipLine2Y);
         } else {
           ctx.fillStyle = '#4ECDC4';
           ctx.beginPath();
@@ -226,7 +250,7 @@ Component({
       const hourly = this.data.hourly;
       if (!hourly.length) return;
       const touch = e.touches[0];
-      const w = this._w || this.data.canvasWidth;
+      const w = this._w || this.data.chartContentWidth;
       const padL = 36, padR = 16;
       const chartW = w - padL - padR;
       const stepX = chartW / (hourly.length - 1);

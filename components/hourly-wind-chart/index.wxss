@@ -11,6 +11,18 @@
   display: block;
 }
 
+.arrow-overlay {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.arrow-icon {
+  width: 16px;
+  height: 16px;
+}
+
 .hit-area {
   position: absolute;
   top: 0;

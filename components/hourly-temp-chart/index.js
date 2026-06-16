@@ -84,18 +84,20 @@ Component({
       if (this._ctx) { cb && cb(); return; }
       const query = this.createSelectorQuery();
       query.select('#tempCanvas')
-        .fields({ node: true, size: true })
+        .fields({ node: true })
         .exec((res) => {
           if (!res || !res[0] || !res[0].node) return;
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
-          const dpr = (wx.getDeviceInfo && wx.getDeviceInfo().devicePixelRatio) || 2;
-          canvas.width = res[0].width * dpr;
-          canvas.height = res[0].height * dpr;
+          const dpr = wx.getSystemInfoSync().pixelRatio || 2;
+          const cssW = this.data.chartContentWidth;
+          const cssH = this.data.canvasHeight;
+          canvas.width = cssW * dpr;
+          canvas.height = cssH * dpr;
           ctx.scale(dpr, dpr);
           this._ctx = ctx;
-          this._w = res[0].width;
-          this._h = res[0].height;
+          this._w = cssW;
+          this._h = cssH;
           cb && cb();
         });
     },
@@ -109,7 +111,7 @@ Component({
       const hourly = this.data.hourly;
       if (!ctx || !hourly.length) return;
 
-      const padL = 36, padR = 16, padT = 24, padB = 30;
+      const padL = 36, padR = 16, padT = 36, padB = 30;
       const chartW = w - padL - padR;
       const chartH = h - padT - padB;
       const count = hourly.length;
@@ -195,7 +197,8 @@ Component({
           ctx.fillStyle = '#fff';
           ctx.font = 'bold 12px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText(hourly[i].temp + '°', p.x, p.y - 10);
+          const tipY = Math.max(padT + 14, p.y - 18);
+          ctx.fillText(hourly[i].temp + '°', p.x, tipY);
         } else {
           ctx.fillStyle = '#FF8C00';
           ctx.beginPath();
