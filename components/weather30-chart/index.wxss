@@ -47,12 +47,14 @@
 
 .chart-week {
   font-size: 22rpx;
+  line-height: 1;
   color: #fff;
   white-space: nowrap;
 }
 
 .chart-day {
   font-size: 20rpx;
+  line-height: 1;
   color: #8C9AA5;
   margin-top: 4rpx;
   white-space: nowrap;
@@ -60,11 +62,13 @@
 
 .chart-icon {
   font-size: 40rpx;
+  line-height: 1;
   margin: 8rpx 0;
 }
 
 .chart-temp-max {
   font-size: 24rpx;
+  line-height: 1;
   color: #fff;
   font-weight: 500;
 }
@@ -76,6 +80,7 @@
 
 .chart-temp-min {
   font-size: 24rpx;
+  line-height: 1;
   color: #8C9AA5;
 }
 

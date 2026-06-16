@@ -53,9 +53,23 @@ Component({
       const rpx2px = sys.screenWidth / 750;
       const itemWidth = Math.round(140 * rpx2px);
       const totalWidth = itemWidth * (this.data.daily.length || 30);
-      // 计算 canvasTop: padding(16rpx) + chart-week(22rpx) + chart-day(20rpx+4rpx) + chart-icon(40rpx+16rpx) + chart-temp-max(24rpx)
-      const canvasTop = Math.round((16 + 22 + 24 + 56 + 24) * rpx2px);
-      this.setData({ itemWidth, totalWidth, canvasTop });
+      this.setData({ itemWidth, totalWidth });
+    },
+    // 测量 chart-line-space 相对于 chart-content 的实际 top 位置，动态设置 canvasTop
+    measureCanvasTop(cb) {
+      const query = this.createSelectorQuery();
+      query.select('.chart-line-space').boundingClientRect();
+      query.select('.chart-content').boundingClientRect();
+      query.exec((res) => {
+        const space = res[0];
+        const content = res[1];
+        if (space && content) {
+          const canvasTop = Math.round(space.top - content.top);
+          this.setData({ canvasTop }, cb);
+        } else {
+          cb && cb();
+        }
+      });
     },
     initCanvas(cb) {
       if (this._ctx) { cb && cb(); return; }
@@ -80,7 +94,9 @@ Component({
         });
     },
     drawChart() {
-      this.initCanvas(() => this._drawChart());
+      this.measureCanvasTop(() => {
+        this.initCanvas(() => this._drawChart());
+      });
     },
     _drawChart() {
       const ctx = this._ctx;
@@ -90,8 +106,8 @@ Component({
       if (!ctx || !daily.length) return;
 
       const itemW = this.data.itemWidth;
-      const padT = 10;
-      const padB = 10;
+      const padT = 18;
+      const padB = 18;
       const chartH = h - padT - padB;
 
       // 全局温度范围
