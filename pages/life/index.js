@@ -37,6 +37,8 @@ const formatDateParts = (s) => {
 Page({
   data: {
     location: '',
+    province: '',
+    district: '',
     tabs: DEFAULT_TYPES,
     activeType: '1',
     // 当前 tab 的指数列表（最多 4 项）
@@ -48,8 +50,10 @@ Page({
 
   onLoad(options = {}) {
     const location = options.location || '';
+    const province = options.province ? decodeURIComponent(options.province) : '';
+    const district = options.district ? decodeURIComponent(options.district) : '';
     const activeType = options.type && this.matchType(options.type) ? options.type : '1';
-    this.setData({ location, activeType, definition: getDefinition(activeType) });
+    this.setData({ location, province, district, activeType, definition: getDefinition(activeType) });
     if (location) {
       this.loadIndices();
     } else {

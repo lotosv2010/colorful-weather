@@ -54,6 +54,8 @@ const MSG_TYPE_MAP = {
 Page({
   data: {
     location: '',
+    province: '',
+    district: '',
     alerts: [],
     attributions: '',
     loading: false,
@@ -62,7 +64,9 @@ Page({
 
   onLoad(options = {}) {
     const location = options.location || '';
-    this.setData({ location });
+    const province = options.province ? decodeURIComponent(options.province) : '';
+    const district = options.district ? decodeURIComponent(options.district) : '';
+    this.setData({ location, province, district });
     if (location) {
       this.loadData();
     } else {

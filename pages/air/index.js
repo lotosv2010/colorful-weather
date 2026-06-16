@@ -5,6 +5,8 @@ const { toHex, getTextColor } = require('../../utils/util');
 Page({
   data: {
     location: '',
+    province: '',
+    district: '',
     aqi: '',
     category: '',
     categoryDesc: '',
@@ -22,8 +24,10 @@ Page({
 
   onLoad(options = {}) {
     const location = options.location || '';
+    const province = options.province ? decodeURIComponent(options.province) : '';
+    const district = options.district ? decodeURIComponent(options.district) : '';
     console.log('onLoad', location);
-    this.setData({ location });
+    this.setData({ location, province, district });
     if (location) {
       this.loadData();
     } else {

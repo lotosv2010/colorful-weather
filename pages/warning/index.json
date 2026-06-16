@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "天气预警",
-  "usingComponents": {}
+  "usingComponents": {
+    "page-header": "/components/page-header/index"
+  }
 }

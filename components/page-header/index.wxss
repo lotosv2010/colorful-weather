@@ -1,0 +1,10 @@
+/* components/page-header/index.wxss */
+.header-city {
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.city-name {
+  font-size: 36rpx;
+  font-weight: 500;
+}

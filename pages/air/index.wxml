@@ -1,6 +1,9 @@
 <!--pages/air/index.wxml-->
 <view class="air-page">
 
+  <!-- 头部城市信息 -->
+  <page-header district="{{district}}" province="{{province}}" />
+
   <!-- 加载与错误状态 -->
   <view wx:if="{{loading}}" class="tip">加载中...</view>
   <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>

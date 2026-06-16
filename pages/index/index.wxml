@@ -33,6 +33,8 @@
     <weather-air
       air="{{air}}"
       location="{{longitude}},{{latitude}}"
+      province="{{province}}"
+      district="{{district}}"
     />
     <weather-astronomy
       sun="{{astronomySun}}"
@@ -41,6 +43,8 @@
     <weather-life
       indices="{{indices}}"
       location="{{longitude}},{{latitude}}"
+      province="{{province}}"
+      district="{{district}}"
     />
   </view>
   <city-search show="{{selectorVisible}}" bind:select="onSelectCity" bind:close="hideSelector" />

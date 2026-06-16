@@ -16,17 +16,6 @@ page {
   padding: 80rpx 0;
 }
 
-/* 头部城市 */
-.header-city {
-  text-align: center;
-  margin-bottom: 20rpx;
-}
-
-.city-name {
-  font-size: 36rpx;
-  font-weight: 500;
-}
-
 /* 统计摘要 */
 .summary-card {
   background: rgb(34, 37, 48);

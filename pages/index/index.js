@@ -227,9 +227,9 @@ Page({
     this.getWeather();
   },
   gotoWarning() {
-    const {longitude, latitude} = this.data;
+    const { longitude, latitude, province, district } = this.data;
     wx.navigateTo({
-      url: `/pages/warning/index?location=${longitude},${latitude}`
+      url: `/pages/warning/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`
     });
   },
 })

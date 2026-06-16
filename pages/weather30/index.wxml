@@ -7,9 +7,7 @@
 
   <block wx:else>
     <!-- 头部城市信息 -->
-    <view class="header-city" wx:if="{{city}}">
-      <text class="city-name">{{city}}</text>
-    </view>
+    <page-header district="{{district}}" province="{{province}}" />
 
     <!-- 统计摘要 -->
     <view class="summary-card">

@@ -33,6 +33,8 @@ Page({
     loading: true,
     errorMsg: '',
     city: '',
+    province: '',
+    district: '',
     daily: [],
     summary: {},
     activeTab: 'list',
@@ -46,7 +48,13 @@ Page({
       return;
     }
     this.location = location;
-    if (city) this.setData({ city: decodeURIComponent(city) });
+    if (city) {
+      const decoded = decodeURIComponent(city);
+      const parts = decoded.split(',');
+      const province = parts[0] || '';
+      const district = parts[1] || '';
+      this.setData({ city: decoded, province, district });
+    }
     this.fetchData();
   },
 

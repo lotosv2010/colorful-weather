@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "空气质量",
-  "usingComponents": {}
+  "usingComponents": {
+    "page-header": "/components/page-header/index"
+  }
 }

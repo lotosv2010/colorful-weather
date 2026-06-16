@@ -1,0 +1,4 @@
+<!--components/page-header/index.wxml-->
+<view class="header-city" wx:if="{{district || province}}">
+  <text class="city-name">{{district}}{{district && province ? ' · ' : ''}}{{province}}</text>
+</view>
