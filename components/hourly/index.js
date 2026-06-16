@@ -24,6 +24,10 @@ Component({
    * 组件的方法列表
    */
   methods: {
-
+    onItemTap(e) {
+      const { index } = e.currentTarget.dataset;
+      const item = this.data.hourly[index];
+      this.triggerEvent('itemtap', { index, item });
+    }
   }
 })

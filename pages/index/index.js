@@ -232,4 +232,11 @@ Page({
       url: `/pages/warning/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`
     });
   },
+  onHourlyTap(e) {
+    const { longitude, latitude, province, district } = this.data;
+    const { index } = e.detail;
+    wx.navigateTo({
+      url: `/pages/hourly/index?location=${longitude},${latitude}&city=${encodeURIComponent(province + ',' + district)}&hour=${index}`
+    });
+  },
 })

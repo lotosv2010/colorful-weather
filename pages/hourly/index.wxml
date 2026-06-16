@@ -1,0 +1,116 @@
+<!--pages/hourly/index.wxml-->
+<wxs src="../../utils/iconColor.wxs" module="ic" />
+<wxs src="../../utils/fmt.wxs" module="fmt" />
+
+<view class="hourly-page">
+  <!-- 加载与错误状态 -->
+  <view wx:if="{{loading}}" class="tip">加载中...</view>
+  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+
+  <block wx:else>
+    <!-- 头部城市信息 -->
+    <page-header district="{{district}}" province="{{province}}" />
+
+    <!-- 温度图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">温度变化</text>
+        <text class="chart-card-unit">°C</text>
+      </view>
+      <hourly-temp-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
+    </view>
+
+    <!-- 风速图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">风速风向</text>
+        <text class="chart-card-unit">km/h</text>
+      </view>
+      <hourly-wind-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
+    </view>
+
+    <!-- 降水图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">降水量</text>
+        <text class="chart-card-unit">mm / %</text>
+      </view>
+      <hourly-precip-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
+    </view>
+
+    <!-- 详情卡片 -->
+    <view class="detail-card" wx:if="{{detail}}">
+      <!-- 天气图标 + 描述 + 时间 -->
+      <view class="detail-header">
+        <i class="qi-{{detail.icon}}-fill icon-color-{{ic.category(detail.icon)}} detail-icon"></i>
+        <view class="detail-header-info">
+          <text class="detail-weather-text">{{detail.text}}</text>
+          <text class="detail-time">{{detail.dateLabel}}</text>
+        </view>
+        <view class="detail-temp-badge">
+          <text class="detail-temp-value">{{detail.temp}}</text>
+          <text class="detail-temp-unit">°C</text>
+        </view>
+      </view>
+
+      <!-- 分割线 -->
+      <view class="detail-divider"></view>
+
+      <!-- 详细数据网格 -->
+      <view class="detail-grid">
+        <!-- 风速 -->
+        <view class="detail-cell cell-c1">
+          <view class="cell-value">
+            <text>{{fmt.safe(detail.windSpeed)}} km/h</text>
+            <text class="cell-extra">（{{fmt.safe(detail.windScale)}}级）</text>
+          </view>
+          <text class="cell-label">风速</text>
+        </view>
+        <!-- 风向 -->
+        <view class="detail-cell cell-c2">
+          <view class="cell-value">
+            <text>{{fmt.safe(detail.windDir)}}</text>
+            <text class="cell-extra">（{{fmt.safe(detail.wind360)}}°）</text>
+          </view>
+          <text class="cell-label">风向</text>
+        </view>
+        <!-- 相对湿度 -->
+        <view class="detail-cell cell-c3">
+          <text class="cell-value">{{fmt.safe(detail.humidity)}}%</text>
+          <text class="cell-label">相对湿度</text>
+        </view>
+        <!-- 降水量 -->
+        <view class="detail-cell cell-c1">
+          <text class="cell-value">{{fmt.safe(detail.precip)}} mm</text>
+          <text class="cell-label">降水量</text>
+        </view>
+        <!-- 降水概率 -->
+        <view class="detail-cell cell-c2">
+          <text class="cell-value">{{detail.pop ? detail.pop + '%' : '-'}}</text>
+          <text class="cell-label">降水概率</text>
+        </view>
+        <!-- 大气压强 -->
+        <view class="detail-cell cell-c3">
+          <text class="cell-value">{{fmt.safe(detail.pressure)}} hPa</text>
+          <text class="cell-label">大气压强</text>
+        </view>
+        <!-- 云量 -->
+        <view class="detail-cell cell-c1">
+          <text class="cell-value">{{detail.cloud ? detail.cloud + '%' : '-'}}</text>
+          <text class="cell-label">云量</text>
+        </view>
+        <!-- 露点温度 -->
+        <view class="detail-cell cell-c2">
+          <text class="cell-value">{{detail.dew ? detail.dew + '°' : '-'}}</text>
+          <text class="cell-label">露点温度</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

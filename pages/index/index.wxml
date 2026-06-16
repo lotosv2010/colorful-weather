@@ -23,6 +23,7 @@
     />
     <weather-hourly
       hourly="{{hourly}}"
+      bind:itemtap="onHourlyTap"
     />
     <weather-daily
       daily="{{daily}}"

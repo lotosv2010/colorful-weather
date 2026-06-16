@@ -1,0 +1,137 @@
+/* pages/hourly/index.wxss */
+page {
+  background: #000;
+  color: #fff;
+}
+
+.hourly-page {
+  padding: 20rpx 24rpx 40rpx;
+}
+
+/* 加载/错误提示 */
+.tip {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 80rpx 0;
+}
+
+/* 图表卡片 */
+.chart-card {
+  background: rgb(34, 37, 48);
+  border-radius: 15px;
+  padding: 20rpx 0;
+  margin-bottom: 20rpx;
+}
+
+.chart-card-title {
+  display: flex;
+  align-items: baseline;
+  padding: 0 24rpx 10rpx;
+}
+
+.chart-card-title-text {
+  font-size: 26rpx;
+  color: #d5d5d5;
+  margin-right: 10rpx;
+}
+
+.chart-card-unit {
+  font-size: 22rpx;
+  color: #8C9AA5;
+}
+
+/* 详情卡片 */
+.detail-card {
+  background: rgb(34, 37, 48);
+  border-radius: 15px;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+}
+
+.detail-icon {
+  font-size: 72rpx;
+  margin-right: 20rpx;
+}
+
+.detail-header-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-weather-text {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #fff;
+}
+
+.detail-time {
+  font-size: 24rpx;
+  color: #8C9AA5;
+  margin-top: 6rpx;
+}
+
+.detail-temp-badge {
+  display: flex;
+  align-items: flex-start;
+}
+
+.detail-temp-value {
+  font-size: 56rpx;
+  font-weight: 300;
+  color: #fff;
+  line-height: 1;
+}
+
+.detail-temp-unit {
+  font-size: 24rpx;
+  color: #8C9AA5;
+  margin-top: 8rpx;
+}
+
+.detail-divider {
+  height: 2rpx;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 24rpx 0;
+}
+
+/* 数据网格 */
+.detail-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.detail-cell {
+  padding: 16rpx 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.cell-c1 { width: 40%; }
+.cell-c2 { width: 35%; }
+.cell-c3 { width: 25%; }
+
+.cell-value {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+.cell-extra {
+  font-size: 20rpx;
+  color: #8C9AA5;
+}
+
+.cell-label {
+  font-size: 22rpx;
+  color: #8C9AA5;
+  margin-top: 4rpx;
+}

@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "逐小时预报",
+  "usingComponents": {
+    "hourly-temp-chart": "/components/hourly-temp-chart/index",
+    "hourly-wind-chart": "/components/hourly-wind-chart/index",
+    "hourly-precip-chart": "/components/hourly-precip-chart/index",
+    "page-header": "/components/page-header/index"
+  }
+}

@@ -52,7 +52,16 @@
   font-size: 0.5rem;
 }
 .weather-hourly-windDir {
-  font-size: 0.6rem;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wind-arrow {
+  width: 0.8rem;
+  height: 0.8rem;
 }
 .weather-hourly-windSpeed {
   font-size: 0.6rem;
