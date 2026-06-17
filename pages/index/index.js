@@ -6,14 +6,21 @@ const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 // 获取应用实例
 const app = getApp()
 
+// 收集当前批次的 wx.request task，用于城市切换时取消未完成的旧请求
+let _pendingTasks = [];
+const abortPending = () => {
+  _pendingTasks.forEach(t => { try { t.abort(); } catch (_) {} });
+  _pendingTasks = [];
+};
+
 Page({
   data: {
-    qqmapsdk: null,
+    // 注意：qqmapsdk 实例存放在 this.qqmapsdk（实例属性），不放入 data
     lbs: app.globalData.lbs,
     currentWeather: {},
     selectorVisible: false,
     city: '',
-    dateNow: formatDate(new Date).substr(11, 5),
+    dateNow: '',
     desc: '',
     uv: '',
     hourly: [],
@@ -128,6 +135,8 @@ Page({
   },
   async getWeather() {
     try {
+      // 取消上一批未完成的请求，避免城市切换时旧数据覆盖新结果
+      abortPending();
       wx.showLoading({
         title: '数据加载中...',
       });
@@ -135,17 +144,18 @@ Page({
       const {longitude, latitude} = this.data;
       location = `${longitude},${latitude}`;
       const today = this.formatDateStr(new Date());
+      const tc = _pendingTasks; // 当前批次 taskCollector
       const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes, stormListRes] = await Promise.all([
-        now({location}),
-        this.getIndices(location),
-        hourly({location}),
-        sevenDay({location}),
-        air(location),
-        sun({location, date: today}),
-        moon({location, date: today}),
-        warning(location).catch(() => null),
-        minutely({location}).catch(() => null),
-        stormList({ basin: 'NP', year: new Date().getFullYear() }).catch(() => null)
+        now({location}, tc),
+        this.getIndices(location, tc),
+        hourly({location}, tc),
+        sevenDay({location}, tc),
+        air(location, tc),
+        sun({location, date: today}, tc),
+        moon({location, date: today}, tc),
+        warning(location, tc).catch(() => null),
+        minutely({location}, tc).catch(() => null),
+        stormList({ basin: 'NP', year: new Date().getFullYear() }, tc).catch(() => null)
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
@@ -168,6 +178,7 @@ Page({
       const typhoonSummary = displayStorms.map(s => `${s.name}(${s.id})`).join('、');
 
       this.setData({
+        dateNow: formatDate(new Date()).substr(11, 5),
         currentWeather: weatherData?.now,
         uv: daily.find(d => d.type === '5')?.category,
         desc: daily.find(d => d.type === '8')?.text,
@@ -240,7 +251,7 @@ Page({
   },
   async getLocation(){
     const { latitude, longitude } = await wx.getLocation({
-      altitude: 'gcj02',
+      type: 'gcj02',
     });
     this.setData({
       latitude,
@@ -266,8 +277,8 @@ Page({
       });
     });
   },
-  getIndices(location) {
-    return indices({ location, type: 0 });
+  getIndices(location, tc) {
+    return indices({ location, type: 0 }, tc);
   },
   // 显示组件
   showSelector() {
@@ -296,7 +307,7 @@ Page({
       longitude: selected.lon,
       selectorVisible: false,
     });
-    this.getWeather();
+    this.getWeather().catch(console.error);
   },
   gotoWarning() {
     const { longitude, latitude, province, district, city } = this.data;

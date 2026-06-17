@@ -31,6 +31,12 @@ Component({
   lifetimes: {
     ready() {
       this.initCanvas();
+    },
+    detached() {
+      // 组件卸载时释放 Canvas 引用，防止 observer 在 detached 后触发报错
+      this._ctx = null;
+      this._w = null;
+      this._h = null;
     }
   },
   methods: {
@@ -49,7 +55,7 @@ Component({
           const canvas = res[0].node;
           if (!canvas) return;
           const ctx = canvas.getContext('2d');
-          const dpr = (wx.getDeviceInfo && wx.getDeviceInfo().devicePixelRatio) || wx.getSystemInfoSync().pixelRatio || 2;
+          const dpr = wx.getDeviceInfo?.().devicePixelRatio ?? 2;
           canvas.width = res[0].width * dpr;
           canvas.height = res[0].height * dpr;
           ctx.scale(dpr, dpr);
