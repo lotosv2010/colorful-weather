@@ -27,17 +27,3 @@ page {
   padding: 0px 16px;
   box-sizing: border-box;
 }
-.minutely-entry {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 0 6px;
-}
-.minutely-entry-icon {
-  font-size: 1.2rem;
-  color: #5BA3D9;
-}
-.typhoon-entry-icon {
-  font-size: 1.2rem;
-  color: #FF9800;
-  margin-left: 16px;
-}

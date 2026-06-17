@@ -90,6 +90,37 @@
   font-size: 1rem;
   color: rgb(181, 187, 204);
 }
+.weather-entry {
+  display: flex;
+  align-items: center;
+  background-color: rgb(44, 57, 93);
+  border-radius: 10px;
+  padding: 12px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 10px 0 0;
+}
+.weather-entry-icon {
+  margin-right: 8px;
+  font-size: 0.85rem;
+  color: #5BA3D9;
+}
+.weather-entry-text {
+  flex: 1;
+  font-size: 0.8rem;
+  color: #e0e0e0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.weather-entry-arrow {
+  margin-left: 8px;
+  font-size: 1rem;
+  color: rgb(181, 187, 204);
+}
+.weather-entry-typhoon .weather-entry-icon {
+  color: #FF9800;
+}
 .weather-header-desc {
   font-size: 0.8rem;
   text-align: center;

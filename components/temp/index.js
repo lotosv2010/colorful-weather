@@ -31,6 +31,22 @@ Component({
       type: Array,
       value: []
     },
+    showEntry: {
+      type: Boolean,
+      value: false
+    },
+    minutelyType: {
+      type: String,
+      value: 'rain'
+    },
+    minutelySummary: {
+      type: String,
+      value: ''
+    },
+    typhoonSummary: {
+      type: String,
+      value: ''
+    }
   },
 
   /**
@@ -49,6 +65,12 @@ Component({
     },
     gotoWarning() {
       this.triggerEvent('gowarning');
+    },
+    onMinutelyTap() {
+      this.triggerEvent('minutelytap');
+    },
+    onTyphoonTap() {
+      this.triggerEvent('typhoontap');
     }
   }
 })

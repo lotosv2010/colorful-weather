@@ -85,16 +85,18 @@
 }
 
 .chart-air-tag {
-  padding: 2rpx 12rpx;
-  border-radius: 18rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rpx 22rpx;
+  border-radius: 8rpx;
   margin-top: 8rpx;
   white-space: nowrap;
-  min-width: 60rpx;
-  text-align: center;
 }
 
 .chart-air-tag .air-tag-text {
-  font-size: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
 }
 
 .chart-detail {

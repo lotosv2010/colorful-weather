@@ -274,10 +274,12 @@ page {
 }
 
 .daily-tag {
-  padding: 4rpx 24rpx;
-  border-radius: 16rpx;
-  min-width: 100rpx;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rpx 32rpx;
+  border-radius: 8rpx;
+  white-space: nowrap;
 }
 
 .daily-tag-text {

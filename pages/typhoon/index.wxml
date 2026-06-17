@@ -27,9 +27,9 @@
       <view wx:if="{{track.length}}" class="info-card">
         <view class="card-title">
           {{selectedStorm.name}}
-          <text class="storm-type-tag" style="background-color: {{track[track.length - 1].color}}">
+          <view class="storm-type-tag" style="background-color: {{track[track.length - 1].color}}">
             {{track[track.length - 1].typeName}}
-          </text>
+          </view>
         </view>
         <view class="info-grid">
           <view class="info-cell">

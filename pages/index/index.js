@@ -153,9 +153,12 @@ Page({
       const showMinutely = hasPrecip || !!minutelyRes?.summary;
       const minutelyType = minutelyData.some(m => Number(m.precip) > 0 && m.type === 'snow') ? 'snow' : 'rain';
 
-      // 台风：筛选活跃台风
+      // 台风：优先展示活跃台风，无活跃则展示非活跃
       const storms = stormListRes?.storm || [];
-      const hasActiveStorm = storms.some(s => s.isActive === '1');
+      const activeStorms = storms.filter(s => s.isActive === '1');
+      const hasActiveStorm = activeStorms.length > 0;
+      const displayStorms = hasActiveStorm ? activeStorms : storms.filter(s => s.isActive === '0');
+      const typhoonSummary = displayStorms.map(s => `${s.name}(${s.id})`).join('、');
 
       this.setData({
         currentWeather: weatherData?.now,
@@ -171,7 +174,8 @@ Page({
         showMinutely,
         minutelySummary: minutelyRes?.summary || '',
         minutelyType,
-        hasActiveStorm
+        hasActiveStorm,
+        typhoonSummary
       });
     } catch (error) {
       console.log(error)
