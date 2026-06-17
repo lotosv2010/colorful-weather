@@ -207,11 +207,11 @@ Page({
         location,
         success: (res) => {
           const ad = res?.result?.ad_info || {};
-          resolve({
-            city: ad.city,
-            province: ad.province,
-            district: ad.district
-          });
+          // 直辖市 district 可能与 province 相同，city 为空
+          const district = ad.district || ad.city || ad.province || '';
+          const city = ad.city || ad.province || '';
+          const province = ad.province || '';
+          resolve({ city, province, district });
         },
         fail: function(error) {
           reject(error);
