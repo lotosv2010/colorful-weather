@@ -57,6 +57,13 @@
       city="{{city}}"
       district="{{district}}"
     />
+    <weather-tide
+      tideTable="{{tideTable}}"
+      tideHourly="{{tideHourly}}"
+      stationName="{{tideStationName}}"
+      dateOffset="{{tideDateOffset}}"
+      bind:datechange="onTideDateChange"
+    />
   </view>
   <city-search show="{{selectorVisible}}" bind:select="onSelectCity" bind:close="hideSelector" />
 </view>

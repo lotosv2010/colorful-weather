@@ -1,0 +1,192 @@
+/* components/tide/index.wxss */
+.weather-tide {
+  background-color: rgb(34, 37, 48);
+  padding: 15px;
+  border-radius: 15px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+
+.weather-tide-header {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn {
+  color: rgb(68, 179, 255);
+  font-size: 1.2rem;
+  padding: 0 4px;
+}
+
+.nav-date {
+  font-size: 0.75rem;
+  color: #A6A9AD;
+}
+
+.tide-station {
+  margin-bottom: 10px;
+}
+
+.station-name {
+  font-size: 0.75rem;
+  color: #A6A9AD;
+}
+
+/* 状态摘要 */
+.tide-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 0 4px;
+}
+
+.tide-current {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.tide-height {
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.tide-height .unit {
+  font-size: 0.85rem;
+  color: #A6A9AD;
+  margin-left: 2px;
+}
+
+.tide-trend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.tide-trend.rising {
+  background: rgba(68, 179, 255, 0.15);
+  color: rgb(68, 179, 255);
+}
+
+.tide-trend.falling {
+  background: rgba(166, 169, 173, 0.15);
+  color: #A6A9AD;
+}
+
+.trend-arrow {
+  font-size: 0.9rem;
+}
+
+.tide-next {
+  text-align: right;
+}
+
+.next-label {
+  font-size: 0.7rem;
+  color: #A6A9AD;
+  display: block;
+}
+
+.next-time {
+  font-size: 1rem;
+  color: rgb(68, 179, 255);
+}
+
+/* 曲线 */
+.tide-canvas-wrap {
+  width: 100%;
+  height: 120px;
+  margin-bottom: 14px;
+}
+
+.tide-canvas {
+  width: 100%;
+  height: 120px;
+}
+
+/* 卡片列表 */
+.tide-table {
+  width: 100%;
+}
+
+.tide-table-inner {
+  display: flex;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.tide-card {
+  flex-shrink: 0;
+  width: 72px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+}
+
+.tide-card.high {
+  border-color: rgba(68, 179, 255, 0.2);
+}
+
+.tide-card.low {
+  border-color: rgba(166, 169, 173, 0.15);
+}
+
+.tide-card.next {
+  border-color: rgb(68, 179, 255);
+  background: rgba(68, 179, 255, 0.1);
+}
+
+.card-arrow {
+  font-size: 0.7rem;
+}
+
+.tide-card.high .card-arrow {
+  color: rgb(68, 179, 255);
+}
+
+.tide-card.low .card-arrow {
+  color: #A6A9AD;
+}
+
+.card-label {
+  font-size: 0.65rem;
+  color: #A6A9AD;
+}
+
+.card-time {
+  font-size: 0.85rem;
+}
+
+.card-height {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.tide-card.high .card-height {
+  color: rgb(68, 179, 255);
+}
+
+.card-unit {
+  font-size: 0.6rem;
+  color: #A6A9AD;
+  margin-left: 1px;
+}

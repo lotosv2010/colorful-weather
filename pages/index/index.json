@@ -7,6 +7,7 @@
     "weather-air": "../../components/air/index",
     "weather-life": "../../components/life/index",
     "weather-astronomy": "../../components/astronomy/index",
-    "city-search": "../../components/city-search/index"
+    "city-search": "../../components/city-search/index",
+    "weather-tide": "../../components/tide/index"
   }
 }

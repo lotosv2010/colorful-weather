@@ -38,7 +38,13 @@ Page({
   onLoad() {
     this._iconCache = {};
     this._mapScale = 5;
+    this._unmounted = false;
     this.fetchStormList();
+  },
+
+  onUnload() {
+    this._unmounted = true;
+    this._iconCache = {};
   },
 
   async fetchStormList() {
@@ -68,6 +74,7 @@ Page({
       const results = await Promise.all(
         list.map(s => stormTrack({ stormid: s.id }).catch(() => null))
       );
+      if (this._unmounted) return;
       const timeMap = {};
       results.forEach((res, i) => {
         if (res?.track?.length) {
@@ -98,6 +105,7 @@ Page({
         stormTrack({ stormid: stormId }).catch(() => null),
         stormForecast({ stormid: stormId }).catch(() => null)
       ]);
+      if (this._unmounted) return;
 
       const track = (trackRes?.track || []).map(t => ({
         ...t,
@@ -177,6 +185,7 @@ Page({
 
     const trackColors = track.map(p => p.color);
     await this._prepareIcons([...trackColors, '#8C9AA5']);
+    if (this._unmounted) return;
 
     const markers = track.map((p, i) => {
       const isLast = i === track.length - 1;

@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, stormList } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, stormList, tide, poiLookup } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
@@ -30,7 +30,12 @@ Page({
     latitude: '',
     longitude: '',
     province: '',
-    district: ''
+    district: '',
+    tideTable: [],
+    tideHourly: [],
+    tideLocationId: '',
+    tideStationName: '',
+    tideDateOffset: 0,
   },
   // 事件处理函数
   onLoad() {
@@ -178,6 +183,9 @@ Page({
         showTyphoonEntry: hasActiveStorm,
         typhoonSummary
       });
+
+      // 潮汐：用坐标查最近 TSTA 站点再拉数据，失败静默处理
+      this.fetchTide(location, today).catch(() => {});
     } catch (error) {
       console.log(error)
       this.showToast();
@@ -191,6 +199,36 @@ Page({
     const m = `${date.getMonth() + 1}`.padStart(2, '0');
     const d = `${date.getDate()}`.padStart(2, '0');
     return `${y}${m}${d}`;
+  },
+  // 查找最近潮汐站并拉取当日数据
+  async fetchTide(location, date) {
+    const poiRes = await poiLookup({ location, type: 'TSTA', number: 1 });
+    if (poiRes?.code !== '200' || !poiRes?.poi?.length) {
+      this.setData({ tideTable: [], tideHourly: [], tideLocationId: '', tideStationName: '' });
+      return;
+    }
+    const { id: stationId, name: stationName } = poiRes.poi[0];
+    this.setData({ tideLocationId: stationId, tideStationName: stationName });
+    await this.loadTideData(stationId, date, 0);
+  },
+  async loadTideData(locationId, date, offset) {
+    const d = new Date(date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+    d.setDate(d.getDate() + offset);
+    const dateStr = this.formatDateStr(d);
+    const res = await tide({ location: locationId, date: dateStr });
+    if (res?.code !== '200') return;
+    this.setData({
+      tideTable: res.tideTable || [],
+      tideHourly: res.tideHourly || [],
+      tideDateOffset: offset,
+    });
+  },
+  onTideDateChange(e) {
+    const { offset } = e.detail;
+    const { tideLocationId } = this.data;
+    if (!tideLocationId) return;
+    const today = this.formatDateStr(new Date());
+    this.loadTideData(tideLocationId, today, offset).catch(() => {});
   },
   async getLocation(){
     const { latitude, longitude } = await wx.getLocation({

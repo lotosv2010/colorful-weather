@@ -1,0 +1,52 @@
+<!--components/tide/index.wxml-->
+<view class="weather-tide" hidden="{{!tideTable.length}}">
+  <view class="weather-tide-header">
+    <text class="right">潮汐</text>
+    <view class="date-nav">
+      <text class="nav-btn" bindtap="prevDay">‹</text>
+      <text class="nav-date">{{displayDate}}</text>
+      <text class="nav-btn {{dateOffset >= 9 ? 'disabled' : ''}}" bindtap="nextDay">›</text>
+    </view>
+  </view>
+
+  <!-- 站点名称 -->
+  <view class="tide-station" wx:if="{{stationName}}">
+    <text class="station-name">📍 {{stationName}}</text>
+  </view>
+
+  <!-- 当前状态摘要：仅今天显示 -->
+  <view class="tide-status" wx:if="{{dateOffset === 0}}">
+    <view class="tide-current">
+      <text class="tide-height">{{currentHeight}}<text class="unit">m</text></text>
+      <view class="tide-trend {{rising ? 'rising' : 'falling'}}">
+        <text class="trend-arrow">{{rising ? '↑' : '↓'}}</text>
+        <text class="trend-label">{{rising ? '涨潮中' : '落潮中'}}</text>
+      </view>
+    </view>
+    <view class="tide-next" wx:if="{{nextEvent}}">
+      <text class="next-label">距{{nextEvent.type === 'H' ? '满潮' : '干潮'}}还有</text>
+      <text class="next-time">{{nextEvent.countdown}}</text>
+    </view>
+  </view>
+
+  <!-- 潮汐曲线 -->
+  <view class="tide-canvas-wrap">
+    <canvas type="2d" id="tideCanvas" class="tide-canvas"></canvas>
+  </view>
+
+  <!-- 满/干潮时间卡片 -->
+  <scroll-view class="tide-table" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="tide-table-inner">
+      <view
+        wx:for="{{tideTable}}"
+        wx:key="fxTime"
+        class="tide-card {{item.type === 'H' ? 'high' : 'low'}} {{item.fxTime === nextFxTime ? 'next' : ''}}"
+      >
+        <text class="card-arrow">{{item.type === 'H' ? '▲' : '▼'}}</text>
+        <text class="card-label">{{item.type === 'H' ? '满潮' : '干潮'}}</text>
+        <text class="card-time">{{item.fxTime.substring(11, 16)}}</text>
+        <text class="card-height">{{item.height}}<text class="card-unit">m</text></text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

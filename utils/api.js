@@ -73,4 +73,8 @@ module.exports = {
   airDaily: (location) => request(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', {'localTime': true}),
   // 天气预警（location 为 "lon,lat" 格式，内部转换为 URL 路径）
   warning: (location) => request(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', {'localTime': true}),
+  // 潮汐（location 为 LocationID，date 为 yyyyMMdd）
+  tide: (data) => request(`${BASE_URL}/ocean/tide`, 'GET', data),
+  // POI 搜索（type: scenic | TSTA 等）
+  poiLookup: (data) => request(`${GEO_URL}/poi/lookup`, 'GET', data),
 }
