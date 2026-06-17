@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, stormList, tide, poiLookup } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, stormList, tide, poiLookup, solarRadiation } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
@@ -36,6 +36,7 @@ Page({
     tideLocationId: '',
     tideStationName: '',
     tideDateOffset: 0,
+    solarForecasts: [],
   },
   // 事件处理函数
   onLoad() {
@@ -186,6 +187,8 @@ Page({
 
       // 潮汐：用坐标查最近 TSTA 站点再拉数据，失败静默处理
       this.fetchTide(location, today).catch(() => {});
+      // 太阳辐射：失败静默处理
+      this.fetchSolar(latitude, longitude).catch(() => {});
     } catch (error) {
       console.log(error)
       this.showToast();
@@ -229,6 +232,11 @@ Page({
     if (!tideLocationId) return;
     const today = this.formatDateStr(new Date());
     this.loadTideData(tideLocationId, today, offset).catch(() => {});
+  },
+  async fetchSolar(lat, lon) {
+    const res = await solarRadiation(lat, lon, { hours: 24, interval: 60, extra: 'weather' });
+    if (!res || !res.forecasts || !res.forecasts.length) return;
+    this.setData({ solarForecasts: res.forecasts });
   },
   async getLocation(){
     const { latitude, longitude } = await wx.getLocation({

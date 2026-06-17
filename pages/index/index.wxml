@@ -64,6 +64,9 @@
       dateOffset="{{tideDateOffset}}"
       bind:datechange="onTideDateChange"
     />
+    <weather-solar
+      forecasts="{{solarForecasts}}"
+    />
   </view>
   <city-search show="{{selectorVisible}}" bind:select="onSelectCity" bind:close="hideSelector" />
 </view>

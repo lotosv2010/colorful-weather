@@ -1,0 +1,39 @@
+<!--components/solar/index.wxml-->
+<view class="weather-solar" hidden="{{!forecasts.length}}">
+  <view class="weather-solar-header">
+    <text class="title">太阳辐射</text>
+    <text class="subtitle">未来24小时</text>
+  </view>
+
+  <!-- 当前辐照 -->
+  <view class="solar-current">
+    <view class="solar-current-left">
+      <text class="solar-value">{{currentGhi}}</text>
+      <text class="solar-unit">W/m²</text>
+      <view class="solar-level level-{{currentLevel}}">{{currentLevelText}}</view>
+    </view>
+    <view class="solar-current-right" wx:if="{{peakItem}}">
+      <text class="peak-label">今日峰值</text>
+      <text class="peak-time">{{peakItem.timeStr}}</text>
+      <text class="peak-value">{{peakItem.ghi}} W/m²</text>
+    </view>
+  </view>
+
+  <!-- 强度进度条 -->
+  <view class="solar-bar-wrap">
+    <view class="solar-bar-bg">
+      <view class="solar-bar-fill level-fill-{{currentLevel}}" style="width: {{currentPct}}%"></view>
+    </view>
+    <view class="solar-bar-labels">
+      <text>弱</text>
+      <text>中</text>
+      <text>强</text>
+      <text>极强</text>
+    </view>
+  </view>
+
+  <!-- GHI 曲线图 -->
+  <view class="solar-canvas-wrap">
+    <canvas type="2d" id="solarCanvas" class="solar-canvas"></canvas>
+  </view>
+</view>

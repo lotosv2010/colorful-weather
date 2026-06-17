@@ -77,4 +77,6 @@ module.exports = {
   tide: (data) => request(`${BASE_URL}/ocean/tide`, 'GET', data),
   // POI 搜索（type: scenic | TSTA 等）
   poiLookup: (data) => request(`${GEO_URL}/poi/lookup`, 'GET', data),
+  // 太阳辐射预报（lat/lon 为路径参数，hours 默认24，interval 默认60）
+  solarRadiation: (lat, lon, data = {}) => request(`https://m97fbtc2ed.re.qweatherapi.com/solarradiation/v1/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }),
 }

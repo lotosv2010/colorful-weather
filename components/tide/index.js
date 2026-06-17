@@ -223,11 +223,26 @@ Component({
         ctx.fill();
 
         // 文字标注
-        ctx.textAlign = 'center';
-        ctx.fillStyle = isHigh ? 'rgb(68,179,255)' : 'rgba(166,169,173,0.9)';
+        const labelText = `${isHigh ? '▲' : '▼'} ${h}m`;
         ctx.font = 'bold 8px sans-serif';
-        const labelY = isHigh ? y - 7 : y + 13;
-        ctx.fillText(`${isHigh ? '▲' : '▼'} ${h}m`, x, labelY);
+        ctx.fillStyle = isHigh ? 'rgb(68,179,255)' : 'rgba(166,169,173,0.9)';
+        // 左右边界检测
+        const distLeft = x - padLeft;
+        const distRight = W - padRight - x;
+        let textAlign, labelX;
+        if (distLeft < 18) {
+          textAlign = 'left'; labelX = padLeft;
+        } else if (distRight < 18) {
+          textAlign = 'right'; labelX = W - padRight;
+        } else {
+          textAlign = 'center'; labelX = x;
+        }
+        ctx.textAlign = textAlign;
+        // 上下边界检测
+        let labelY = isHigh ? y - 7 : y + 13;
+        if (isHigh && labelY < padTop + 8) labelY = y + 13;
+        if (!isHigh && labelY > padTop + chartH - 2) labelY = y - 7;
+        ctx.fillText(labelText, labelX, labelY);
       });
 
       // 当前时刻竖线
