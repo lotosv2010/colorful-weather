@@ -175,7 +175,7 @@ Page({
         showMinutelyEntry,
         minutelySummary: minutelyRes?.summary || '',
         minutelyType,
-        showTyphoonEntry: hasActiveStorm,
+        showTyphoonEntry: storms.length > 0,
         typhoonSummary
       });
     } catch (error) {

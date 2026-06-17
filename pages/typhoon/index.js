@@ -17,6 +17,7 @@ const TYPE_NAMES = {
   STY: '强台风',
   SuperTY: '超强台风'
 };
+const ICON_SIZE = 16;
 
 Page({
   data: {
@@ -26,10 +27,15 @@ Page({
     selectedStorm: null,
     track: [],
     forecast: [],
-    isActive: false
+    isActive: false,
+    mapCenter: { lat: 20, lon: 130 },
+    mapZoom: 3,
+    mapPolylines: [],
+    mapMarkers: []
   },
 
   onLoad() {
+    this._iconCache = {};
     this.fetchStormList();
   },
 
@@ -41,16 +47,45 @@ Page({
         this.setData({ loading: false, errorMsg: '暂无台风数据' });
         return;
       }
-      // 活跃台风排前面
+      // 活跃台风排前面，同组保持原序（后续按时间精确排序）
       const list = res.storm.sort((a, b) => Number(b.isActive) - Number(a.isActive));
       this.setData({ stormList: list, loading: false });
 
-      // 默认选中第一个活跃台风
-      const active = list.find(s => s.isActive === '1');
-      if (active) this.onSelectStorm({ currentTarget: { dataset: { id: active.id } } });
+      // 默认选中列表第一个台风
+      if (list.length) {
+        this.onSelectStorm({ currentTarget: { dataset: { id: list[0].id } } });
+      }
+
+      // 并行拉取所有台风 track，按最早发生时间降序重排
+      this._sortByTime(list);
     } catch (e) {
       console.error(e);
       this.setData({ loading: false, errorMsg: '数据加载失败' });
+    }
+  },
+
+  /** 并行获取 track，按最早出现时间降序重排列表 */
+  async _sortByTime(list) {
+    try {
+      const results = await Promise.all(
+        list.map(s => stormTrack({ stormid: s.id }).catch(() => null))
+      );
+      const timeMap = {};
+      results.forEach((res, i) => {
+        if (res?.track?.length) {
+          const firstTime = new Date(res.track[0].time || 0).getTime();
+          timeMap[list[i].id] = firstTime;
+        }
+      });
+      const sorted = [...list].sort((a, b) => {
+        if (a.isActive !== b.isActive) return Number(b.isActive) - Number(a.isActive);
+        return (timeMap[b.id] || 0) - (timeMap[a.id] || 0);
+      });
+      this.setData({ stormList: sorted });
+      // 重排后默认选中最新台风
+      this.onSelectStorm({ currentTarget: { dataset: { id: sorted[0].id } } });
+    } catch (e) {
+      console.error('按时间排序失败', e);
     }
   },
 
@@ -92,156 +127,126 @@ Page({
 
       const isActive = trackRes?.isActive === '1';
       this.setData({ track, forecast, isActive });
-      wx.nextTick(() => this.drawTrack());
+      this.renderTrackMap();
     } catch (e) {
       console.error(e);
     }
   },
 
-  // Canvas 绘制台风路径
-  initCanvas(cb) {
-    if (this._ctx) { cb && cb(); return; }
-    const query = this.createSelectorQuery();
-    query.select('#trackCanvas')
-      .fields({ node: true })
-      .exec((res) => {
-        if (!res || !res[0] || !res[0].node) return;
-        const canvas = res[0].node;
-        const ctx = canvas.getContext('2d');
-        const dpr = wx.getSystemInfoSync().pixelRatio || 2;
-        const info = wx.getWindowInfo();
-        const cssW = info.windowWidth - 48;
-        const cssH = 300;
-        canvas.width = cssW * dpr;
-        canvas.height = cssH * dpr;
-        ctx.scale(dpr, dpr);
-        this._ctx = ctx;
-        this._w = cssW;
-        this._h = cssH;
-        cb && cb();
-      });
-  },
-
-  drawTrack() {
-    this.initCanvas(() => this._drawTrack());
-  },
-
-  _drawTrack() {
-    const ctx = this._ctx;
-    const w = this._w;
-    const h = this._h;
-    const { track, forecast } = this.data;
-    if (!ctx) return;
-
-    const allPoints = [...track, ...forecast];
-    if (!allPoints.length) return;
-
-    const pad = 40;
-    const chartW = w - pad * 2;
-    const chartH = h - pad * 2;
-
-    // 计算 lat/lon 范围
-    let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
-    allPoints.forEach(p => {
+  /** 计算地图中心与缩放级别（查表法，避免公式偏差） */
+  _calcMapBounds(points) {
+    let minLat = Infinity, maxLat = -Infinity;
+    let minLon = Infinity, maxLon = -Infinity;
+    points.forEach(p => {
       if (p.lat < minLat) minLat = p.lat;
       if (p.lat > maxLat) maxLat = p.lat;
       if (p.lon < minLon) minLon = p.lon;
       if (p.lon > maxLon) maxLon = p.lon;
     });
-    // 加边距
-    const latRange = (maxLat - minLat) || 5;
-    const lonRange = (maxLon - minLon) || 5;
-    minLat -= latRange * 0.1;
-    maxLat += latRange * 0.1;
-    minLon -= lonRange * 0.1;
-    maxLon += lonRange * 0.1;
+    const center = { lat: (minLat + maxLat) / 2, lon: (minLon + maxLon) / 2 };
+    if (points.length <= 1) return { center, zoom: 5 };
+    const span = Math.max(maxLat - minLat, maxLon - minLon);
+    let zoom;
+    if (span > 30) zoom = 3;
+    else if (span > 15) zoom = 3;
+    else if (span > 8) zoom = 4;
+    else if (span > 4) zoom = 4;
+    else if (span > 2) zoom = 5;
+    else zoom = 5;
+    return { center, zoom };
+  },
 
-    const toX = (lon) => pad + ((lon - minLon) / (maxLon - minLon)) * chartW;
-    const toY = (lat) => pad + ((maxLat - lat) / (maxLat - minLat)) * chartH;
+  /** 渲染台风路径到地图 */
+  renderTrackMap() {
+    const { track, forecast } = this.data;
+    if (!track.length) return;
 
-    ctx.clearRect(0, 0, w, h);
+    const allPoints = [...track, ...forecast];
+    const { center, zoom } = this._calcMapBounds(allPoints);
 
-    // 绘制网格
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i <= 4; i++) {
-      const y = pad + (chartH * i / 4);
-      ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
-      const x = pad + (chartW * i / 4);
-      ctx.beginPath(); ctx.moveTo(x, pad); ctx.lineTo(x, h - pad); ctx.stroke();
+    const last = track[track.length - 1];
+    const polylines = [
+      {
+        points: track.map(p => ({ latitude: p.lat, longitude: p.lon })),
+        color: last.color,
+        width: 3
+      }
+    ];
+    if (forecast.length) {
+      polylines.push({
+        points: [last, ...forecast].map(p => ({ latitude: p.lat, longitude: p.lon })),
+        color: '#8C9AA5',
+        width: 2,
+        dottedLine: true
+      });
     }
 
-    // 绘制历史路径（实线）
-    if (track.length > 1) {
-      ctx.lineWidth = 2;
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
-      for (let i = 1; i < track.length; i++) {
-        ctx.strokeStyle = track[i].color;
-        ctx.beginPath();
-        ctx.moveTo(toX(track[i - 1].lon), toY(track[i - 1].lat));
-        ctx.lineTo(toX(track[i].lon), toY(track[i].lat));
-        ctx.stroke();
+    const markers = track.map((p, i) => ({
+      id: i,
+      latitude: p.lat,
+      longitude: p.lon,
+      iconPath: this._getMarkerIcon(p.color),
+      width: ICON_SIZE,
+      height: ICON_SIZE,
+      callout: {
+        content: `${p.timeLabel}\n${p.typeName}  ${p.pressure}hPa  ${p.windSpeed}m/s`,
+        color: '#ffffff',
+        bgColor: '#222530',
+        borderRadius: 8,
+        padding: 10,
+        fontSize: 12,
+        display: 'BYCLICK'
       }
-    }
-
-    // 绘制预报路径（虚线）
-    if (forecast.length > 0) {
-      const lastTrack = track[track.length - 1];
-      const firstForecast = forecast[0];
-      const forecastPoints = lastTrack ? [lastTrack, ...forecast] : forecast;
-
-      ctx.setLineDash([6, 3]);
-      ctx.lineWidth = 1.5;
-      for (let i = 1; i < forecastPoints.length; i++) {
-        ctx.strokeStyle = forecastPoints[i].color;
-        ctx.beginPath();
-        ctx.moveTo(toX(forecastPoints[i - 1].lon), toY(forecastPoints[i - 1].lat));
-        ctx.lineTo(toX(forecastPoints[i].lon), toY(forecastPoints[i].lat));
-        ctx.stroke();
-      }
-      ctx.setLineDash([]);
-    }
-
-    // 绘制历史路径点
-    track.forEach((p, i) => {
-      const x = toX(p.lon);
-      const y = toY(p.lat);
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      ctx.arc(x, y, i === track.length - 1 ? 5 : 3, 0, Math.PI * 2);
-      ctx.fill();
-      // 最后一个点加白色边框
-      if (i === track.length - 1) {
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-      }
+    }));
+    forecast.forEach((p, i) => {
+      markers.push({
+        id: track.length + i,
+        latitude: p.lat,
+        longitude: p.lon,
+        iconPath: this._getMarkerIcon('#8C9AA5'),
+        width: ICON_SIZE,
+        height: ICON_SIZE,
+        callout: {
+          content: `${p.timeLabel}\n${p.typeName}  ${p.pressure}hPa  ${p.windSpeed}m/s`,
+          color: '#ffffff',
+          bgColor: '#222530',
+          borderRadius: 8,
+          padding: 10,
+          fontSize: 12,
+          display: 'BYCLICK'
+        }
+      });
     });
 
-    // 绘制预报点
-    forecast.forEach(p => {
-      const x = toX(p.lon);
-      const y = toY(p.lat);
-      ctx.fillStyle = p.color;
-      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+    this.setData({
+      mapCenter: center,
+      mapZoom: zoom,
+      mapPolylines: polylines,
+      mapMarkers: markers
     });
+    this._ctx = null;
+  },
 
-    // 时间标签（首尾 + 中间每隔几个）
-    ctx.font = '9px sans-serif';
-    ctx.fillStyle = '#8C9AA5';
-    ctx.textAlign = 'center';
-    const labelIndices = [0, Math.floor(track.length / 2), track.length - 1];
-    labelIndices.forEach(i => {
-      if (i >= 0 && i < track.length) {
-        const p = track[i];
-        ctx.fillText(p.timeLabel, toX(p.lon), toY(p.lat) - 10);
-      }
-    });
+  onZoomIn() {
+    this.setData({ mapZoom: Math.min(18, this.data.mapZoom + 1) });
+  },
+  onZoomOut() {
+    this.setData({ mapZoom: Math.max(3, this.data.mapZoom - 1) });
+  },
+  onLocate() {
+    const { track } = this.data;
+    if (!track.length) return;
+    const last = track[track.length - 1];
+    this.setData({ mapCenter: { lat: last.lat, lon: last.lon } });
+  },
+
+  /** 生成纯色圆形 marker 图标（SVG data URI，无需 canvas） */
+  _getMarkerIcon(color) {
+    if (this._iconCache[color]) return this._iconCache[color];
+    const r = ICON_SIZE / 2;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${ICON_SIZE}" height="${ICON_SIZE}"><circle cx="${r}" cy="${r}" r="${r}" fill="${color}"/></svg>`;
+    const icon = 'data:image/svg+xml,' + encodeURIComponent(svg);
+    this._iconCache[color] = icon;
+    return icon;
   }
 });

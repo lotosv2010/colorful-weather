@@ -53,7 +53,25 @@
           路径图
           <text class="card-subtitle">{{isActive ? '实线为历史路径，虚线为预报' : '该台风已停编'}}</text>
         </view>
-        <canvas type="2d" id="trackCanvas" class="track-canvas"></canvas>
+        <view class="map-wrapper">
+          <map
+            id="trackMap"
+            class="track-map"
+            latitude="{{mapCenter.lat}}"
+            longitude="{{mapCenter.lon}}"
+            zoom="{{mapZoom}}"
+            enable-zoom
+            enable-scroll
+            show-location="{{false}}"
+            polyline="{{mapPolylines}}"
+            markers="{{mapMarkers}}"
+          ></map>
+          <view class="map-ctrl">
+            <view class="map-ctrl-btn" bindtap="onZoomIn">+</view>
+            <view class="map-ctrl-btn" bindtap="onZoomOut">−</view>
+            <view class="map-ctrl-btn locate" bindtap="onLocate">◎</view>
+          </view>
+        </view>
       </view>
 
       <!-- 预报数据 -->
