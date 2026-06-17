@@ -59,7 +59,7 @@
             class="track-map"
             latitude="{{mapCenter.lat}}"
             longitude="{{mapCenter.lon}}"
-            zoom="{{mapZoom}}"
+            scale="{{mapScale}}"
             enable-zoom
             enable-scroll
             show-location="{{false}}"
