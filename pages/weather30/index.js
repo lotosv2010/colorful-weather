@@ -44,19 +44,17 @@ Page({
   },
 
   onLoad(options) {
-    const { location, city, date } = options;
+    const { location, province, city, district, date } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
       return;
     }
     this.location = location;
-    if (city) {
-      const decoded = decodeURIComponent(city);
-      const parts = decoded.split(',');
-      const province = parts[0] || '';
-      const district = parts[1] || '';
-      this.setData({ city: decoded, province, district });
-    }
+    this.setData({
+      province: province ? decodeURIComponent(province) : '',
+      city: city ? decodeURIComponent(city) : '',
+      district: district ? decodeURIComponent(district) : ''
+    });
     if (date) this.setData({ activeDate: date });
     this.fetchData();
   },

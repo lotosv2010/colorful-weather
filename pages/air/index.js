@@ -6,6 +6,7 @@ Page({
   data: {
     location: '',
     province: '',
+    city: '',
     district: '',
     aqi: '',
     category: '',
@@ -25,9 +26,10 @@ Page({
   onLoad(options = {}) {
     const location = options.location || '';
     const province = options.province ? decodeURIComponent(options.province) : '';
+    const city = options.city ? decodeURIComponent(options.city) : '';
     const district = options.district ? decodeURIComponent(options.district) : '';
     console.log('onLoad', location);
-    this.setData({ location, province, district });
+    this.setData({ location, province, city, district });
     if (location) {
       this.loadData();
     } else {

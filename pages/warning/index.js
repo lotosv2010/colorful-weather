@@ -55,6 +55,7 @@ Page({
   data: {
     location: '',
     province: '',
+    city: '',
     district: '',
     alerts: [],
     attributions: '',
@@ -65,8 +66,9 @@ Page({
   onLoad(options = {}) {
     const location = options.location || '';
     const province = options.province ? decodeURIComponent(options.province) : '';
+    const city = options.city ? decodeURIComponent(options.city) : '';
     const district = options.district ? decodeURIComponent(options.district) : '';
-    this.setData({ location, province, district });
+    this.setData({ location, province, city, district });
     if (location) {
       this.loadData();
     } else {

@@ -2,7 +2,7 @@
 <view class="life-page">
 
   <!-- 头部城市信息 -->
-  <page-header district="{{district}}" province="{{province}}" />
+  <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
 
   <!-- 类型切换：横向滑动 -->
   <scroll-view class="tabs" scroll-x scroll-into-view="tab-{{activeType}}" scroll-with-animation>

@@ -31,7 +31,11 @@ Component({
       type: Array,
       value: []
     },
-    showEntry: {
+    showMinutelyEntry: {
+      type: Boolean,
+      value: false
+    },
+    showTyphoonEntry: {
       type: Boolean,
       value: false
     },

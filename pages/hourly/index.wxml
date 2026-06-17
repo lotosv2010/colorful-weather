@@ -9,7 +9,7 @@
 
   <block wx:else>
     <!-- 头部城市信息 -->
-    <page-header district="{{district}}" province="{{province}}" />
+    <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
 
     <!-- 温度图表 -->
     <view class="chart-card">

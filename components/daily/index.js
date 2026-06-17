@@ -16,6 +16,10 @@ Component({
       type: String,
       value: ''
     },
+    city: {
+      type: String,
+      value: ''
+    },
     district: {
       type: String,
       value: ''
@@ -53,9 +57,9 @@ Component({
   methods: {
     onItemTap(e) {
       const { fxdate } = e.currentTarget.dataset;
-      const { location, province, district } = this.data;
+      const { location, province, city, district } = this.data;
       wx.navigateTo({
-        url: `/pages/weather30/index?location=${location}&city=${encodeURIComponent(province + ',' + district)}&date=${fxdate}`
+        url: `/pages/weather30/index?location=${location}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&date=${fxdate}`
       });
     }
   }

@@ -38,6 +38,7 @@ Page({
   data: {
     location: '',
     province: '',
+    city: '',
     district: '',
     tabs: DEFAULT_TYPES,
     activeType: '1',
@@ -51,9 +52,10 @@ Page({
   onLoad(options = {}) {
     const location = options.location || '';
     const province = options.province ? decodeURIComponent(options.province) : '';
+    const city = options.city ? decodeURIComponent(options.city) : '';
     const district = options.district ? decodeURIComponent(options.district) : '';
     const activeType = options.type && this.matchType(options.type) ? options.type : '1';
-    this.setData({ location, province, district, activeType, definition: getDefinition(activeType) });
+    this.setData({ location, province, city, district, activeType, definition: getDefinition(activeType) });
     if (location) {
       this.loadIndices();
     } else {

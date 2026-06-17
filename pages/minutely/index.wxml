@@ -1,6 +1,6 @@
 <!--pages/minutely/index.wxml-->
 <view class="minutely-page">
-  <page-header province="{{province}}" district="{{city || district}}" />
+  <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
 
   <view wx:if="{{loading}}" class="tip">加载中...</view>
   <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>

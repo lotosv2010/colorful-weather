@@ -5,6 +5,10 @@ Component({
       type: String,
       value: ''
     },
+    city: {
+      type: String,
+      value: ''
+    },
     province: {
       type: String,
       value: ''

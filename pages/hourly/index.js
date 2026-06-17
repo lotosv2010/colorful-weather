@@ -12,22 +12,23 @@ Page({
     scrollToItem: '',
     syncScrollLeft: 0,
     province: '',
+    city: '',
     district: '',
     detail: null
   },
 
   onLoad(options) {
-    const { location, city, hour } = options;
+    const { location, province, city, district, hour } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
       return;
     }
     this.location = location;
-    if (city) {
-      const decoded = decodeURIComponent(city);
-      const parts = decoded.split(',');
-      this.setData({ province: parts[0] || '', district: parts[1] || '' });
-    }
+    this.setData({
+      province: province ? decodeURIComponent(province) : '',
+      city: city ? decodeURIComponent(city) : '',
+      district: district ? decodeURIComponent(district) : ''
+    });
     if (hour !== undefined) {
       this.setData({ selectedIndex: Number(hour) });
     }

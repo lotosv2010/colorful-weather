@@ -13,6 +13,10 @@ Component({
       type: String,
       value: ''
     },
+    city: {
+      type: String,
+      value: ''
+    },
     district: {
       type: String,
       value: ''
@@ -31,9 +35,9 @@ Component({
   },
   methods: {
     gotoDetail() {
-      const { location, province, district } = this.data;
+      const { location, province, city, district } = this.data;
       wx.navigateTo({
-        url: `/pages/air/index?location=${location}&province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`
+        url: `/pages/air/index?location=${location}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
       });
     },
     initCanvas() {

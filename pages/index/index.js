@@ -23,9 +23,10 @@ Page({
     astronomySun: {},
     astronomyMoon: {},
     alerts: [],
-    showMinutely: false,
+    showMinutelyEntry: false,
+    showTyphoonEntry: false,
     minutelySummary: '',
-    hasActiveStorm: false,
+    typhoonSummary: '',
     latitude: '',
     longitude: '',
     province: '',
@@ -150,7 +151,7 @@ Page({
       // 分钟级降水：取有降水的类型，默认 rain
       const minutelyData = minutelyRes?.minutely || [];
       const hasPrecip = minutelyData.some(m => Number(m.precip) > 0);
-      const showMinutely = hasPrecip || !!minutelyRes?.summary;
+      const showMinutelyEntry = hasPrecip;
       const minutelyType = minutelyData.some(m => Number(m.precip) > 0 && m.type === 'snow') ? 'snow' : 'rain';
 
       // 台风：优先展示活跃台风，无活跃则展示非活跃
@@ -171,10 +172,10 @@ Page({
         astronomySun: sunData,
         astronomyMoon: moonData,
         alerts,
-        showMinutely,
+        showMinutelyEntry,
         minutelySummary: minutelyRes?.summary || '',
         minutelyType,
-        hasActiveStorm,
+        showTyphoonEntry: hasActiveStorm,
         typhoonSummary
       });
     } catch (error) {
@@ -207,7 +208,7 @@ Page({
         success: (res) => {
           const ad = res?.result?.ad_info || {};
           resolve({
-            city: ad.district,
+            city: ad.city,
             province: ad.province,
             district: ad.district
           });
@@ -252,16 +253,16 @@ Page({
     this.getWeather();
   },
   gotoWarning() {
-    const { longitude, latitude, province, district } = this.data;
+    const { longitude, latitude, province, district, currentCity } = this.data;
     wx.navigateTo({
-      url: `/pages/warning/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`
+      url: `/pages/warning/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(currentCity)}&district=${encodeURIComponent(district)}`
     });
   },
   onHourlyTap(e) {
-    const { longitude, latitude, province, district } = this.data;
+    const { longitude, latitude, province, district, currentCity } = this.data;
     const { index } = e.detail;
     wx.navigateTo({
-      url: `/pages/hourly/index?location=${longitude},${latitude}&city=${encodeURIComponent(province + ',' + district)}&hour=${index}`
+      url: `/pages/hourly/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(currentCity)}&district=${encodeURIComponent(district)}&hour=${index}`
     });
   },
   onMinutelyTap() {

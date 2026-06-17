@@ -2,7 +2,7 @@
 <view class="warning-page">
 
   <!-- 头部城市信息 -->
-  <page-header district="{{district}}" province="{{province}}" />
+  <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
 
   <!-- Loading & Error -->
   <view wx:if="{{loading}}" class="tip">加载中...</view>

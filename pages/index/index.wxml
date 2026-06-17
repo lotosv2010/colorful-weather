@@ -17,7 +17,8 @@
       desc="{{desc}}"
       uv="{{uv}}"
       alerts="{{alerts}}"
-      showEntry
+      showMinutelyEntry="{{showMinutelyEntry}}"
+      showTyphoonEntry="{{showTyphoonEntry}}"
       minutelyType="{{minutelyType}}"
       minutelySummary="{{minutelySummary}}"
       typhoonSummary="{{typhoonSummary}}"
@@ -35,12 +36,14 @@
       daily="{{daily}}"
       location="{{longitude}},{{latitude}}"
       province="{{province}}"
+      city="{{currentCity}}"
       district="{{district}}"
     />
     <weather-air
       air="{{air}}"
       location="{{longitude}},{{latitude}}"
       province="{{province}}"
+      city="{{currentCity}}"
       district="{{district}}"
     />
     <weather-astronomy
@@ -51,6 +54,7 @@
       indices="{{indices}}"
       location="{{longitude}},{{latitude}}"
       province="{{province}}"
+      city="{{currentCity}}"
       district="{{district}}"
     />
   </view>

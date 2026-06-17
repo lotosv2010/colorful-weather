@@ -23,12 +23,12 @@
       <text class="weather-alert-text">{{alerts.length > 1 ? '多种天气预警正在发生' : alerts[0].headline}}</text>
       <text class="weather-alert-arrow">›</text>
     </view>
-    <view class="weather-entry" wx:if="{{showEntry}}" bindtap="onMinutelyTap">
+    <view class="weather-entry" wx:if="{{showMinutelyEntry}}" bindtap="onMinutelyTap">
       <i class="weather-entry-icon qi-{{minutelyType === 'snow' ? 499 : 399}}-fill"></i>
       <text class="weather-entry-text">{{minutelySummary || '分钟级雨量'}}</text>
       <text class="weather-entry-arrow">›</text>
     </view>
-    <view class="weather-entry weather-entry-typhoon" wx:if="{{showEntry}}" bindtap="onTyphoonTap">
+    <view class="weather-entry weather-entry-typhoon" wx:if="{{showTyphoonEntry}}" bindtap="onTyphoonTap">
       <i class="weather-entry-icon qi-1803"></i>
       <text class="weather-entry-text">{{typhoonSummary || '台风路径'}}</text>
       <text class="weather-entry-arrow">›</text>
