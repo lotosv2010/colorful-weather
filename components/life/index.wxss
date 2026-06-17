@@ -42,7 +42,7 @@
   margin-left: 5px;
 }
 .weather-life-col {
-  background-color: rgb(46, 48, 63);
+  background-color: rgb(46, 48, 61);
   padding: 10px;
   display: flex;
   align-items: center;

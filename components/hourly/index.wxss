@@ -28,7 +28,7 @@
   flex: 1;
   justify-content: space-around;
   font-size: 0.8rem;
-  background-color: rgb(17, 17, 21);
+  background-color: rgb(46, 48, 61);
   box-sizing: border-box;
   border-radius: 10px;
   padding: 10px;
@@ -65,9 +65,9 @@
 }
 .weather-hourly-windSpeed {
   font-size: 0.6rem;
-  color: rgb(142, 142, 144);
+  color: #A6A9AD;
 }
 .weather-hourly-fxTime {
   font-size: 0.6rem;
-  color: rgb(142, 142, 144);
+  color: #A6A9AD;
 }
