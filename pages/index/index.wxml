@@ -12,7 +12,7 @@
   <view class="container">
     <weather-temp
       weather="{{currentWeather}}"
-      city="{{currentCity}}"
+      city="{{district}}"
       date="{{dateNow}}"
       desc="{{desc}}"
       uv="{{uv}}"
@@ -36,14 +36,14 @@
       daily="{{daily}}"
       location="{{longitude}},{{latitude}}"
       province="{{province}}"
-      city="{{currentCity}}"
+      city="{{city}}"
       district="{{district}}"
     />
     <weather-air
       air="{{air}}"
       location="{{longitude}},{{latitude}}"
       province="{{province}}"
-      city="{{currentCity}}"
+      city="{{city}}"
       district="{{district}}"
     />
     <weather-astronomy
@@ -54,7 +54,7 @@
       indices="{{indices}}"
       location="{{longitude}},{{latitude}}"
       province="{{province}}"
-      city="{{currentCity}}"
+      city="{{city}}"
       district="{{district}}"
     />
   </view>

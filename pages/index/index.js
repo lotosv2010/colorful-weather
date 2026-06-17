@@ -12,7 +12,7 @@ Page({
     lbs: app.globalData.lbs,
     currentWeather: {},
     selectorVisible: false,
-    currentCity: '',
+    city: '',
     dateNow: formatDate(new Date).substr(11, 5),
     desc: '',
     uv: '',
@@ -59,7 +59,7 @@ Page({
       const {longitude, latitude} = this.data;
       const { city, province, district } = await this.getCity(`${latitude},${longitude}`);
       this.setData({
-        currentCity: city,
+        city,
         province,
         district
       });
@@ -240,35 +240,35 @@ Page({
   // 当用户选择了组件中的城市之后的回调函数
   // GeoAPI 返回字段：name / id / lat / lon / adm1(省) / adm2(市)
   onSelectCity(e) {
-    const { city } = e.detail;
-    if (!city) return;
+    const { city: selected } = e.detail;
+    if (!selected) return;
     this.setData({
-      currentCity: city.name,
-      province: city.adm1 || '',
-      district: city.name || '',
-      latitude: city.lat,
-      longitude: city.lon,
+      city: selected.adm2 || '',
+      province: selected.adm1 || '',
+      district: selected.name || '',
+      latitude: selected.lat,
+      longitude: selected.lon,
       selectorVisible: false,
     });
     this.getWeather();
   },
   gotoWarning() {
-    const { longitude, latitude, province, district, currentCity } = this.data;
+    const { longitude, latitude, province, district, city } = this.data;
     wx.navigateTo({
-      url: `/pages/warning/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(currentCity)}&district=${encodeURIComponent(district)}`
+      url: `/pages/warning/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
     });
   },
   onHourlyTap(e) {
-    const { longitude, latitude, province, district, currentCity } = this.data;
+    const { longitude, latitude, province, district, city } = this.data;
     const { index } = e.detail;
     wx.navigateTo({
-      url: `/pages/hourly/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(currentCity)}&district=${encodeURIComponent(district)}&hour=${index}`
+      url: `/pages/hourly/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&hour=${index}`
     });
   },
   onMinutelyTap() {
-    const { longitude, latitude, currentCity, province, district } = this.data;
+    const { longitude, latitude, city, province, district } = this.data;
     wx.navigateTo({
-      url: `/pages/minutely/index?location=${longitude},${latitude}&city=${encodeURIComponent(currentCity)}&province=${encodeURIComponent(province)}&district=${encodeURIComponent(district)}`
+      url: `/pages/minutely/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
     });
   },
   onTyphoonTap() {
