@@ -84,11 +84,6 @@ Page({
         };
       });
 
-      // 调试：打印第一条数据结构，便于排查字段类型
-      if (daily.length > 0) {
-        console.log('[weather30] 首条数据:', JSON.stringify(daily[0], null, 2));
-      }
-
       // 合并空气质量
       this.mergeAir(daily, airRes);
 
