@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, stormList, tide, poiLookup, solarRadiation } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
@@ -31,19 +31,11 @@ Page({
     astronomyMoon: {},
     alerts: [],
     showMinutelyEntry: false,
-    showTyphoonEntry: false,
     minutelySummary: '',
-    typhoonSummary: '',
     latitude: '',
     longitude: '',
     province: '',
     district: '',
-    tideTable: [],
-    tideHourly: [],
-    tideLocationId: '',
-    tideStationName: '',
-    tideDateOffset: 0,
-    solarForecasts: [],
   },
   // 事件处理函数
   onLoad() {
@@ -145,7 +137,7 @@ Page({
       location = `${longitude},${latitude}`;
       const today = this.formatDateStr(new Date());
       const tc = _pendingTasks; // 当前批次 taskCollector
-      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes, stormListRes] = await Promise.all([
+      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes] = await Promise.all([
         now({location}, tc),
         this.getIndices(location, tc),
         hourly({location}, tc),
@@ -154,8 +146,7 @@ Page({
         sun({location, date: today}, tc),
         moon({location, date: today}, tc),
         warning(location, tc).catch(() => null),
-        minutely({location}, tc).catch(() => null),
-        stormList({ basin: 'NP', year: new Date().getFullYear() }, tc).catch(() => null)
+        minutely({location}, tc).catch(() => null)
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
@@ -169,13 +160,6 @@ Page({
       const hasPrecip = minutelyData.some(m => Number(m.precip) > 0);
       const showMinutelyEntry = hasPrecip;
       const minutelyType = minutelyData.some(m => Number(m.precip) > 0 && m.type === 'snow') ? 'snow' : 'rain';
-
-      // 台风：优先展示活跃台风，无活跃则展示非活跃
-      const storms = stormListRes?.storm || [];
-      const activeStorms = storms.filter(s => s.isActive === '1');
-      const hasActiveStorm = activeStorms.length > 0;
-      const displayStorms = hasActiveStorm ? activeStorms : storms.filter(s => s.isActive === '0');
-      const typhoonSummary = displayStorms.map(s => `${s.name}(${s.id})`).join('、');
 
       this.setData({
         dateNow: formatDate(new Date()).substr(11, 5),
@@ -191,15 +175,8 @@ Page({
         alerts,
         showMinutelyEntry,
         minutelySummary: minutelyRes?.summary || '',
-        minutelyType,
-        showTyphoonEntry: hasActiveStorm,
-        typhoonSummary
+        minutelyType
       });
-
-      // 潮汐：用坐标查最近 TSTA 站点再拉数据，失败静默处理
-      this.fetchTide(location, today).catch(() => {});
-      // 太阳辐射：失败静默处理
-      this.fetchSolar(latitude, longitude).catch(() => {});
     } catch (error) {
       console.log(error)
       this.showToast();
@@ -213,41 +190,6 @@ Page({
     const m = `${date.getMonth() + 1}`.padStart(2, '0');
     const d = `${date.getDate()}`.padStart(2, '0');
     return `${y}${m}${d}`;
-  },
-  // 查找最近潮汐站并拉取当日数据
-  async fetchTide(location, date) {
-    const poiRes = await poiLookup({ location, type: 'TSTA', number: 1 });
-    if (poiRes?.code !== '200' || !poiRes?.poi?.length) {
-      this.setData({ tideTable: [], tideHourly: [], tideLocationId: '', tideStationName: '' });
-      return;
-    }
-    const { id: stationId, name: stationName } = poiRes.poi[0];
-    this.setData({ tideLocationId: stationId, tideStationName: stationName });
-    await this.loadTideData(stationId, date, 0);
-  },
-  async loadTideData(locationId, date, offset) {
-    const d = new Date(date.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
-    d.setDate(d.getDate() + offset);
-    const dateStr = this.formatDateStr(d);
-    const res = await tide({ location: locationId, date: dateStr });
-    if (res?.code !== '200') return;
-    this.setData({
-      tideTable: res.tideTable || [],
-      tideHourly: res.tideHourly || [],
-      tideDateOffset: offset,
-    });
-  },
-  onTideDateChange(e) {
-    const { offset } = e.detail;
-    const { tideLocationId } = this.data;
-    if (!tideLocationId) return;
-    const today = this.formatDateStr(new Date());
-    this.loadTideData(tideLocationId, today, offset).catch(() => {});
-  },
-  async fetchSolar(lat, lon) {
-    const res = await solarRadiation(lat, lon, { hours: 24, interval: 60, extra: 'weather' });
-    if (!res || !res.forecasts || !res.forecasts.length) return;
-    this.setData({ solarForecasts: res.forecasts });
   },
   async getLocation(){
     const { latitude, longitude } = await wx.getLocation({
@@ -326,11 +268,6 @@ Page({
     const { longitude, latitude, city, province, district } = this.data;
     wx.navigateTo({
       url: `/pages/minutely/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
-    });
-  },
-  onTyphoonTap() {
-    wx.navigateTo({
-      url: '/pages/typhoon/index'
     });
   },
 })

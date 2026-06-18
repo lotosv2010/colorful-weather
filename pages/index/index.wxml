@@ -18,14 +18,11 @@
       uv="{{uv}}"
       alerts="{{alerts}}"
       showMinutelyEntry="{{showMinutelyEntry}}"
-      showTyphoonEntry="{{showTyphoonEntry}}"
       minutelyType="{{minutelyType}}"
       minutelySummary="{{minutelySummary}}"
-      typhoonSummary="{{typhoonSummary}}"
       bind:getnow="getWeather"
       bind:gowarning="gotoWarning"
       bind:minutelytap="onMinutelyTap"
-      bind:typhoontap="onTyphoonTap"
       class="weather-temp"
     />
     <weather-hourly
@@ -56,16 +53,6 @@
       province="{{province}}"
       city="{{city}}"
       district="{{district}}"
-    />
-    <weather-tide
-      tideTable="{{tideTable}}"
-      tideHourly="{{tideHourly}}"
-      stationName="{{tideStationName}}"
-      dateOffset="{{tideDateOffset}}"
-      bind:datechange="onTideDateChange"
-    />
-    <weather-solar
-      forecasts="{{solarForecasts}}"
     />
   </view>
   <city-search show="{{selectorVisible}}" bind:select="onSelectCity" bind:close="hideSelector" />
