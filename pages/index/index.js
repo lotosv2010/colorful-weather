@@ -1,5 +1,6 @@
 const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
+const cache = require('../../utils/cache');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -49,6 +50,9 @@ Page({
     });
   },
   async init() {
+    if (this._fetching) return;
+    // 重新定位时清除缓存，确保拿到最新数据
+    cache.clear();
     try {
       this.qqmapsdk = new QQMapWX({
         key: app.globalData.lbs.key
@@ -126,6 +130,9 @@ Page({
     };
   },
   async getWeather() {
+    // 防止并发重复调用
+    if (this._fetching) return;
+    this._fetching = true;
     try {
       // 取消上一批未完成的请求，避免城市切换时旧数据覆盖新结果
       abortPending();
@@ -182,6 +189,7 @@ Page({
       this.showToast();
     } finally {
       wx.hideLoading();
+      this._fetching = false;
     }
   },
   // 格式化日期为 yyyyMMdd（天文 API 要求）

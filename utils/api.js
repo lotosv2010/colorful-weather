@@ -1,3 +1,5 @@
+const cache = require('./cache');
+
 // 接口地址
 const BASE_URL = 'https://m97fbtc2ed.re.qweatherapi.com/v7';
 // GeoAPI 地址
@@ -7,6 +9,26 @@ const AIR_URL = 'https://m97fbtc2ed.re.qweatherapi.com/airquality/v1';
 // 应用key
 const KEY = '9f00952418204e51997981c77fc3192a';
 
+// 缓存时长（毫秒）
+const MIN = 60 * 1000;
+const HOUR = 3600 * 1000;
+const TTL = {
+  NOW:        20 * MIN,   // 实时天气：20 分钟
+  HOURLY:     30 * MIN,   // 逐小时预报：30 分钟
+  DAILY:       1 * HOUR,  // 逐天预报：1 小时
+  DAILY_30:    2 * HOUR,  // 30 天预报：2 小时
+  INDICES:     6 * HOUR,  // 生活指数：6 小时
+  AIR:        30 * MIN,   // 实时空气质量：30 分钟
+  AIR_HOURLY: 30 * MIN,   // 空气质量小时预报：30 分钟
+  AIR_DAILY:   8 * HOUR,  // 空气质量日预报：8 小时
+  WARNING:    10 * MIN,   // 天气预警：10 分钟
+  MINUTELY:    5 * MIN,   // 分钟级降水：5 分钟
+  ASTRONOMY:   2 * HOUR,  // 日出日落 / 月相：2 小时
+  SOLAR:       6 * HOUR,  // 太阳辐射：6 小时
+  TIDE:        8 * HOUR,  // 潮汐：8 小时
+  STORM:      20 * MIN,   // 台风：20 分钟
+};
+
 /**
  * API 请求函数
  * @param {string} url 请求地址
@@ -15,7 +37,6 @@ const KEY = '9f00952418204e51997981c77fc3192a';
  * @param {Array|null} taskCollector 可选，用于收集 wx.request task 以便外部取消
  */
 const request = (url, method, data, taskCollector = null) => {
-  // 展开新对象，避免修改调用方传入的原始对象
   const reqData = { ...data, key: KEY };
   return new Promise((resolve, reject) => {
     const task = wx.request({
@@ -32,12 +53,36 @@ const request = (url, method, data, taskCollector = null) => {
         reject(err);
       }
     });
-    // 若提供了 taskCollector，将 task 收集进去供外部 abort()
     if (taskCollector) {
       taskCollector.push(task);
     }
   });
-}
+};
+
+// 生成缓存 key：URL 路径 + 去掉 key 字段后的排序参数
+const makeCacheKey = (url, data) => {
+  const path = url.replace(/^https?:\/\/[^/]+/, '');
+  const params = Object.keys(data)
+    .filter(k => k !== 'key')
+    .sort()
+    .map(k => `${k}=${data[k]}`)
+    .join('&');
+  return params ? `${path}?${params}` : path;
+};
+
+// 带缓存的请求：命中直接返回，未命中则发起请求并在成功时写缓存
+const cachedRequest = (url, method, data, tc, ttl) => {
+  const key = makeCacheKey(url, data);
+  const hit = cache.get(key);
+  if (hit) return Promise.resolve(hit);
+  return request(url, method, data, tc).then(res => {
+    // code 为 '200' 或无 code 字段（air / warning 等）时缓存
+    if (res && (res.code == null || res.code === '200')) {
+      cache.set(key, res, ttl);
+    }
+    return res;
+  });
+};
 
 // 将 "lon,lat" 转为 airquality v1 URL 路径所需的 "lat/lon"
 const toAirPath = (lonLat) => {
@@ -46,42 +91,26 @@ const toAirPath = (lonLat) => {
 };
 
 module.exports = {
-  now: (data, tc) => request(`${BASE_URL}/weather/now`, 'GET', data, tc),
-  sevenDay: (data, tc) => request(`${BASE_URL}/weather/7d`, 'GET', data, tc),
-  indices: (data, tc) => request(`${BASE_URL}/indices/1d`, 'GET', data, tc),
-  // 生活指数 3 天预报（和风免费版上限）
-  indices3d: (data, tc) => request(`${BASE_URL}/indices/3d`, 'GET', data, tc),
-  hourly: (data, tc) => request(`${BASE_URL}/weather/24h`, 'GET', data, tc),
-  // 分钟级降水（未来2小时逐5分钟）
-  minutely: (data, tc) => request(`${BASE_URL}/minutely/5m`, 'GET', data, tc),
-  // 台风列表（当年西北太平洋）
-  stormList: (data, tc) => request(`${BASE_URL}/tropical/storm-list`, 'GET', data, tc),
-  // 台风预报路径
-  stormForecast: (data, tc) => request(`${BASE_URL}/tropical/storm-forecast`, 'GET', data, tc),
-  // 台风实况与历史路径
-  stormTrack: (data, tc) => request(`${BASE_URL}/tropical/storm-track`, 'GET', data, tc),
-  // 30天预报
-  weather30d: (data, tc) => request(`${BASE_URL}/weather/30d`, 'GET', data, tc),
-  // 空气质量实况（location 为 "lon,lat" 格式，内部转换为 URL 路径）
-  air: (location, tc) => request(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {}, tc),
-  // 城市搜索：location 支持中文/拼音/ID/经纬度
+  now:        (data, tc) => cachedRequest(`${BASE_URL}/weather/now`, 'GET', data, tc, TTL.NOW),
+  sevenDay:   (data, tc) => cachedRequest(`${BASE_URL}/weather/7d`, 'GET', data, tc, TTL.DAILY),
+  indices:    (data, tc) => cachedRequest(`${BASE_URL}/indices/1d`, 'GET', data, tc, TTL.INDICES),
+  indices3d:  (data, tc) => cachedRequest(`${BASE_URL}/indices/3d`, 'GET', data, tc, TTL.INDICES),
+  hourly:     (data, tc) => cachedRequest(`${BASE_URL}/weather/24h`, 'GET', data, tc, TTL.HOURLY),
+  minutely:   (data, tc) => cachedRequest(`${BASE_URL}/minutely/5m`, 'GET', data, tc, TTL.MINUTELY),
+  stormList:  (data, tc) => cachedRequest(`${BASE_URL}/tropical/storm-list`, 'GET', data, tc, TTL.STORM),
+  stormForecast: (data, tc) => cachedRequest(`${BASE_URL}/tropical/storm-forecast`, 'GET', data, tc, TTL.STORM),
+  stormTrack: (data, tc) => cachedRequest(`${BASE_URL}/tropical/storm-track`, 'GET', data, tc, TTL.STORM),
+  weather30d: (data, tc) => cachedRequest(`${BASE_URL}/weather/30d`, 'GET', data, tc, TTL.DAILY_30),
+  air:        (location, tc) => cachedRequest(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {}, tc, TTL.AIR),
+  airHourly:  (location, tc) => cachedRequest(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_HOURLY),
+  airDaily:   (location, tc) => cachedRequest(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_DAILY),
+  warning:    (location, tc) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.WARNING),
+  sun:        (data, tc) => cachedRequest(`${BASE_URL}/astronomy/sun`, 'GET', data, tc, TTL.ASTRONOMY),
+  moon:       (data, tc) => cachedRequest(`${BASE_URL}/astronomy/moon`, 'GET', data, tc, TTL.ASTRONOMY),
+  tide:       (data, tc) => cachedRequest(`${BASE_URL}/ocean/tide`, 'GET', data, tc, TTL.TIDE),
+  solarRadiation: (lat, lon, data = {}, tc) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/solarradiation/v1/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc, TTL.SOLAR),
+  // GeoAPI 数据版权禁止缓存，始终实时请求
   cityLookup: (data, tc) => request(`${GEO_URL}/city/lookup`, 'GET', data, tc),
-  // 热门城市（默认 range=cn）
-  topCity: (data = {}, tc) => request(`${GEO_URL}/city/top`, 'GET', data, tc),
-  // 天文：日出日落
-  sun: (data, tc) => request(`${BASE_URL}/astronomy/sun`, 'GET', data, tc),
-  // 天文：月升月落 + 月相
-  moon: (data, tc) => request(`${BASE_URL}/astronomy/moon`, 'GET', data, tc),
-  // 空气质量小时预报（location 为 "lon,lat" 格式，内部转换为 URL 路径）
-  airHourly: (location, tc) => request(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', {'localTime': true}, tc),
-  // 空气质量每日预报
-  airDaily: (location, tc) => request(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', {'localTime': true}, tc),
-  // 天气预警（location 为 "lon,lat" 格式，内部转换为 URL 路径）
-  warning: (location, tc) => request(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', {'localTime': true}, tc),
-  // 潮汐（location 为 LocationID，date 为 yyyyMMdd）
-  tide: (data, tc) => request(`${BASE_URL}/ocean/tide`, 'GET', data, tc),
-  // POI 搜索（type: scenic | TSTA 等）
-  poiLookup: (data, tc) => request(`${GEO_URL}/poi/lookup`, 'GET', data, tc),
-  // 太阳辐射预报（lat/lon 为路径参数，hours 默认24，interval 默认60）
-  solarRadiation: (lat, lon, data = {}, tc) => request(`https://m97fbtc2ed.re.qweatherapi.com/solarradiation/v1/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc),
-}
+  topCity:    (data = {}, tc) => request(`${GEO_URL}/city/top`, 'GET', data, tc),
+  poiLookup:  (data, tc) => request(`${GEO_URL}/poi/lookup`, 'GET', data, tc),
+};
