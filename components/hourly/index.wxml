@@ -7,7 +7,7 @@
       <i class="weather-hourly-icon icon-color-{{ic.category(item.icon)}} qi-{{item.icon}}-fill"></i>
       <view class="weather-hourly-temp">
         <text class="value">{{item.temp}}</text>
-        <text class="unit">o</text>
+        <text class="unit">°</text>
       </view>
       <view wx:if="{{item.windArrowVisible}}" class="weather-hourly-windDir" style="transform: rotate({{item.windArrowRotate}}deg)">
         <weather-icon class="wind-arrow" colors="{{['rgb(68, 179, 255)']}}" src="/static/icons/fx.svg" />

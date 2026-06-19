@@ -1,5 +1,5 @@
 <!--components/temp/index.wxml-->
-<wxs src="../../utils/iconColor.wxs" module="ic" />
+<wxs src="/utils/iconColor.wxs" module="ic" />
 <view class="weather-header">
   <view class="weather-header-date" bindtap="getNow">
     <view>{{ date }} </view>
@@ -12,7 +12,7 @@
       <view class="weather-header-left">
         <view class="weather-header-temp">
           {{ weather.temp }}
-          <text class="weather-header-unit">o</text>
+          <text class="weather-header-unit">°</text>
         </view>
         <view class="weather-header-text">{{ weather.text }}</view>
       </view>
@@ -54,7 +54,7 @@
           <view class="grid">
             <text class="value">
               <text>{{weather.feelsLike}}</text>
-              <text class="unit">o</text>
+              <text class="unit">°</text>
             </text>
             <text class="label">体感温度</text>
           </view>

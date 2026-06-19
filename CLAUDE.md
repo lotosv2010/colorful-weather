@@ -102,8 +102,7 @@ static/
 
 ## 已知待办与潜在问题
 
-- 温度 / 角度的 `o` 字符是用普通文本模拟的「°」，应改为真正的度数符号 `°`（`components/temp/index.wxml` 第 15、57 行，`components/hourly/index.wxml` 第 10 行）。
-- `components/temp/index.wxml` 第 2 行使用相对路径 `../../utils/iconColor.wxs`，建议统一为绝对路径。
+详见 `docs/tasks/current.md`。
 
 ## 开发命令
 

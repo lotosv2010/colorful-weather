@@ -69,8 +69,8 @@
 ## 未完成 / 待改进
 
 ### Bug 修复
-- [ ] 温度符号用字母 `o` 代替度数符号 `°`（`components/temp/index.wxml` 第 15、57 行，`components/hourly/index.wxml` 第 10 行）
-- [ ] `components/temp/index.wxml` 第 2 行使用相对路径 `../../utils/iconColor.wxs`，应统一为绝对路径
+- [x] 温度符号用字母 `o` 代替度数符号 `°`（`components/temp/index.wxml` 第 15、57 行，`components/hourly/index.wxml` 第 10 行）
+- [x] `components/temp/index.wxml` 第 2 行使用相对路径 `../../utils/iconColor.wxs`，应统一为绝对路径
 
 ### 功能增强
 - [ ] 多城市管理：收藏 / 固定多个城市快速切换
