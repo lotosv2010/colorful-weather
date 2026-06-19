@@ -1,59 +1,139 @@
 <!--index.wxml-->
-<view class="weather">
-  <view class="header">
-    <view class="weather-search" bindtap="showSelector">
-      <icon class="icon-small" type="search" color="#fff" size="24"></icon>
-      <view class="icon-title">搜索</view>
+<wxs src="/utils/iconColor.wxs" module="ic" />
+<view class="page">
+  <map
+    class="bg-map"
+    longitude="{{longitude}}"
+    latitude="{{latitude}}"
+    scale="9"
+    show-location
+    enable-3D="{{false}}"
+    show-compass="{{false}}"
+    enable-scroll="{{mapInteractive}}"
+    enable-zoom="{{mapInteractive}}"
+    enable-rotate="{{mapInteractive}}"
+  />
+
+  <!-- 地图定位按钮：跟随地图显示/隐藏，sheet 展开时淡出 -->
+  <view
+    class="locate-btn {{sheetExpanded ? '' : 'locate-interactive'}}"
+    style="opacity: {{1 - sheetProgress}};"
+    catchtap="onLocateTap"
+  >
+    <weather-icon class="locate-icon" src="/static/icons/locate.svg" colors="{{['#333']}}" />
+  </view>
+
+  <!-- 顶部搜索栏：随 progress 渐入；容器不拦截手势，仅子元素响应点击 -->
+  <view class="top-bar" style="opacity: {{sheetProgress}};">
+    <view class="top-search {{sheetExpanded ? 'top-interactive' : ''}}" bindtap="showSelector">
+      <icon class="top-search-icon" type="search" color="#fff" size="24"></icon>
+      <view class="top-search-text">{{ locationLabel || '搜索城市' }}</view>
     </view>
-    <view class="weather-location" bindtap="init">
-      <view class="icon-title">当前位置</view>
+    <view class="top-locate {{sheetExpanded ? 'top-interactive' : ''}}" catchtap="onLocateTap">
+      <weather-icon class="top-locate-icon" src="/static/icons/locate.svg" colors="{{['#fff']}}" />
     </view>
   </view>
-  <view class="container">
-    <weather-temp
-      weather="{{currentWeather}}"
-      city="{{district}}"
-      date="{{dateNow}}"
-      desc="{{desc}}"
-      uv="{{uv}}"
-      alerts="{{alerts}}"
-      showMinutelyEntry="{{showMinutelyEntry}}"
-      minutelyType="{{minutelyType}}"
-      minutelySummary="{{minutelySummary}}"
-      bind:getnow="getWeather"
-      bind:gowarning="gotoWarning"
-      bind:minutelytap="onMinutelyTap"
-      class="weather-temp"
-    />
-    <weather-hourly
-      hourly="{{hourly}}"
-      bind:itemtap="onHourlyTap"
-    />
-    <weather-daily
-      daily="{{daily}}"
-      location="{{longitude}},{{latitude}}"
-      province="{{province}}"
-      city="{{city}}"
-      district="{{district}}"
-    />
-    <weather-air
-      air="{{air}}"
-      location="{{longitude}},{{latitude}}"
-      province="{{province}}"
-      city="{{city}}"
-      district="{{district}}"
-    />
-    <weather-astronomy
-      sun="{{astronomySun}}"
-      moon="{{astronomyMoon}}"
-    />
-    <weather-life
-      indices="{{indices}}"
-      location="{{longitude}},{{latitude}}"
-      province="{{province}}"
-      city="{{city}}"
-      district="{{district}}"
-    />
-  </view>
+
+  <bottom-sheet id="sheet" bind:change="onSheetChange" bind:progress="onSheetProgress" bind:dragstart="onSheetDragStart" bind:dragend="onSheetDragEnd">
+    <!-- 紧凑卡片上方外侧胶囊 -->
+    <view slot="compact-above" class="compact-above-row" style="opacity: {{1 - sheetProgress}};">
+      <view wx:if="{{air.aqi}}" class="capsule aqi-capsule" catchtap="onAirTap">
+        <view class="aqi-leaf">
+          <weather-icon class="aqi-leaf-icon" src="/static/icons/leaf.svg" colors="{{['#fff']}}" />
+        </view>
+        <text class="capsule-label">AQI</text>
+        <text class="capsule-value">{{air.aqi}}</text>
+        <text class="capsule-desc">{{air.category}}</text>
+      </view>
+      <view wx:else></view>
+      <view class="capsule-right">
+        <view wx:if="{{alerts.length}}" class="capsule warning-capsule" catchtap="gotoWarning">
+          <i class="capsule-icon qi-9999"></i>
+          <text class="capsule-text">{{alerts.length > 1 ? '多种天气预警正在发生' : alerts[0].headline}}</text>
+          <text class="capsule-arrow">›</text>
+        </view>
+        <view wx:if="{{showMinutelyEntry}}" class="capsule minutely-capsule" catchtap="onMinutelyTap">
+          <i class="capsule-icon qi-{{minutelyType === 'snow' ? 499 : 399}}-fill"></i>
+          <text class="capsule-text">{{minutelySummary || '分钟级雨量'}}</text>
+          <text class="capsule-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 紧凑卡片 -->
+    <view slot="compact" class="compact">
+      <view class="compact-top" style="opacity: {{1 - sheetProgress}};">
+        <view class="compact-location" catchtap="showSelector">
+          <icon class="compact-location-icon" type="search" color="#fff" size="24"></icon>
+          <view class="compact-location-text">{{ locationLabel || '定位中…' }}</view>
+        </view>
+        <view class="compact-date">
+          <view>{{ dateNow }}</view>
+          <weather-icon
+            class="compact-refresh"
+            colors="{{['rgb(181, 187, 204)']}}"
+            src="/static/icons/refresh.svg"
+            catchtap="init"
+          />
+        </view>
+      </view>
+      <view class="weather-header-container">
+        <view class="weather-header-main">
+          <i class="weather-header-svg icon-color-{{ic.category(currentWeather.icon || 100)}} qi-{{currentWeather.icon || 100}}-fill"></i>
+          <view class="weather-header-left">
+            <view class="weather-header-temp">
+              {{ currentWeather.temp || '--' }}
+              <text class="weather-header-unit">°</text>
+            </view>
+            <view class="weather-header-text">{{ currentWeather.text || '' }}</view>
+          </view>
+        </view>
+        <view class="weather-header-desc">{{ desc || '' }}</view>
+      </view>
+    </view>
+
+    <!-- 全部卡片列表 -->
+    <view slot="full" class="full-list">
+      <weather-temp
+        weather="{{currentWeather}}"
+        city="{{district}}"
+        date="{{dateNow}}"
+        desc="{{desc}}"
+        uv="{{uv}}"
+        alerts="{{alerts}}"
+        showMinutelyEntry="{{showMinutelyEntry}}"
+        minutelyType="{{minutelyType}}"
+        minutelySummary="{{minutelySummary}}"
+        bind:getnow="getWeather"
+        bind:gowarning="gotoWarning"
+        bind:minutelytap="onMinutelyTap"
+        class="weather-temp"
+      />
+      <weather-hourly hourly="{{hourly}}" bind:itemtap="onHourlyTap" />
+      <weather-daily
+        daily="{{daily}}"
+        location="{{longitude}},{{latitude}}"
+        province="{{province}}"
+        city="{{city}}"
+        district="{{district}}"
+      />
+      <weather-air
+        air="{{air}}"
+        location="{{longitude}},{{latitude}}"
+        province="{{province}}"
+        city="{{city}}"
+        district="{{district}}"
+      />
+      <weather-astronomy sun="{{astronomySun}}" moon="{{astronomyMoon}}" />
+      <weather-life
+        indices="{{indices}}"
+        location="{{longitude}},{{latitude}}"
+        province="{{province}}"
+        city="{{city}}"
+        district="{{district}}"
+      />
+    </view>
+  </bottom-sheet>
+
   <city-search show="{{selectorVisible}}" bind:select="onSelectCity" bind:close="hideSelector" />
 </view>

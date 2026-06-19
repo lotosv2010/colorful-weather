@@ -1,12 +1,14 @@
 <!--components/temp/index.wxml-->
 <wxs src="/utils/iconColor.wxs" module="ic" />
 <view class="weather-header">
+  <view class="weather-handle">
+    <view class="weather-handle-bar"></view>
+  </view>
   <view class="weather-header-date" bindtap="getNow">
     <view>{{ date }} </view>
     <weather-icon class="weather-header-refresh" colors="{{['rgb(181, 187, 204)']}}" src="/static/icons/refresh.svg" />
   </view>
   <view class="weather-header-container">
-    <view class="weather-header-city">{{ city }}</view>
     <view class="weather-header-main">
       <i class="weather-header-svg icon-color-{{ic.category(weather.icon || 100)}} qi-{{weather.icon || 100}}-fill"></i>
       <view class="weather-header-left">

@@ -1,29 +1,316 @@
 /**index.wxss**/
 page {
   background-color: #000;
+  height: 100%;
+  overflow: hidden;
 }
-.weather {
-  background-color: black;
-  color: #ffffff;
-  padding: 10px 0;
+
+.page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000;
 }
-.weather .header {
+
+.bg-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* 地图定位按钮：右上角 */
+.locate-btn {
+  position: fixed;
+  top: 24rpx;
+  right: 32rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
   display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.locate-btn.locate-interactive {
+  pointer-events: auto;
+}
+
+.locate-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+/* 顶部搜索栏：容器永远不拦截手势，避免遮挡 sheet 下拉手柄；子元素按需开启交互 */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 15px 16px;
-  font-size: 0.9rem;
+  padding: 24rpx 32rpx;
   color: #fff;
+  pointer-events: none;
 }
-.weather-search {
+
+.top-bar .top-interactive {
+  pointer-events: auto;
+}
+
+.top-search {
+  display: flex;
+  align-items: center;
+  height: 56rpx;
+  flex: 1;
+  color: #fff;
+  min-width: 0;
+}
+
+.top-search-icon {
+  margin-right: 10rpx;
+}
+
+.top-search-text {
+  font-size: 32rpx;
+  line-height: 32rpx;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* top-bar 右侧定位按钮 */
+.top-locate {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.top-locate-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+/* 紧凑卡片外侧胶囊行 */
+.compact-above-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  transition: opacity 0.3s ease;
+  gap: 16rpx;
+}
+
+.capsule {
+  display: flex;
+  align-items: center;
+  height: 56rpx;
+  padding: 0 20rpx;
+  border-radius: 28rpx;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 24rpx;
+  line-height: 1;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.25);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.capsule-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+  flex-shrink: 0;
+}
+
+.capsule-label {
+  font-weight: 500;
+  margin-right: 6rpx;
+}
+
+.capsule-value {
+  font-weight: 600;
+  margin-right: 8rpx;
+}
+
+.capsule-desc {
+  opacity: 0.95;
+}
+
+.capsule-text {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.capsule-arrow {
+  margin-left: 8rpx;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+}
+
+.capsule-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12rpx;
+  max-width: 66%;
+  min-width: 0;
+}
+
+.capsule-right .capsule {
+  width: 100%;
+}
+
+.warning-capsule .capsule-icon {
+  color: #ffb366;
+}
+
+.minutely-capsule .capsule-icon {
+  color: #5BA3D9;
+}
+
+.aqi-capsule {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding-left: 8rpx;
+}
+
+.aqi-leaf {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background-color: #7FC359;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.aqi-leaf-icon {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+/* 紧凑卡片 */
+.compact {
+  padding: 8px 16px 28px;
+  box-sizing: border-box;
+}
+
+.compact-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: rgb(181, 187, 204);
+}
+
+.compact-location {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.compact-location-icon {
+  margin-right: 10rpx;
+}
+
+.compact-location-text {
+  font-size: 32rpx;
+  line-height: 32rpx;
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact-date {
   display: flex;
   align-items: center;
 }
-.weather-search .icon-title {
+
+.compact-refresh {
+  width: 1rem;
+  height: 1rem;
   margin-left: 5px;
 }
-.weather .container {
+
+/* 紧凑卡中部 / 描述：复用 weather-header 系列样式 */
+.weather-header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgb(181, 187, 204);
+}
+.weather-header-main {
+  height: 4.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+}
+.weather-header-svg {
+  font-size: 4.5rem;
+}
+.weather-header-left {
   height: 100%;
-  padding: 0px 16px;
-  box-sizing: border-box;
+  font-size: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-left: 10px;
+  color: #fff;
+}
+.weather-header-temp {
+  height: 2rem;
+  line-height: 2rem;
+  position: relative;
+}
+.weather-header-unit {
+  font-size: 1rem;
+  height: 1rem;
+  line-height: 1rem;
+  position: absolute;
+  top: 0px;
+  right: -12px;
+  margin-left: 5px;
+}
+.weather-header-text {
+  font-size: 1.2rem;
+}
+.weather-header-desc {
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 15px;
+  font-weight: 300;
+  color: #A6A9AD;
+}
+
+/* 全部列表里 weather-temp 间距 */
+.full-list .weather-temp {
+  display: block;
+  margin-bottom: 16rpx;
 }

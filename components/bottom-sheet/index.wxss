@@ -1,0 +1,86 @@
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 紧凑层：底部浮动卡片 */
+.compact-layer {
+  position: absolute;
+  left: 32rpx;
+  right: 32rpx;
+  bottom: 30rpx;
+  background-color: rgb(34, 37, 48);
+  border-radius: 30rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+}
+
+/* 紧凑卡片之外、上方的胶囊区域 */
+.compact-above {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  padding-bottom: 16rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.compact-above > view {
+  pointer-events: auto;
+}
+
+.compact-handle {
+  padding: 20rpx 0 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* 全屏层：默认在屏幕下方，progress→1 时滑到顶 */
+.full-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  transform: translateY(100%);
+  background-color: transparent;
+  transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1),
+              background-color 0.42s ease;
+}
+
+.full-layer.dragging {
+  transition: none;
+}
+
+.full-layer.full-active {
+  pointer-events: auto;
+}
+
+.full-handle {
+  height: 88rpx;
+  flex-shrink: 0;
+}
+
+.handle-bar {
+  width: 88rpx;
+  height: 8rpx;
+  background-color: rgba(255, 255, 255, 0.45);
+  border-radius: 4rpx;
+}
+
+.full-scroll {
+  flex: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 16px 32rpx;
+  color: #fff;
+}

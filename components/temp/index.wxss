@@ -1,8 +1,20 @@
 /* components/temp/index.wxss */
 .weather-header {
   background-color: rgb(34, 37, 48);
-  padding: 15px;
+  padding: 0 15px 15px;
   border-radius: 15px;
+}
+.weather-handle {
+  padding: 20rpx 0 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.weather-handle-bar {
+  width: 88rpx;
+  height: 8rpx;
+  background-color: rgba(255, 255, 255, 0.45);
+  border-radius: 4rpx;
 }
 .weather-header-date {
   font-size: 0.8rem;

@@ -37,6 +37,37 @@ Page({
     longitude: '',
     province: '',
     district: '',
+    locationLabel: '',
+    sheetExpanded: false,
+    sheetProgress: 0,
+    mapInteractive: true,
+  },
+  onSheetChange(e) {
+    this.setData({ sheetExpanded: e.detail.expanded });
+  },
+  onSheetProgress(e) {
+    this.setData({ sheetProgress: e.detail.progress });
+  },
+  onSheetDragStart() {
+    this.setData({ mapInteractive: false });
+  },
+  onSheetDragEnd() {
+    this.setData({ mapInteractive: true });
+  },
+  onExpandSheet() {
+    const sheet = this.selectComponent('#sheet');
+    if (sheet) sheet.expand();
+  },
+  onLocateTap() {
+    this.init();
+  },
+  _buildLocationLabel(district, city, province) {
+    const parts = [];
+    const push = (v) => { if (v && !parts.includes(v)) parts.push(v); };
+    push(district);
+    push(city);
+    push(province);
+    return parts.join('，');
   },
   // 事件处理函数
   onLoad() {
@@ -70,7 +101,8 @@ Page({
       this.setData({
         city,
         province,
-        district
+        district,
+        locationLabel: this._buildLocationLabel(district, city, province),
       });
       await this.getWeather();
     } catch (error) {
@@ -249,10 +281,14 @@ Page({
   onSelectCity(e) {
     const { city: selected } = e.detail;
     if (!selected) return;
+    const district = selected.name || '';
+    const city = selected.adm2 || '';
+    const province = selected.adm1 || '';
     this.setData({
-      city: selected.adm2 || '',
-      province: selected.adm1 || '',
-      district: selected.name || '',
+      city,
+      province,
+      district,
+      locationLabel: this._buildLocationLabel(district, city, province),
       latitude: selected.lat,
       longitude: selected.lon,
       selectorVisible: false,
@@ -276,6 +312,12 @@ Page({
     const { longitude, latitude, city, province, district } = this.data;
     wx.navigateTo({
       url: `/pages/minutely/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
+    });
+  },
+  onAirTap() {
+    const { longitude, latitude, city, province, district } = this.data;
+    wx.navigateTo({
+      url: `/pages/air/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
     });
   },
 })
