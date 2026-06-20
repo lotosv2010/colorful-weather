@@ -5,10 +5,16 @@
  * @param {Object} params - 键值对，null/undefined 值会被跳过
  * @returns {string} 编码后的查询字符串（不含前导 ?）
  */
+// location 值中的逗号是坐标分隔符，不应编码
+const NO_ENCODE_KEYS = new Set(['location']);
+
 const buildQuery = (params) => {
   return Object.keys(params)
     .filter(k => params[k] != null && params[k] !== '')
-    .map(k => `${k}=${encodeURIComponent(params[k])}`)
+    .map(k => {
+      const v = String(params[k]);
+      return `${k}=${NO_ENCODE_KEYS.has(k) ? v : encodeURIComponent(v)}`;
+    })
     .join('&');
 };
 
