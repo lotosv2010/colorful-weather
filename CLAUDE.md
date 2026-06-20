@@ -63,6 +63,7 @@ utils/
   util.js                          日期格式化、RGBA 转 hex、亮度文字色
   lifeMeta.js                      生活指数定义与等级颜色映射
   airMeta.js                       AQI 等级定义与污染物元数据
+  route.js                         页面跳转路径构造（buildPath / navigateTo / buildQuery）
   wind.js                          风向角度 → 8 方位箭头旋转
   iconColor.wxs                    WXS：天气图标 code → 颜色分类
   moonPhase.wxs                    WXS：月相 code → emoji / 名称

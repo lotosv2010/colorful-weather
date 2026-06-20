@@ -128,7 +128,7 @@
 
 ### 重构 / 待决策
 - [-] `solar` / `tide` 组件去留：组件代码保留，`pages/index/index.json` 中已注册但 `index.wxml` 无引用（commit b60a065 隐藏入口），决定恢复 / 删除
-- [ ] 抽 `utils/route.js`：8 个页面重复拼接 `location/province/city/district` 跳转参数（当前不存在此文件）
+- [x] 抽 `utils/route.js`：统一页面跳转路径构造（`buildPath` / `navigateTo` / `buildQuery`）
 
 ### 工程化
 - [ ] ESLint 配置实际可用的 rules（当前仅启用 parser）

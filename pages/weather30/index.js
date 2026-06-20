@@ -1,6 +1,7 @@
 const api = require('../../utils/api');
 const { formatDate, toHex, getTextColor } = require('../../utils/util');
 const prefs = require('../../utils/prefs');
+const { buildPath } = require('../../utils/route');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -239,17 +240,16 @@ Page({
     return { location: this.location || '', province, city, district };
   },
   onShareAppMessage() {
-    const { district, city } = this.data;
-    return {
-      title: `${district || city || ''} 未来 30 天天气`,
-      path: `/pages/weather30/index?location=${this.location || ''}&province=${encodeURIComponent(this.data.province)}&city=${encodeURIComponent(this.data.city)}&district=${encodeURIComponent(this.data.district)}`
-    };
+    const { district, city, province } = this.data;
+    const path = buildPath('/pages/weather30/index', { location: this.location || '', province, city, district });
+    return { title: `${district || city || ''} 未来 30 天天气`, path };
   },
   onShareTimeline() {
     const { district, city, province } = this.data;
+    const path = buildPath('/pages/weather30/index', { location: this.location || '', province, city, district });
     return {
       title: `${district || city || ''} 30 天天气趋势`,
-      query: `location=${this.location || ''}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
+      query: path.split('?')[1] || ''
     };
   }
 });

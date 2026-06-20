@@ -3,6 +3,7 @@ const { formatDate } = require('../../utils/util');
 const cache = require('../../utils/cache');
 const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
+const { navigateTo } = require('../../utils/route');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -358,28 +359,19 @@ Page({
   },
   gotoWarning() {
     const { longitude, latitude, province, district, city } = this.data;
-    wx.navigateTo({
-      url: `/pages/warning/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
-    });
+    navigateTo('/pages/warning/index', { location: `${longitude},${latitude}`, province, city, district });
   },
   onHourlyTap(e) {
     const { longitude, latitude, province, district, city } = this.data;
-    const { index } = e.detail;
-    wx.navigateTo({
-      url: `/pages/hourly/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&hour=${index}`
-    });
+    navigateTo('/pages/hourly/index', { location: `${longitude},${latitude}`, province, city, district }, { hour: e.detail.index });
   },
   onMinutelyTap() {
     const { longitude, latitude, city, province, district } = this.data;
-    wx.navigateTo({
-      url: `/pages/minutely/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
-    });
+    navigateTo('/pages/minutely/index', { location: `${longitude},${latitude}`, province, city, district });
   },
   onAirTap() {
     const { longitude, latitude, city, province, district } = this.data;
-    wx.navigateTo({
-      url: `/pages/air/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
-    });
+    navigateTo('/pages/air/index', { location: `${longitude},${latitude}`, province, city, district });
   },
   onShareAppMessage() {
     const { locationLabel, currentWeather, tempUnit } = this.data;

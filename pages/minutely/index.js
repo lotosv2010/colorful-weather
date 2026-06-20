@@ -1,4 +1,5 @@
 const { minutely } = require('../../utils/api');
+const { buildPath } = require('../../utils/route');
 
 Page({
   data: {
@@ -168,18 +169,15 @@ Page({
 
   onShareAppMessage() {
     const { city, district, province, summary } = this.data;
-    const loc = this._location || '';
-    return {
-      title: `${district || city || ''} ${summary || '分钟级降水'}`,
-      path: `/pages/minutely/index?location=${loc}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
-    };
+    const path = buildPath('/pages/minutely/index', { location: this._location || '', province, city, district });
+    return { title: `${district || city || ''} ${summary || '分钟级降水'}`, path };
   },
   onShareTimeline() {
     const { city, district, province, summary } = this.data;
-    const loc = this._location || '';
+    const path = buildPath('/pages/minutely/index', { location: this._location || '', province, city, district });
     return {
       title: `${district || city || ''} ${summary || '分钟级降水'}`,
-      query: `location=${loc}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
+      query: path.split('?')[1] || ''
     };
   }
 });

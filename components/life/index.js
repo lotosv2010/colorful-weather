@@ -1,4 +1,5 @@
 // components/life/index.js
+const { navigateTo } = require('../../utils/route');
 Component({
   properties: {
     indices: {
@@ -27,9 +28,7 @@ Component({
     gotoDetail(e) {
       const type = e.currentTarget.dataset.type || '';
       const { location, province, city, district } = this.data;
-      wx.navigateTo({
-        url: `/pages/life/index?location=${location}&type=${type}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`,
-      });
+      navigateTo('/pages/life/index', { location, province, city, district }, { type });
     }
   }
 })

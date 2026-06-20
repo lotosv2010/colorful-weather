@@ -2,6 +2,7 @@
 const { indices3d, indices: indices1d } = require('../../utils/api');
 const { getDefinition, getColor } = require('../../utils/lifeMeta');
 const prefs = require('../../utils/prefs');
+const { buildPath } = require('../../utils/route');
 
 // 全量 16 类生活指数（无 SVG 的用文字兜底显示在圆内）
 const DEFAULT_TYPES = [
@@ -139,17 +140,14 @@ Page({
     const { district, city, definition } = this.data;
     const title = `${district || city || ''} ${definition && definition.name ? definition.name + '指数' : '生活指数'}`;
     const p = this._shareParams();
-    return {
-      title,
-      path: `/pages/life/index?location=${p.location}&province=${encodeURIComponent(p.province)}&city=${encodeURIComponent(p.city)}&district=${encodeURIComponent(p.district)}&type=${p.type}`
-    };
+    return { title, path: buildPath('/pages/life/index', p) };
   },
   onShareTimeline() {
     const { district, city, definition } = this.data;
     const p = this._shareParams();
     return {
       title: `${district || city || ''} ${definition && definition.name ? definition.name + '指数' : '生活指数'}`,
-      query: `location=${p.location}&province=${encodeURIComponent(p.province)}&city=${encodeURIComponent(p.city)}&district=${encodeURIComponent(p.district)}&type=${p.type}`
+      query: buildPath('/pages/life/index', p).split('?')[1] || ''
     };
   }
 });

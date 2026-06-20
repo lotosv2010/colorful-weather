@@ -1,4 +1,5 @@
 // components/daily/index.js
+const { navigateTo } = require('../../utils/route');
 Component({
   options: {
     addGlobalClass: true
@@ -62,9 +63,7 @@ Component({
     onItemTap(e) {
       const { fxdate } = e.currentTarget.dataset;
       const { location, province, city, district } = this.data;
-      wx.navigateTo({
-        url: `/pages/weather30/index?location=${location}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&date=${fxdate}`
-      });
+      navigateTo('/pages/weather30/index', { location, province, city, district }, { date: fxdate });
     }
   }
 })

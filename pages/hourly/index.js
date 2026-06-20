@@ -1,6 +1,7 @@
 // pages/hourly/index.js
 const api = require('../../utils/api');
 const prefs = require('../../utils/prefs');
+const { buildPath } = require('../../utils/route');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -107,8 +108,7 @@ Page({
 
   _sharePath() {
     const { province, city, district } = this.data;
-    const q = `location=${this.location || ''}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`;
-    return `/pages/hourly/index?${q}`;
+    return buildPath('/pages/hourly/index', { location: this.location || '', province, city, district });
   },
   onShareAppMessage() {
     const { district, city } = this.data;

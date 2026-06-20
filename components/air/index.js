@@ -1,4 +1,5 @@
 // components/air/index.js
+const { navigateTo } = require('../../utils/route');
 Component({
   properties: {
     air: {
@@ -42,9 +43,7 @@ Component({
   methods: {
     gotoDetail() {
       const { location, province, city, district } = this.data;
-      wx.navigateTo({
-        url: `/pages/air/index?location=${location}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
-      });
+      navigateTo('/pages/air/index', { location, province, city, district });
     },
     initCanvas() {
       const query = this.createSelectorQuery();
