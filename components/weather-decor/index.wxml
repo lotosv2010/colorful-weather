@@ -59,7 +59,7 @@
 
   <!-- 雷暴：闪电 + 雨滴 -->
   <block wx:if="{{weatherEffect === 'lightning-drops'}}">
-    <view class="decor-item emoji emoji-lightning">⚡</view>
+    <view class="decor-item emoji emoji-lightning">⚡️</view>
     <view class="decor-item emoji emoji-drop-1">💧</view>
     <view class="decor-item emoji emoji-drop-2">💧</view>
   </block>
@@ -68,7 +68,6 @@
   <block wx:if="{{weatherEffect === 'fog-circles'}}">
     <view class="decor-item fog-circle fog-1"></view>
     <view class="decor-item fog-circle fog-2"></view>
-    <view class="decor-item emoji emoji-fog">🌫️</view>
   </block>
 
   <!-- 霾 -->
