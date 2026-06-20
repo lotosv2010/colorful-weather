@@ -1,5 +1,6 @@
 // pages/warning/index.js
 const { warning } = require('../../utils/api');
+const share = require('../../utils/share');
 
 // RGBA 对象 → CSS 颜色值
 const toRgba = (c = {}) => `rgba(${c.red || 0},${c.green || 0},${c.blue || 0},${c.alpha != null ? c.alpha : 1})`;
@@ -118,5 +119,20 @@ Page({
     } finally {
       this.setData({ loading: false });
     }
+  },
+
+  _shareParams() {
+    const { location, province, city, district } = this.data;
+    return { location, province, city, district };
+  },
+  onShareAppMessage() {
+    const { district, city, alerts } = this.data;
+    const headline = alerts && alerts.length ? alerts[0].headline : '天气预警';
+    return share.card('/pages/warning/index', this._shareParams(), `${district || city || ''} ${headline}`);
+  },
+  onShareTimeline() {
+    const { district, city, alerts } = this.data;
+    const headline = alerts && alerts.length ? alerts[0].headline : '天气预警';
+    return share.timeline('/pages/warning/index', this._shareParams(), `${district || city || ''} ${headline}`);
   }
 });

@@ -94,11 +94,13 @@
 ### 功能增强
 - [x] 多城市管理：收藏 / 置顶 / 取消
 - [x] 用户设置页：温度单位切换（℃/℉）、主题色选择、默认城市
-- [ ] 温度单位接入子页（hourly / weather30 chart / air page）：当前仅首页生效
-- [ ] 主题色作用范围扩展：bottom-sheet 把手、按钮高亮等
-- [ ] 离线降级 UI：断网时回落到 stale 缓存 + 顶部「离线模式」横幅
-- [ ] 分享菜单：开启 `onShareAppMessage` / `onShareTimeline`，并各页面自定义分享标题、图片、路径
-- [ ] 订阅消息：降水提醒、预警推送（`wx.requestSubscribeMessage`）（待小程序后台申请模板 ID）
+- [x] 温度单位接入子页（hourly / weather30 chart）：通过 `utils/temp.js` + 组件 `tempUnit` 属性下发
+- [x] 主题色作用范围扩展：bottom-sheet 把手、weather30/life 子页 tab 高亮
+- [x] 主题色新增「夜幕灰」预设（与 home bar 同色）
+- [x] 离线降级 UI：断网时回落 stale 缓存（`cache.getStale`）+ 顶部「离线模式」横幅
+- [x] 分享菜单：开启 `onShareAppMessage` / `onShareTimeline`，覆盖首页 / hourly / weather30 / air / warning / minutely / typhoon / life
+- [x] city-search 顶部「当前定位」行（样式与历史 / 收藏一致）
+- [-] ~~订阅消息：降水提醒、预警推送（`wx.requestSubscribeMessage`）~~ —— 不做
 - [ ] 天气时光机：查询历史某天的天气实况（温度、天气现象、风向风速等）
 - [ ] 空气质量时光机：查询历史某天的空气质量（AQI、污染物浓度等）
 

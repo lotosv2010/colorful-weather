@@ -15,8 +15,17 @@ Component({
         if (val) {
           this.loadFavorites();
           this.loadHistory();
+          this.loadCurrent();
           if (this.data.hotList.length === 0) this.loadHotCity();
         }
+      }
+    },
+    // 当前定位城市：{ name, adm1, adm2, lat, lon }
+    current: {
+      type: Object,
+      value: null,
+      observer() {
+        if (this.data.show) this.loadCurrent();
       }
     }
   },
@@ -26,11 +35,45 @@ Component({
     hotList: [],
     historyList: [], // 历史记录 + 实时天气
     favoritesList: [], // 收藏城市 + 实时天气
+    currentItem: null, // 当前定位 + 实时天气
     favoriteIds: {}, // { [cityId]: true } 用于在结果项上展示是否已收藏
     loading: false,
     errorMsg: ''
   },
   methods: {
+    // 加载当前定位天气
+    async loadCurrent() {
+      const cur = this.data.current;
+      if (!cur || !cur.lat || !cur.lon) {
+        this.setData({ currentItem: null });
+        return;
+      }
+      this.setData({ currentItem: { ...cur } });
+      try {
+        const r = await now({ location: `${cur.lon},${cur.lat}` });
+        if (r && r.code === '200') {
+          this.setData({ currentItem: { ...cur, weather: r.now } });
+        }
+      } catch (e) {}
+    },
+
+    // 选中当前定位
+    onPickCurrent() {
+      const cur = this.data.current;
+      if (!cur) return;
+      // 模拟 GeoAPI 返回结构，复用 onSelectCity
+      this.triggerEvent('select', { city: {
+        id: cur.id || `cur_${cur.lat}_${cur.lon}`,
+        name: cur.name,
+        adm1: cur.adm1,
+        adm2: cur.adm2,
+        lat: cur.lat,
+        lon: cur.lon,
+        country: cur.country || '中国'
+      } });
+      this.onClose();
+    },
+
     _refreshFavoriteIds() {
       const map = {};
       prefs.getPrefs().cities.forEach(c => { map[c.id] = true; });

@@ -2,6 +2,7 @@
 <wxs src="../../utils/iconColor.wxs" module="ic" />
 <wxs src="../../utils/moonPhase.wxs" module="mp" />
 <wxs src="../../utils/fmt.wxs" module="fmt" />
+<wxs src="../../utils/tempUnit.wxs" module="tu" />
 
 <view class="detail-card {{active ? 'detail-card-active' : ''}}">
   <!-- 第1行: 周 + 日期 -->
@@ -12,15 +13,15 @@
   <!-- 第2行: icon + 最高～最低温度 -->
   <view class="card-row row-main">
     <i class="qi-{{fmt.safe(item.iconDay)}}-fill icon-color-{{ic.category(fmt.safe(item.iconDay))}} card-icon"></i>
-    <text class="temp-max">{{fmt.safe(item.tempMax)}}°</text>
+    <text class="temp-max">{{tu.fmt(item.tempMax, tempUnit)}}°</text>
     <text class="temp-sep">～</text>
-    <text class="temp-min">{{fmt.safe(item.tempMin)}}°</text>
+    <text class="temp-min">{{tu.fmt(item.tempMin, tempUnit)}}°</text>
   </view>
 
   <!-- 第3行: 升降温 + 白天/晚间天气 + 最高最低 -->
   <view class="card-row row-desc">
-    <text class="desc-text" wx:if="{{item.tempDesc}}">{{item.tempDesc}}，白天{{fmt.safe(item.textDay)}}，最高{{fmt.safe(item.tempMax)}}°；晚间{{fmt.safe(item.textNight)}}，最低{{fmt.safe(item.tempMin)}}°。</text>
-    <text class="desc-text" wx:else>白天{{fmt.safe(item.textDay)}}，最高{{fmt.safe(item.tempMax)}}°；晚间{{fmt.safe(item.textNight)}}，最低{{fmt.safe(item.tempMin)}}°。</text>
+    <text class="desc-text" wx:if="{{item.tempDesc}}">{{item.tempDesc}}，白天{{fmt.safe(item.textDay)}}，最高{{tu.fmt(item.tempMax, tempUnit)}}°；晚间{{fmt.safe(item.textNight)}}，最低{{tu.fmt(item.tempMin, tempUnit)}}°。</text>
+    <text class="desc-text" wx:else>白天{{fmt.safe(item.textDay)}}，最高{{tu.fmt(item.tempMax, tempUnit)}}°；晚间{{fmt.safe(item.textNight)}}，最低{{tu.fmt(item.tempMin, tempUnit)}}°。</text>
   </view>
 
   <!-- 第4行: 风速 · 降水量 · 湿度 -->

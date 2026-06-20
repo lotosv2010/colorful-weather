@@ -73,8 +73,9 @@
 .handle-bar {
   width: 88rpx;
   height: 8rpx;
-  background-color: rgba(255, 255, 255, 0.45);
+  background-color: var(--theme, rgba(255, 255, 255, 0.45));
   border-radius: 4rpx;
+  opacity: 0.85;
 }
 
 .full-scroll {

@@ -2,6 +2,7 @@ const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely } = re
 const { formatDate } = require('../../utils/util');
 const cache = require('../../utils/cache');
 const prefs = require('../../utils/prefs');
+const network = require('../../utils/network');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -44,6 +45,7 @@ Page({
     mapInteractive: true,
     tempUnit: 'C',
     themeColor: '#1296db',
+    offline: false,
   },
   onSheetChange(e) {
     this.setData({ sheetExpanded: e.detail.expanded });
@@ -86,11 +88,16 @@ Page({
   onLoad() {
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
+    this.setData({ offline: !network.isOnline() });
+    this._unsubNet = network.subscribe(({ online }) => {
+      this.setData({ offline: !online });
+    });
     // 实例化API核心类
     this.init();
   },
   onUnload() {
     if (this._unsubPrefs) this._unsubPrefs();
+    if (this._unsubNet) this._unsubNet();
   },
   showToast() {
     wx.showToast({
@@ -349,5 +356,22 @@ Page({
     wx.navigateTo({
       url: `/pages/air/index?location=${longitude},${latitude}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
     });
+  },
+  onShareAppMessage() {
+    const { locationLabel, currentWeather, tempUnit } = this.data;
+    const tempStr = currentWeather && currentWeather.temp != null ? `${currentWeather.temp}°${tempUnit}` : '';
+    const text = currentWeather && currentWeather.text ? `${currentWeather.text} ${tempStr}` : '实时天气';
+    return {
+      title: `${locationLabel || '我的位置'}：${text}`,
+      path: '/pages/index/index'
+    };
+  },
+  onShareTimeline() {
+    const { locationLabel, currentWeather, tempUnit } = this.data;
+    const tempStr = currentWeather && currentWeather.temp != null ? `${currentWeather.temp}°${tempUnit}` : '';
+    return {
+      title: `${locationLabel || '我的位置'} 天气 ${tempStr}`,
+      query: ''
+    };
   },
 })

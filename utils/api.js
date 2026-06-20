@@ -1,4 +1,5 @@
 const cache = require('./cache');
+const network = require('./network');
 const config = require('./config.local');
 
 // 接口地址
@@ -72,6 +73,7 @@ const makeCacheKey = (url, data) => {
 };
 
 // 带缓存的请求：命中直接返回，未命中则发起请求并在成功时写缓存
+// 请求失败时回落到 stale 缓存（标记 _stale: true），并通知 network 进入离线态
 const cachedRequest = (url, method, data, tc, ttl) => {
   const key = makeCacheKey(url, data);
   const hit = cache.get(key);
@@ -82,6 +84,14 @@ const cachedRequest = (url, method, data, tc, ttl) => {
       cache.set(key, res, ttl);
     }
     return res;
+  }, err => {
+    const stale = cache.getStale(key);
+    if (stale) {
+      network.markOffline();
+      console.log(`[cache stale] ${key}（离线降级）`);
+      return { ...stale, _stale: true };
+    }
+    throw err;
   });
 };
 

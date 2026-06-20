@@ -1,5 +1,6 @@
 const api = require('../../utils/api');
 const { formatDate, toHex, getTextColor } = require('../../utils/util');
+const prefs = require('../../utils/prefs');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -40,10 +41,24 @@ Page({
     daily: [],
     summary: {},
     activeTab: 'list',
-    updateTime: ''
+    updateTime: '',
+    tempUnit: 'C',
+    themeColor: '#1296db'
+  },
+
+  _syncPrefs() {
+    const p = prefs.getPrefs();
+    if (p.tempUnit === this.data.tempUnit && p.themeColor === this.data.themeColor) return;
+    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor });
+  },
+
+  onUnload() {
+    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   onLoad(options) {
+    this._syncPrefs();
+    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const { location, province, city, district, date } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
@@ -211,5 +226,24 @@ Page({
   onPullDownRefresh() {
     this.fetchData();
     wx.stopPullDownRefresh();
+  },
+
+  _shareParams() {
+    const { province, city, district } = this.data;
+    return { location: this.location || '', province, city, district };
+  },
+  onShareAppMessage() {
+    const { district, city } = this.data;
+    return {
+      title: `${district || city || ''} 未来 30 天天气`,
+      path: `/pages/weather30/index?location=${this.location || ''}&province=${encodeURIComponent(this.data.province)}&city=${encodeURIComponent(this.data.city)}&district=${encodeURIComponent(this.data.district)}`
+    };
+  },
+  onShareTimeline() {
+    const { district, city, province } = this.data;
+    return {
+      title: `${district || city || ''} 30 天天气趋势`,
+      query: `location=${this.location || ''}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
+    };
   }
 });

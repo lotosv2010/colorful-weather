@@ -309,5 +309,15 @@ Page({
         this._iconCache[lastKey] = await this._drawCircleIcon(color, ICON_SIZE_LAST, true);
       }
     }));
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '台风路径实时追踪',
+      path: '/pages/typhoon/index'
+    };
+  },
+  onShareTimeline() {
+    return { title: '台风路径实时追踪', query: '' };
   }
 });

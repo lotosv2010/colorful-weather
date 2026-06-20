@@ -1,4 +1,5 @@
 // components/weather30-chart/index.js
+const { convert, fmt } = require('../../utils/temp.js');
 
 // 安全取数值：处理对象/数组/NaN
 const safeNum = (val, fallback = 0) => {
@@ -25,6 +26,10 @@ Component({
     daily: {
       type: Array,
       value: []
+    },
+    tempUnit: {
+      type: String,
+      value: 'C'
     }
   },
   data: {
@@ -44,6 +49,11 @@ Component({
     'daily'(list) {
       if (list && list.length) {
         this.initSize();
+        wx.nextTick(() => this.drawChart());
+      }
+    },
+    'tempUnit'() {
+      if (this.data.daily && this.data.daily.length) {
         wx.nextTick(() => this.drawChart());
       }
     }
@@ -104,6 +114,7 @@ Component({
       const w = this._w;
       const h = this._h;
       const daily = this.data.daily;
+      const unit = this.data.tempUnit || 'C';
       if (!ctx || !daily.length) return;
 
       const itemW = this.data.itemWidth;
@@ -114,8 +125,8 @@ Component({
       // 全局温度范围
       let globalMax = -Infinity, globalMin = Infinity;
       daily.forEach(d => {
-        const hi = safeNum(d.tempMax, 0);
-        const lo = safeNum(d.tempMin, 0);
+        const hi = convert(safeNum(d.tempMax, 0), unit);
+        const lo = convert(safeNum(d.tempMin, 0), unit);
         if (hi > globalMax) globalMax = hi;
         if (lo < globalMin) globalMin = lo;
       });
@@ -133,11 +144,11 @@ Component({
       ctx.clearRect(0, 0, w, h);
 
       // 最高温折线
-      const maxPoints = daily.map((d, i) => ({ x: pointX(i), y: tempToY(safeNum(d.tempMax)) }));
+      const maxPoints = daily.map((d, i) => ({ x: pointX(i), y: tempToY(convert(safeNum(d.tempMax), unit)) }));
       this.drawLine(ctx, maxPoints, '#FF8C00', 2);
 
       // 最低温折线
-      const minPoints = daily.map((d, i) => ({ x: pointX(i), y: tempToY(safeNum(d.tempMin)) }));
+      const minPoints = daily.map((d, i) => ({ x: pointX(i), y: tempToY(convert(safeNum(d.tempMin), unit)) }));
       this.drawLine(ctx, minPoints, '#6CB4EE', 2);
 
       // 圆点

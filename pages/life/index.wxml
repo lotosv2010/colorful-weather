@@ -1,5 +1,5 @@
 <!--pages/life/index.wxml-->
-<view class="life-page">
+<view class="life-page" style="--theme:{{themeColor}}">
 
   <!-- 头部城市信息 -->
   <page-header district="{{district}}" city="{{city}}" province="{{province}}" />

@@ -1,8 +1,9 @@
 <!--pages/hourly/index.wxml-->
 <wxs src="../../utils/iconColor.wxs" module="ic" />
 <wxs src="../../utils/fmt.wxs" module="fmt" />
+<wxs src="../../utils/tempUnit.wxs" module="tu" />
 
-<view class="hourly-page">
+<view class="hourly-page" style="--theme:{{themeColor}}">
   <!-- 加载与错误状态 -->
   <view wx:if="{{loading}}" class="tip">加载中...</view>
   <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
@@ -15,9 +16,9 @@
     <view class="chart-card">
       <view class="chart-card-title">
         <text class="chart-card-title-text">温度变化</text>
-        <text class="chart-card-unit">°C</text>
+        <text class="chart-card-unit">°{{tempUnit}}</text>
       </view>
-      <hourly-temp-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+      <hourly-temp-chart hourly="{{hourly}}" tempUnit="{{tempUnit}}" selectedIndex="{{selectedIndex}}"
         scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
         bind:select="onChartSelect" bind:scroll="onChartScroll" />
     </view>
@@ -54,8 +55,8 @@
           <text class="detail-time">{{detail.dateLabel}}</text>
         </view>
         <view class="detail-temp-badge">
-          <text class="detail-temp-value">{{detail.temp}}</text>
-          <text class="detail-temp-unit">°C</text>
+          <text class="detail-temp-value">{{tu.fmt(detail.temp, tempUnit)}}</text>
+          <text class="detail-temp-unit">°{{tempUnit}}</text>
         </view>
       </view>
 
@@ -107,7 +108,7 @@
         </view>
         <!-- 露点温度 -->
         <view class="detail-cell cell-c2">
-          <text class="cell-value">{{detail.dew ? detail.dew + '°' : '-'}}</text>
+          <text class="cell-value">{{detail.dew ? tu.fmt(detail.dew, tempUnit) + '°' : '-'}}</text>
           <text class="cell-label">露点温度</text>
         </view>
       </view>

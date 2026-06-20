@@ -7,6 +7,7 @@ const THEME_PRESETS = [
   { name: '林荫绿', color: '#52c41a' },
   { name: '暮山紫', color: '#722ed1' },
   { name: '晨曦橙', color: '#fa8c16' },
+  { name: '夜幕灰', color: 'rgba(255, 255, 255, 0.45)' },
 ];
 
 const DEFAULTS = {

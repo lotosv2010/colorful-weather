@@ -15,6 +15,12 @@
     enable-rotate="{{mapInteractive}}"
   />
 
+  <!-- 离线模式横幅 -->
+  <view wx:if="{{offline}}" class="offline-banner">
+    <text class="offline-dot"></text>
+    <text class="offline-text">离线模式 · 展示缓存数据</text>
+  </view>
+
   <!-- 地图定位按钮：跟随地图显示/隐藏，sheet 展开时淡出 -->
   <view
     class="locate-btn {{sheetExpanded ? '' : 'locate-interactive'}}"
@@ -138,5 +144,5 @@
     </view>
   </bottom-sheet>
 
-  <city-search show="{{selectorVisible}}" bind:select="onSelectCity" bind:close="hideSelector" />
+  <city-search show="{{selectorVisible}}" current="{{ {name: district, adm1: province, adm2: city, lat: latitude, lon: longitude} }}" bind:select="onSelectCity" bind:close="hideSelector" />
 </view>

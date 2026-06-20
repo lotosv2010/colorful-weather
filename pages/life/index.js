@@ -1,6 +1,7 @@
 // pages/life/index.js
 const { indices3d, indices: indices1d } = require('../../utils/api');
 const { getDefinition, getColor } = require('../../utils/lifeMeta');
+const prefs = require('../../utils/prefs');
 
 // 全量 16 类生活指数（无 SVG 的用文字兜底显示在圆内）
 const DEFAULT_TYPES = [
@@ -46,10 +47,23 @@ Page({
     list: [],
     definition: {},
     loading: false,
-    errorMsg: ''
+    errorMsg: '',
+    themeColor: '#1296db'
+  },
+
+  _syncPrefs() {
+    const p = prefs.getPrefs();
+    if (p.themeColor === this.data.themeColor) return;
+    this.setData({ themeColor: p.themeColor });
+  },
+
+  onUnload() {
+    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   onLoad(options = {}) {
+    this._syncPrefs();
+    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const location = options.location || '';
     const province = options.province ? decodeURIComponent(options.province) : '';
     const city = options.city ? decodeURIComponent(options.city) : '';
@@ -109,6 +123,28 @@ Page({
     if (type === this.data.activeType) return;
     this.setData({ activeType: type, definition: getDefinition(type) });
     this.refreshList();
+  },
+
+  _shareParams() {
+    const { location, province, city, district, activeType } = this.data;
+    return { location, province, city, district, type: activeType };
+  },
+  onShareAppMessage() {
+    const { district, city, definition } = this.data;
+    const title = `${district || city || ''} ${definition && definition.name ? definition.name + '指数' : '生活指数'}`;
+    const p = this._shareParams();
+    return {
+      title,
+      path: `/pages/life/index?location=${p.location}&province=${encodeURIComponent(p.province)}&city=${encodeURIComponent(p.city)}&district=${encodeURIComponent(p.district)}&type=${p.type}`
+    };
+  },
+  onShareTimeline() {
+    const { district, city, definition } = this.data;
+    const p = this._shareParams();
+    return {
+      title: `${district || city || ''} ${definition && definition.name ? definition.name + '指数' : '生活指数'}`,
+      query: `location=${p.location}&province=${encodeURIComponent(p.province)}&city=${encodeURIComponent(p.city)}&district=${encodeURIComponent(p.district)}&type=${p.type}`
+    };
   }
 });
 

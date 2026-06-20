@@ -1,8 +1,10 @@
 // app.js
 const config = require('./utils/config.local');
+const network = require('./utils/network');
 
 App({
   onLaunch() {
+    network.init();
     wx.showShareMenu({
       withShareTicket: true,
       menus: ['shareAppMessage', 'shareTimeline']

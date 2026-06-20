@@ -24,6 +24,26 @@
       <view wx:if="{{loading}}" class="tip">搜索中…</view>
       <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
 
+      <!-- 当前定位 -->
+      <block wx:if="{{!keyword && currentItem}}">
+        <view class="section-title">当前定位</view>
+        <view class="history-list">
+          <view class="history-item">
+            <view class="history-main" catchtap="onPickCurrent">
+              <view class="row">
+                <i class="weather-icon icon-color-{{ic.category(currentItem.weather.icon || 100)}} qi-{{currentItem.weather.icon || 100}}-fill"></i>
+                <text class="city-name">{{currentItem.name}}</text>
+                <text class="pin-tag">定位</text>
+              </view>
+              <view class="row sub">
+                <text class="weather-temp">{{currentItem.weather.temp || '--'}}°</text>
+                <text class="city-path">{{currentItem.adm1}}{{currentItem.adm2 && currentItem.adm2 !== currentItem.adm1 ? ' · ' + currentItem.adm2 : ''}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
       <!-- 搜索结果 -->
       <block wx:if="{{keyword && results.length}}">
         <view class="section-title">搜索结果</view>

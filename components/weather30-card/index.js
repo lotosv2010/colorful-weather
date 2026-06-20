@@ -11,6 +11,10 @@ Component({
     active: {
       type: Boolean,
       value: false
+    },
+    tempUnit: {
+      type: String,
+      value: 'C'
     }
   }
 })

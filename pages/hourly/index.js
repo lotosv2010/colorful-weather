@@ -1,5 +1,6 @@
 // pages/hourly/index.js
 const api = require('../../utils/api');
+const prefs = require('../../utils/prefs');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -14,10 +15,24 @@ Page({
     province: '',
     city: '',
     district: '',
-    detail: null
+    detail: null,
+    tempUnit: 'C',
+    themeColor: '#1296db'
+  },
+
+  _syncPrefs() {
+    const p = prefs.getPrefs();
+    if (p.tempUnit === this.data.tempUnit && p.themeColor === this.data.themeColor) return;
+    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor });
+  },
+
+  onUnload() {
+    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   onLoad(options) {
+    this._syncPrefs();
+    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const { location, province, city, district, hour } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
@@ -82,5 +97,25 @@ Page({
     const { source, scrollLeft } = e.detail;
     if (source !== 'touch') return;
     this.setData({ syncScrollLeft: scrollLeft });
+  },
+
+  _sharePath() {
+    const { province, city, district } = this.data;
+    const q = `location=${this.location || ''}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`;
+    return `/pages/hourly/index?${q}`;
+  },
+  onShareAppMessage() {
+    const { district, city } = this.data;
+    return {
+      title: `${district || city || ''} 逐小时天气预报`,
+      path: this._sharePath()
+    };
+  },
+  onShareTimeline() {
+    const { district, city } = this.data;
+    return {
+      title: `${district || city || ''} 逐小时天气预报`,
+      query: this._sharePath().split('?')[1] || ''
+    };
   }
 });

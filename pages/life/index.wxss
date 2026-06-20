@@ -31,7 +31,7 @@ page {
   transition: background 0.2s;
 }
 .tab.active .tab-circle {
-  background: rgb(68, 179, 255);
+  background: var(--theme, rgb(68, 179, 255));
 }
 .tab-icon {
   width: 44rpx;
@@ -50,7 +50,7 @@ page {
   color: #8C9AA5;
 }
 .tab.active .tab-label {
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
 }
 
 .tip {

@@ -1,19 +1,27 @@
 const PREFIX = 'qw_cache_';
 
-const get = (key) => {
+const _entry = (key) => {
   try {
-    const entry = wx.getStorageSync(PREFIX + key);
-    if (!entry) return null;
-    if (Date.now() > entry.exp) {
-      wx.removeStorageSync(PREFIX + key);
-      return null;
-    }
-    const remaining = Math.round((entry.exp - Date.now()) / 1000);
-    console.log(`[cache hit] ${key} (剩余 ${remaining}s)`);
-    return entry.data;
+    return wx.getStorageSync(PREFIX + key) || null;
   } catch (e) {
     return null;
   }
+};
+
+const get = (key) => {
+  const entry = _entry(key);
+  if (!entry) return null;
+  if (Date.now() > entry.exp) return null;
+  const remaining = Math.round((entry.exp - Date.now()) / 1000);
+  console.log(`[cache hit] ${key} (剩余 ${remaining}s)`);
+  return entry.data;
+};
+
+// 取过期/未过期均可的旧数据，用于离线降级
+const getStale = (key) => {
+  const entry = _entry(key);
+  if (!entry) return null;
+  return entry.data;
 };
 
 const set = (key, data, ttl) => {
@@ -31,4 +39,4 @@ const clear = () => {
   } catch (e) {}
 };
 
-module.exports = { get, set, clear };
+module.exports = { get, getStale, set, clear };

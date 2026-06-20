@@ -1,6 +1,7 @@
 // pages/air/index.js
 const { air, airHourly, airDaily } = require('../../utils/api');
 const { toHex, getTextColor } = require('../../utils/util');
+const share = require('../../utils/share');
 
 Page({
   data: {
@@ -192,5 +193,24 @@ Page({
       };
     });
     this.setData({ daily });
+  },
+
+  _shareParams() {
+    const { location, province, city, district } = this.data;
+    return { location, province, city, district };
+  },
+  onShareAppMessage() {
+    const { district, city, aqi, category } = this.data;
+    const title = aqi
+      ? `${district || city || ''} 空气 AQI ${aqi}${category ? ' · ' + category : ''}`
+      : `${district || city || ''} 空气质量`;
+    return share.card('/pages/air/index', this._shareParams(), title);
+  },
+  onShareTimeline() {
+    const { district, city, aqi, category } = this.data;
+    const title = aqi
+      ? `${district || city || ''} AQI ${aqi}${category ? ' ' + category : ''}`
+      : `${district || city || ''} 空气质量`;
+    return share.timeline('/pages/air/index', this._shareParams(), title);
   }
 });

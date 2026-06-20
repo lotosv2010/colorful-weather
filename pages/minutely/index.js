@@ -15,6 +15,7 @@ Page({
   onLoad(options) {
     const { location, city, province, district } = options;
     if (!location) return;
+    this._location = location;
     this.setData({
       city: city ? decodeURIComponent(city) : '',
       province: province ? decodeURIComponent(province) : '',
@@ -157,5 +158,22 @@ Page({
     ctx.moveTo(padL, padT + chartH);
     ctx.lineTo(w - padR, padT + chartH);
     ctx.stroke();
+  },
+
+  onShareAppMessage() {
+    const { city, district, province, summary } = this.data;
+    const loc = this._location || '';
+    return {
+      title: `${district || city || ''} ${summary || '分钟级降水'}`,
+      path: `/pages/minutely/index?location=${loc}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
+    };
+  },
+  onShareTimeline() {
+    const { city, district, province, summary } = this.data;
+    const loc = this._location || '';
+    return {
+      title: `${district || city || ''} ${summary || '分钟级降水'}`,
+      query: `location=${loc}&province=${encodeURIComponent(province)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}`
+    };
   }
 });

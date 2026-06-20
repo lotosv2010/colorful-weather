@@ -1,4 +1,5 @@
 // components/hourly-temp-chart/index.js
+const { convert, fmt } = require('../../utils/temp.js');
 Component({
   options: {
     addGlobalClass: true
@@ -7,6 +8,10 @@ Component({
     hourly: {
       type: Array,
       value: []
+    },
+    tempUnit: {
+      type: String,
+      value: 'C'
     },
     selectedIndex: {
       type: Number,
@@ -46,6 +51,11 @@ Component({
     },
     'selectedIndex, hourly'(idx, list) {
       if (list && list.length) {
+        wx.nextTick(() => this.drawChart());
+      }
+    },
+    'tempUnit'() {
+      if (this.data.hourly && this.data.hourly.length) {
         wx.nextTick(() => this.drawChart());
       }
     },
@@ -109,6 +119,7 @@ Component({
       const w = this._w;
       const h = this._h;
       const hourly = this.data.hourly;
+      const unit = this.data.tempUnit || 'C';
       if (!ctx || !hourly.length) return;
 
       const padL = 36, padR = 16, padT = 36, padB = 30;
@@ -119,7 +130,8 @@ Component({
 
       let maxT = -Infinity, minT = Infinity;
       hourly.forEach(d => {
-        const t = Number(d.temp);
+        const t = convert(d.temp, unit);
+        if (t == null) return;
         if (t > maxT) maxT = t;
         if (t < minT) minT = t;
       });
@@ -158,7 +170,7 @@ Component({
       // 折线
       const points = hourly.map((d, i) => ({
         x: padL + i * stepX,
-        y: tempToY(Number(d.temp))
+        y: tempToY(convert(d.temp, unit) || 0)
       }));
 
       // 渐变填充
@@ -198,7 +210,7 @@ Component({
           ctx.font = 'bold 12px sans-serif';
           ctx.textAlign = 'center';
           const tipY = Math.max(padT + 14, p.y - 18);
-          ctx.fillText(hourly[i].temp + '°', p.x, tipY);
+          ctx.fillText(fmt(hourly[i].temp, unit) + '°', p.x, tipY);
         } else {
           ctx.fillStyle = '#FF8C00';
           ctx.beginPath();

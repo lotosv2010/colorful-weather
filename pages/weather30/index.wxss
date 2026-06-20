@@ -50,7 +50,7 @@ page {
 }
 
 .tab.active {
-  background: rgb(46, 48, 61);
+  background: var(--theme, rgb(46, 48, 61));
   color: #fff;
 }
 

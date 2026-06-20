@@ -21,13 +21,44 @@ page {
   z-index: 1;
 }
 
-/* 地图定位按钮：右上角 */
+/* 离线模式横幅：顶部安全区下方，居中胶囊 */
+.offline-banner {
+  position: fixed;
+  top: 100rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 12rpx 24rpx;
+  border-radius: 28rpx;
+  background-color: rgba(212, 56, 13, 0.92);
+  color: #fff;
+  font-size: 24rpx;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.offline-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background-color: #fff;
+  opacity: 0.85;
+}
+
+.offline-text {
+  line-height: 1;
+}
+
+/* 地图定位按钮：右上角，尺寸与 top-bar 定位按钮保持一致 */
 .locate-btn {
   position: fixed;
   top: 24rpx;
   right: 32rpx;
-  width: 72rpx;
-  height: 72rpx;
+  width: 56rpx;
+  height: 56rpx;
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.92);
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
@@ -44,8 +75,8 @@ page {
 }
 
 .locate-icon {
-  width: 40rpx;
-  height: 40rpx;
+  width: 32rpx;
+  height: 32rpx;
 }
 
 /* 顶部搜索栏：容器永远不拦截手势，避免遮挡 sheet 下拉手柄；子元素按需开启交互 */
