@@ -1,6 +1,7 @@
 // pages/warning/index.js
 const { warning } = require('../../utils/api');
 const share = require('../../utils/share');
+const monitor = require('../../utils/monitor');
 
 // RGBA 对象 → CSS 颜色值
 const toRgba = (c = {}) => `rgba(${c.red || 0},${c.green || 0},${c.blue || 0},${c.alpha != null ? c.alpha : 1})`;
@@ -65,6 +66,7 @@ Page({
   },
 
   onLoad(options = {}) {
+    this._loadStart = Date.now();
     const location = options.location || '';
     const province = options.province ? decodeURIComponent(options.province) : '';
     const city = options.city ? decodeURIComponent(options.city) : '';
@@ -75,6 +77,10 @@ Page({
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
     }
+  },
+
+  onReady() {
+    monitor.recordPageLoad('/pages/warning/index', this._loadStart);
   },
 
   async loadData() {
@@ -115,6 +121,7 @@ Page({
       this.setData({ alerts, attributions });
     } catch (e) {
       console.log(e);
+      monitor.recordError('page', e?.message || '预警数据加载失败', { page: '/pages/warning/index', stack: e?.stack });
       this.setData({ errorMsg: '网络异常，请稍后重试' });
     } finally {
       this.setData({ loading: false });

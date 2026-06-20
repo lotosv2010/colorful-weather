@@ -133,9 +133,5 @@
 - [x] 抽 `utils/route.js`：统一页面跳转路径构造（`buildPath` / `navigateTo` / `buildQuery`）
 
 ### 工程化
-- [ ] ESLint 配置实际可用的 rules（当前仅启用 parser）
-- [ ] 版本号管理 / 小程序更新提示（`wx.getUpdateManager`）
-- [ ] 性能监控 / 埋点（页面加载耗时、API 成功率、错误上报）
-- [ ] 无障碍适配（aria 属性）
-- [ ] 单元测试 / e2e 测试方案
-- [ ] CI（lint / 构建检查）
+- [x] 版本号管理 / 小程序更新提示（`wx.getUpdateManager`）
+- [x] 性能监控 / 埋点（页面加载耗时、API 成功率、错误上报）

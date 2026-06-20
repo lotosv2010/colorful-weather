@@ -1,6 +1,7 @@
 const cache = require('./cache');
 const network = require('./network');
 const config = require('./config.local');
+const monitor = require('./monitor');
 
 // 接口地址
 const BASE_URL = 'https://m97fbtc2ed.re.qweatherapi.com/v7';
@@ -41,6 +42,8 @@ const TTL = {
  */
 const request = (url, method, data, taskCollector = null) => {
   const reqData = { ...data, key: KEY };
+  const _start = Date.now();
+  const apiPath = url.replace(/^https?:\/\/[^/]+/, '');
   return new Promise((resolve, reject) => {
     const task = wx.request({
       url,
@@ -49,10 +52,12 @@ const request = (url, method, data, taskCollector = null) => {
         'content-type': 'application/json'
       },
       success(res) {
+        monitor.recordApi(apiPath, Date.now() - _start, true);
         resolve(res.data);
       },
       fail(err) {
         console.log('请求数据失败');
+        monitor.recordApi(apiPath, Date.now() - _start, false, err?.errMsg || '');
         reject(err);
       }
     });

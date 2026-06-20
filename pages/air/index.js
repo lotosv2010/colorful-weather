@@ -2,6 +2,7 @@
 const { air, airHourly, airDaily } = require('../../utils/api');
 const { toHex, getTextColor } = require('../../utils/util');
 const share = require('../../utils/share');
+const monitor = require('../../utils/monitor');
 
 Page({
   data: {
@@ -25,6 +26,7 @@ Page({
   },
 
   onLoad(options = {}) {
+    this._loadStart = Date.now();
     const location = options.location || '';
     const province = options.province ? decodeURIComponent(options.province) : '';
     const city = options.city ? decodeURIComponent(options.city) : '';
@@ -36,6 +38,10 @@ Page({
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
     }
+  },
+
+  onReady() {
+    monitor.recordPageLoad('/pages/air/index', this._loadStart);
   },
 
   initCanvas(cb) {
@@ -113,6 +119,7 @@ Page({
       }
     } catch (e) {
       console.log(e);
+      monitor.recordError('page', e?.message || '空气质量加载失败', { page: '/pages/air/index', stack: e?.stack });
       this.setData({ errorMsg: '网络异常，请稍后重试' });
     } finally {
       this.setData({ loading: false });

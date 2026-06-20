@@ -6,6 +6,7 @@ const network = require('../../utils/network');
 const { navigateTo } = require('../../utils/route');
 const { resolveTheme, resolveThemeBg } = require('../../utils/autoTheme');
 const { resolveWeatherEffect } = require('../../utils/weatherEffect');
+const monitor = require('../../utils/monitor');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -121,6 +122,7 @@ Page({
   },
   // 事件处理函数
   onLoad() {
+    this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     this.setData({ offline: !network.isOnline() });
@@ -150,6 +152,9 @@ Page({
     }, 10 * 60 * 1000);
     // 实例化API核心类
     this.init();
+  },
+  onReady() {
+    monitor.recordPageLoad('/pages/index/index', this._loadStart);
   },
   onUnload() {
     if (this._unsubPrefs) this._unsubPrefs();
@@ -181,6 +186,7 @@ Page({
       }
     } catch (error) {
       console.error(error);
+      monitor.recordError('page', error?.message || '初始化失败', { page: '/pages/index/index', stack: error?.stack });
       const msg = String(error?.errMsg || error?.message || '');
       const isLocateFail = msg.includes('getLocation') || msg.includes('auth deny') || msg.includes('auth denied');
       this.setData({
@@ -203,7 +209,8 @@ Page({
       this._resolveCityId(`${longitude},${latitude}`);
       await this.getWeather();
     } catch (error) {
-      console.error(error)
+      console.error(error);
+      monitor.recordError('page', error?.message || '城市解析失败', { page: '/pages/index/index', stack: error?.stack });
       this.setData({ loading: false, errorMsg: '城市解析失败，请稍后再试' });
     }
   },
@@ -338,7 +345,8 @@ Page({
       }
       if (Object.keys(updates).length) this.setData(updates);
     } catch (error) {
-      console.error(error)
+      console.error(error);
+      monitor.recordError('page', error?.message || '天气数据加载失败', { page: '/pages/index/index', stack: error?.stack });
       this.setData({ loading: false, errorMsg: '数据加载失败，请稍后再试' });
     } finally {
       this._fetching = false;

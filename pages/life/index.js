@@ -3,6 +3,7 @@ const { indices3d, indices: indices1d } = require('../../utils/api');
 const { getDefinition, getColor } = require('../../utils/lifeMeta');
 const prefs = require('../../utils/prefs');
 const { buildPath } = require('../../utils/route');
+const monitor = require('../../utils/monitor');
 
 // 全量 16 类生活指数（无 SVG 的用文字兜底显示在圆内）
 const DEFAULT_TYPES = [
@@ -63,6 +64,7 @@ Page({
   },
 
   onLoad(options = {}) {
+    this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const location = options.location || '';
@@ -76,6 +78,10 @@ Page({
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
     }
+  },
+
+  onReady() {
+    monitor.recordPageLoad('/pages/life/index', this._loadStart);
   },
 
   matchType(t) {
@@ -108,6 +114,7 @@ Page({
       this.indicesMap = map;
       this.refreshList();
     } catch (e) {
+      monitor.recordError('page', e?.message || '生活指数加载失败', { page: '/pages/life/index', stack: e?.stack });
       this.setData({ errorMsg: '网络异常' });
     } finally {
       this.setData({ loading: false });

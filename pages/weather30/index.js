@@ -2,6 +2,7 @@ const api = require('../../utils/api');
 const { formatDate, toHex, getTextColor } = require('../../utils/util');
 const prefs = require('../../utils/prefs');
 const { buildPath } = require('../../utils/route');
+const monitor = require('../../utils/monitor');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -58,6 +59,7 @@ Page({
   },
 
   onLoad(options) {
+    this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const { location, province, city, district, date } = options;
@@ -73,6 +75,10 @@ Page({
     });
     if (date) this.setData({ activeDate: date });
     this.fetchData();
+  },
+
+  onReady() {
+    monitor.recordPageLoad('/pages/weather30/index', this._loadStart);
   },
 
   async fetchData() {
@@ -126,6 +132,7 @@ Page({
       });
     } catch (err) {
       console.error('30天预报请求失败', err);
+      monitor.recordError('page', err?.message || '30天预报加载失败', { page: '/pages/weather30/index', stack: err?.stack });
       this.setData({ loading: false, errorMsg: '网络请求失败' });
     }
   },

@@ -1,4 +1,5 @@
 const prefs = require('../../utils/prefs');
+const monitor = require('../../utils/monitor');
 
 Page({
   data: {
@@ -11,8 +12,12 @@ Page({
     cities: [],
   },
   onLoad() {
+    this._loadStart = Date.now();
     this._unsub = prefs.subscribe((p) => this.sync(p));
     this.sync(prefs.getPrefs());
+  },
+  onReady() {
+    monitor.recordPageLoad('/pages/settings/index', this._loadStart);
   },
   onUnload() {
     if (this._unsub) this._unsub();

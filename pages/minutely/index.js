@@ -1,5 +1,6 @@
 const { minutely } = require('../../utils/api');
 const { buildPath } = require('../../utils/route');
+const monitor = require('../../utils/monitor');
 
 Page({
   data: {
@@ -14,6 +15,7 @@ Page({
   },
 
   onLoad(options) {
+    this._loadStart = Date.now();
     const { location, city, province, district } = options;
     if (!location) return;
     this._location = location;
@@ -23,6 +25,10 @@ Page({
       district: district ? decodeURIComponent(district) : ''
     });
     this.fetchData(location);
+  },
+
+  onReady() {
+    monitor.recordPageLoad('/pages/minutely/index', this._loadStart);
   },
 
   async fetchData(location) {
@@ -49,6 +55,7 @@ Page({
       wx.nextTick(() => this.drawChart());
     } catch (e) {
       console.error(e);
+      monitor.recordError('page', e?.message || '分钟降水加载失败', { page: '/pages/minutely/index', stack: e?.stack });
       this.setData({ loading: false, errorMsg: '数据加载失败' });
     }
   },

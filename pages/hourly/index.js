@@ -2,6 +2,7 @@
 const api = require('../../utils/api');
 const prefs = require('../../utils/prefs');
 const { buildPath } = require('../../utils/route');
+const monitor = require('../../utils/monitor');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -32,6 +33,7 @@ Page({
   },
 
   onLoad(options) {
+    this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const { location, province, city, district, hour } = options;
@@ -49,6 +51,10 @@ Page({
       this.setData({ selectedIndex: Number(hour) });
     }
     this.fetchData();
+  },
+
+  onReady() {
+    monitor.recordPageLoad('/pages/hourly/index', this._loadStart);
   },
 
   async fetchData() {
@@ -80,6 +86,7 @@ Page({
       });
     } catch (err) {
       console.error('逐小时预报请求失败', err);
+      monitor.recordError('page', err?.message || '逐小时预报加载失败', { page: '/pages/hourly/index', stack: err?.stack });
       this.setData({ loading: false, errorMsg: '网络请求失败' });
     }
   },

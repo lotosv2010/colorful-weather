@@ -1,4 +1,5 @@
 const { stormList, stormTrack, stormForecast } = require('../../utils/api');
+const monitor = require('../../utils/monitor');
 
 // 台风等级配色（GBT 19201-2006）
 const TYPE_COLORS = {
@@ -36,10 +37,15 @@ Page({
   },
 
   onLoad() {
+    this._loadStart = Date.now();
     this._iconCache = {};
     this._mapScale = 5;
     this._unmounted = false;
     this.fetchStormList();
+  },
+
+  onReady() {
+    monitor.recordPageLoad('/pages/typhoon/index', this._loadStart);
   },
 
   onUnload() {
@@ -65,6 +71,7 @@ Page({
       this._sortByTime(list);
     } catch (e) {
       console.error(e);
+      monitor.recordError('page', e?.message || '台风数据加载失败', { page: '/pages/typhoon/index', stack: e?.stack });
       this.setData({ loading: false, errorMsg: '数据加载失败' });
     }
   },
