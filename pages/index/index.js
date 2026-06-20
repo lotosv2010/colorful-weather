@@ -55,6 +55,7 @@ Page({
     cityId: '',
     loading: true,
     errorMsg: '',
+    markers: [],
   },
   onSheetChange(e) {
     const expanded = e.detail.expanded;
@@ -82,6 +83,7 @@ Page({
   },
   onLocateTap() {
     cache.clear();
+    this.setData({ markers: [] });
     this.init({ forceLocate: true });
   },
   onRefresh() {
@@ -94,6 +96,45 @@ Page({
       this.getWeather();
     } else {
       this.init();
+    }
+  },
+  async onMapTap(e) {
+    const { longitude, latitude } = e.detail;
+    if (this._fetching || longitude == null || latitude == null) return;
+    // 收起抽屉
+    const sheet = this.selectComponent('#sheet');
+    if (sheet) sheet.collapse();
+    // 取消旧请求，更新坐标
+    abortPending();
+    this.setData({ latitude, longitude, loading: true, errorMsg: '' });
+    try {
+      const { city, province, district } = await this.getCity(`${latitude},${longitude}`);
+      this.setData({
+        city,
+        province,
+        district,
+        locationLabel: this._buildLocationLabel(district, city, province),
+        markers: [{
+          id: 1,
+          latitude,
+          longitude,
+          width: 24,
+          height: 34,
+          callout: {
+            content: this._buildLocationLabel(district, city, province),
+            display: 'ALWAYS',
+            borderRadius: 8,
+            padding: 8,
+            bgColor: '#ffffffee',
+            fontSize: 13,
+          },
+        }],
+      });
+      this._resolveCityId(`${longitude},${latitude}`);
+      await this.getWeather();
+    } catch (error) {
+      console.error(error);
+      this.setData({ loading: false, errorMsg: '城市解析失败，请稍后再试' });
     }
   },
   _syncPrefs() {
@@ -421,6 +462,7 @@ Page({
       longitude: selected.lon,
       cityId: selected.id ? String(selected.id) : '',
       selectorVisible: false,
+      markers: [],
     });
     this.getWeather().catch(console.error);
   },

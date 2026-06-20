@@ -13,6 +13,8 @@
     enable-scroll="{{mapInteractive}}"
     enable-zoom="{{mapInteractive}}"
     enable-rotate="{{mapInteractive}}"
+    markers="{{markers}}"
+    bindtap="onMapTap"
   />
 
   <!-- 天气粒子动效层 -->
