@@ -58,6 +58,15 @@
 - [x] 原生地图 + 历史轨迹实线 / 预测轨迹虚线
 - [x] 缩放控件 + 预测表格
 
+### 设置与多城市（pages/settings）
+- [x] 用户偏好 store（`utils/prefs.js`）：温度单位 / 主题色 / 默认城市 / 收藏城市，订阅机制供页面响应
+- [x] 设置页：℃/℉ 切换、主题色（5 种预设）、默认城市设置 / 清除 / 置顶 / 移除
+- [x] city-search 收藏区：⭐ 切换收藏，收藏列表附实时天气
+- [x] city-search 顶部「设置」入口
+- [x] 启动加载默认城市（无默认时回落定位；手动点定位忽略默认）
+- [x] 首页温度（紧凑卡 / weather-temp / hourly / daily）按 tempUnit 显示
+- [x] 主题色通过 CSS 变量 `--theme` 注入页面根节点，作用于顶部定位按钮、设置页选中态
+
 ### 基础设施
 - [x] 本地缓存层（utils/cache.js，TTL 基于 wx.setStorage）
 - [x] 21 个 API 封装函数（utils/api.js：天气 / 空气 / 生活 / 天文 / 预警 / 分钟级 / 30 天 / 台风 / 潮汐 / 太阳辐射 / GeoAPI）
@@ -83,12 +92,13 @@
 - [ ] 进一步：迁移到云函数代理，避免密钥随 wxapkg 泄露（P1）
 
 ### 功能增强
-- [ ] 多城市管理：收藏 / 固定多个城市快速切换
-- [ ] 用户设置页：温度单位切换（℃/℉）、主题色选择、默认城市
+- [x] 多城市管理：收藏 / 置顶 / 取消
+- [x] 用户设置页：温度单位切换（℃/℉）、主题色选择、默认城市
+- [ ] 温度单位接入子页（hourly / weather30 chart / air page）：当前仅首页生效
+- [ ] 主题色作用范围扩展：bottom-sheet 把手、按钮高亮等
 - [ ] 离线降级 UI：断网时回落到 stale 缓存 + 顶部「离线模式」横幅
 - [ ] 分享菜单：开启 `onShareAppMessage` / `onShareTimeline`，并各页面自定义分享标题、图片、路径
-- [ ] 下拉刷新：`enablePullDownRefresh` + `onPullDownRefresh`
-- [ ] 订阅消息：降水提醒、预警推送（`wx.requestSubscribeMessage`）
+- [ ] 订阅消息：降水提醒、预警推送（`wx.requestSubscribeMessage`）（待小程序后台申请模板 ID）
 - [ ] 天气时光机：查询历史某天的天气实况（温度、天气现象、风向风速等）
 - [ ] 空气质量时光机：查询历史某天的空气质量（AQI、污染物浓度等）
 

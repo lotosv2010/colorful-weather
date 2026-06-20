@@ -15,6 +15,7 @@
         />
         <view wx:if="{{keyword}}" class="clear" catchtap="onClear">×</view>
       </view>
+      <image class="icon-btn" src="/static/icons/settings.svg" mode="aspectFit" catchtap="onOpenSettings" />
       <view class="cancel" catchtap="onClose">取消</view>
     </view>
 
@@ -30,11 +31,45 @@
           wx:for="{{results}}"
           wx:key="id"
           class="result-item"
-          data-city="{{item}}"
-          catchtap="onPick"
         >
-          <view class="name">{{item.name}}</view>
-          <view class="path">{{item.adm2}} · {{item.adm1}} · {{item.country}}</view>
+          <view class="result-main" data-city="{{item}}" catchtap="onPick">
+            <view class="name">{{item.name}}</view>
+            <view class="path">{{item.adm2}} · {{item.adm1}} · {{item.country}}</view>
+          </view>
+          <view
+            class="star {{favoriteIds[item.id] ? 'star-on' : ''}}"
+            data-city="{{item}}"
+            catchtap="onToggleFavorite"
+          >{{favoriteIds[item.id] ? '★' : '☆'}}</view>
+        </view>
+      </block>
+
+      <!-- 收藏城市 -->
+      <block wx:if="{{!keyword && favoritesList.length}}">
+        <view class="section-title">我的收藏</view>
+        <view class="history-list">
+          <view
+            wx:for="{{favoritesList}}"
+            wx:key="id"
+            class="history-item"
+          >
+            <view class="history-main" data-city="{{item}}" catchtap="onPick">
+              <view class="row">
+                <i class="weather-icon icon-color-{{ic.category(item.weather.icon || 100)}} qi-{{item.weather.icon || 100}}-fill"></i>
+                <text class="city-name">{{item.name}}</text>
+                <text wx:if="{{item.pinned}}" class="pin-tag">置顶</text>
+              </view>
+              <view class="row sub">
+                <text class="weather-temp">{{item.weather.temp || '--'}}°</text>
+                <text class="city-path">{{item.adm1}}{{item.adm2 && item.adm2 !== item.adm1 ? ' · ' + item.adm2 : ''}}</text>
+              </view>
+            </view>
+            <view
+              class="star star-on"
+              data-city="{{item}}"
+              catchtap="onToggleFavorite"
+            >★</view>
+          </view>
         </view>
       </block>
 
@@ -63,17 +98,22 @@
             wx:for="{{historyList}}"
             wx:key="id"
             class="history-item"
-            data-city="{{item}}"
-            catchtap="onPick"
           >
-            <view class="row">
-              <i class="weather-icon icon-color-{{ic.category(item.weather.icon || 100)}} qi-{{item.weather.icon || 100}}-fill"></i>
-              <text class="city-name">{{item.name}}</text>
+            <view class="history-main" data-city="{{item}}" catchtap="onPick">
+              <view class="row">
+                <i class="weather-icon icon-color-{{ic.category(item.weather.icon || 100)}} qi-{{item.weather.icon || 100}}-fill"></i>
+                <text class="city-name">{{item.name}}</text>
+              </view>
+              <view class="row sub">
+                <text class="weather-temp">{{item.weather.temp || '--'}}°</text>
+                <text class="city-path">{{item.adm1}} · {{item.country}}</text>
+              </view>
             </view>
-            <view class="row sub">
-              <text class="weather-temp">{{item.weather.temp || '--'}}°</text>
-              <text class="city-path">{{item.adm1}} · {{item.country}}</text>
-            </view>
+            <view
+              class="star {{favoriteIds[item.id] ? 'star-on' : ''}}"
+              data-city="{{item}}"
+              catchtap="onToggleFavorite"
+            >{{favoriteIds[item.id] ? '★' : '☆'}}</view>
           </view>
         </view>
       </block>

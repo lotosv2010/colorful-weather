@@ -1,6 +1,7 @@
 const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const cache = require('../../utils/cache');
+const prefs = require('../../utils/prefs');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -41,6 +42,8 @@ Page({
     sheetExpanded: false,
     sheetProgress: 0,
     mapInteractive: true,
+    tempUnit: 'C',
+    themeColor: '#1296db',
   },
   onSheetChange(e) {
     this.setData({ sheetExpanded: e.detail.expanded });
@@ -59,7 +62,17 @@ Page({
     if (sheet) sheet.expand();
   },
   onLocateTap() {
-    this.init();
+    cache.clear();
+    this.init({ forceLocate: true });
+  },
+  onRefresh() {
+    cache.clear();
+    this.getWeather();
+  },
+  _syncPrefs() {
+    const p = prefs.getPrefs();
+    if (p.tempUnit === this.data.tempUnit && p.themeColor === this.data.themeColor) return;
+    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor });
   },
   _buildLocationLabel(district, city, province) {
     const parts = [];
@@ -71,8 +84,13 @@ Page({
   },
   // 事件处理函数
   onLoad() {
+    this._syncPrefs();
+    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     // 实例化API核心类
     this.init();
+  },
+  onUnload() {
+    if (this._unsubPrefs) this._unsubPrefs();
   },
   showToast() {
     wx.showToast({
@@ -80,16 +98,28 @@ Page({
       icon: 'none'
     });
   },
-  async init() {
+  async init(opts = {}) {
     if (this._fetching) return;
-    // 重新定位时清除缓存，确保拿到最新数据
-    cache.clear();
+    const { forceLocate = false } = opts;
     try {
       this.qqmapsdk = new QQMapWX({
         key: app.globalData.lbs.key
       });
-      await this.getLocation();
-      await this.getNow();
+      const defaultCity = !forceLocate ? prefs.findCity(prefs.getPrefs().defaultCityId) : null;
+      if (defaultCity) {
+        this.setData({
+          latitude: defaultCity.lat,
+          longitude: defaultCity.lon,
+          city: defaultCity.adm2 || defaultCity.adm1 || '',
+          province: defaultCity.adm1 || '',
+          district: defaultCity.name || '',
+          locationLabel: this._buildLocationLabel(defaultCity.name, defaultCity.adm2, defaultCity.adm1),
+        });
+        await this.getWeather();
+      } else {
+        await this.getLocation();
+        await this.getNow();
+      }
     } catch (error) {
       this.showToast();
     }

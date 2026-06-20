@@ -1,4 +1,5 @@
 const { cityLookup, topCity, now } = require('../../utils/api');
+const prefs = require('../../utils/prefs');
 
 // 本地存储 key
 const HISTORY_KEY = 'city_search_history';
@@ -12,6 +13,7 @@ Component({
       value: false,
       observer(val) {
         if (val) {
+          this.loadFavorites();
           this.loadHistory();
           if (this.data.hotList.length === 0) this.loadHotCity();
         }
@@ -23,10 +25,75 @@ Component({
     results: [],
     hotList: [],
     historyList: [], // 历史记录 + 实时天气
+    favoritesList: [], // 收藏城市 + 实时天气
+    favoriteIds: {}, // { [cityId]: true } 用于在结果项上展示是否已收藏
     loading: false,
     errorMsg: ''
   },
   methods: {
+    _refreshFavoriteIds() {
+      const map = {};
+      prefs.getPrefs().cities.forEach(c => { map[c.id] = true; });
+      this.setData({ favoriteIds: map });
+    },
+
+    // 加载收藏城市并并发拉实时天气
+    async loadFavorites() {
+      const cities = prefs.getPrefs().cities;
+      this._refreshFavoriteIds();
+      if (!cities.length) {
+        this.setData({ favoritesList: [] });
+        return;
+      }
+      this.setData({ favoritesList: cities });
+      try {
+        const weathers = await Promise.all(
+          cities.map(item =>
+            now({ location: `${item.lon},${item.lat}` })
+              .then(r => (r.code === '200' ? r.now : null))
+              .catch(() => null)
+          )
+        );
+        this.setData({
+          favoritesList: cities.map((item, i) => ({ ...item, weather: weathers[i] }))
+        });
+      } catch (e) {}
+    },
+
+    // 切换收藏
+    onToggleFavorite(e) {
+      const { city } = e.currentTarget.dataset;
+      const isFav = !!this.data.favoriteIds[city.id];
+      if (isFav) {
+        prefs.removeCity(city.id);
+        // 删除场景：本地裁剪，避免重新请求所有城市天气
+        const favoritesList = this.data.favoritesList.filter(c => c.id !== String(city.id));
+        this._refreshFavoriteIds();
+        this.setData({ favoritesList });
+      } else {
+        prefs.addCity({
+          id: city.id,
+          name: city.name,
+          adm1: city.adm1,
+          adm2: city.adm2,
+          lat: city.lat,
+          lon: city.lon,
+        });
+        this._refreshFavoriteIds();
+        // 新增场景：仅为该城市拉一次天气，追加到列表
+        const newItem = { ...prefs.findCity(city.id) };
+        now({ location: `${newItem.lon},${newItem.lat}` })
+          .then(r => { if (r.code === '200') newItem.weather = r.now; })
+          .catch(() => {})
+          .then(() => this.setData({ favoritesList: [...this.data.favoritesList, newItem] }));
+      }
+    },
+
+    onOpenSettings() {
+      this.triggerEvent('close');
+      wx.navigateTo({ url: '/pages/settings/index' });
+    },
+
     // 加载热门城市
     async loadHotCity() {
       try {

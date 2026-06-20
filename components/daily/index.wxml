@@ -1,5 +1,6 @@
 <!--components/daily/index.wxml-->
 <wxs src="../../utils/iconColor.wxs" module="ic" />
+<wxs src="../../utils/tempUnit.wxs" module="tu" />
 <view class="weather-daily">
   <view class="weather-daily-header">
     <text class="right">未来预报</text>
@@ -15,11 +16,11 @@
     <view class="weather-daily-temp-bar">
       <view class="weather-daily-bar" style="left: {{item.barLeft}}%; width: {{item.barWidth}}%">
         <view class="weather-daily-temp weather-daily-temp-max">
-          <text class="value">{{item.tempMax}}</text>
+          <text class="value">{{ tu.fmt(item.tempMax, tempUnit) }}</text>
           <text class="unit">°</text>
         </view>
         <view class="weather-daily-temp weather-daily-temp-min">
-          <text class="value">{{item.tempMin}}</text>
+          <text class="value">{{ tu.fmt(item.tempMin, tempUnit) }}</text>
           <text class="unit">°</text>
         </view>
       </view>

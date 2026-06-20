@@ -1,0 +1,54 @@
+<view class="page" style="--theme:{{themeColor}}">
+
+  <view class="section">
+    <view class="section-title">温度单位</view>
+    <view class="seg">
+      <view class="seg-item {{tempUnit === 'C' ? 'seg-item-active' : ''}}" bindtap="onUnitTap" data-unit="C">摄氏度 ℃</view>
+      <view class="seg-item {{tempUnit === 'F' ? 'seg-item-active' : ''}}" bindtap="onUnitTap" data-unit="F">华氏度 ℉</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">主题色</view>
+    <view class="theme-row">
+      <view
+        wx:for="{{themePresets}}"
+        wx:key="color"
+        class="theme-chip {{item.color === themeColor ? 'theme-chip-active' : ''}}"
+        style="background:{{item.color}}"
+        bindtap="onThemeTap"
+        data-color="{{item.color}}"
+      >
+        <text wx:if="{{item.color === themeColor}}" class="theme-check">✓</text>
+      </view>
+    </view>
+    <view class="section-tip">{{themePresets[0].name}} 等，作用于强调按钮、链接等高亮元素</view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">默认城市</view>
+    <view class="section-tip" wx:if="{{!cities.length}}">还没有收藏城市，去首页搜索城市并收藏后，在此设置默认</view>
+    <view class="city-list" wx:if="{{cities.length}}">
+      <view
+        class="city-row {{item.id === defaultCityId ? 'city-row-default' : ''}}"
+        wx:for="{{cities}}"
+        wx:key="id"
+      >
+        <view class="city-main" bindtap="onDefaultCityTap" data-id="{{item.id}}">
+          <view class="city-name">
+            <text>{{item.name}}</text>
+            <text wx:if="{{item.pinned}}" class="badge-pin">置顶</text>
+            <text wx:if="{{item.id === defaultCityId}}" class="badge-default">默认</text>
+          </view>
+          <view class="city-sub">{{item.adm1}}{{item.adm2 && item.adm2 !== item.adm1 ? ' · ' + item.adm2 : ''}}</view>
+        </view>
+        <view class="city-actions">
+          <view class="city-btn" bindtap="onTogglePin" data-id="{{item.id}}">{{item.pinned ? '取消置顶' : '置顶'}}</view>
+          <view class="city-btn city-btn-danger" bindtap="onRemoveCity" data-id="{{item.id}}" data-name="{{item.name}}">移除</view>
+        </view>
+      </view>
+    </view>
+    <view class="section-tip" wx:if="{{cities.length}}">点击城市设为 / 取消默认。设为默认后，下次启动会直接加载该城市</view>
+  </view>
+
+</view>

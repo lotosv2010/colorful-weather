@@ -61,6 +61,11 @@
   color: #fff;
   padding: 0 8rpx;
 }
+.icon-btn {
+  width: 45rpx;
+  height: 45rpx;
+  flex-shrink: 0;
+}
 
 .body {
   margin-top: 24rpx;
@@ -102,6 +107,12 @@
 .history-item {
   padding: 20rpx 8rpx;
   border-bottom: 1rpx solid #2a2a2a;
+  display: flex;
+  align-items: center;
+}
+.history-main {
+  flex: 1;
+  min-width: 0;
 }
 .history-item .row {
   display: flex;
@@ -135,6 +146,12 @@
 .result-item {
   padding: 20rpx 8rpx;
   border-bottom: 1rpx solid #2a2a2a;
+  display: flex;
+  align-items: center;
+}
+.result-main {
+  flex: 1;
+  min-width: 0;
 }
 .result-item .name {
   font-size: 30rpx;
@@ -144,6 +161,28 @@
   font-size: 22rpx;
   color: #888;
   margin-top: 6rpx;
+}
+
+/* 收藏星 */
+.star {
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  font-size: 40rpx;
+  color: #555;
+}
+.star-on {
+  color: #fbbf24;
+}
+.pin-tag {
+  font-size: 20rpx;
+  background: #fff3e0;
+  color: #fa8c16;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  margin-left: 8rpx;
 }
 
 .hot-grid {

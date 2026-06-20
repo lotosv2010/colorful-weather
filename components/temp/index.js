@@ -50,6 +50,10 @@ Component({
     typhoonSummary: {
       type: String,
       value: ''
+    },
+    tempUnit: {
+      type: String,
+      value: 'C'
     }
   },
 

@@ -12,6 +12,10 @@ Component({
     hourly: {
       type: Array,
       value: []
+    },
+    tempUnit: {
+      type: String,
+      value: 'C'
     }
   },
 

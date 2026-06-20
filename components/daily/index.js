@@ -23,6 +23,10 @@ Component({
     district: {
       type: String,
       value: ''
+    },
+    tempUnit: {
+      type: String,
+      value: 'C'
     }
   },
   data: {

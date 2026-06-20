@@ -1,0 +1,12 @@
+// 温度单位显示：摄氏数值 → 用户偏好单位字符串
+// 参数 c: 原始摄氏值（字符串 / 数字），unit: 'C' | 'F'
+function fmt(c, unit) {
+  if (c === '' || c === null || c === undefined) return '--';
+  var n = c - 0;
+  if (n !== n) return '--';
+  var v = unit === 'F' ? n * 9 / 5 + 32 : n;
+  // 四舍五入到整数
+  return v >= 0 ? Math.floor(v + 0.5) : -Math.floor(-v + 0.5);
+}
+
+module.exports = { fmt: fmt };
