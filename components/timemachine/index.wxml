@@ -1,0 +1,147 @@
+<!--components/timemachine/index.wxml-->
+<wxs src="../../utils/tempUnit.wxs" module="tu" />
+
+<view class="weather-tm" style="--theme:{{themeColor}}">
+  <view class="weather-tm-header">
+    <view class="title-wrap">
+      <text class="title">时光机</text>
+      <view wx:if="{{loading}}" class="tm-spinner"></view>
+    </view>
+    <text class="hint">最近 10 天</text>
+  </view>
+
+  <!-- Tabs -->
+  <view class="tm-tabs">
+    <view class="tm-tab {{tab === 'weather' ? 'active' : ''}}" data-tab="weather" bindtap="onTabTap">
+      <text>天气时光机</text>
+    </view>
+    <view class="tm-tab {{tab === 'air' ? 'active' : ''}}" data-tab="air" bindtap="onTabTap">
+      <text>空气质量时光机</text>
+    </view>
+  </view>
+
+  <!-- 日期选择 -->
+  <scroll-view class="tm-dates" scroll-x enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view
+      wx:for="{{dateList}}"
+      wx:key="key"
+      class="tm-date {{selectedDate === item.key ? 'active' : ''}}"
+      data-date="{{item.key}}"
+      bindtap="onDateTap"
+    >
+      <text class="d-week">{{item.weekday}}</text>
+      <text class="d-day">{{item.label}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 内容区固定高度，避免切换时高度坍塌导致页面滚动跳变 -->
+  <view class="tm-body">
+    <!-- 缺 cityId -->
+    <view wx:if="{{!cityId}}" class="tm-empty">需要城市 ID 才能加载历史数据</view>
+
+    <!-- 错误（仅在没有可展示数据时占满，否则保留旧视图） -->
+    <view
+      wx:elif="{{errorMsg && ((tab === 'weather' && !weather) || (tab === 'air' && !air))}}"
+      class="tm-empty"
+    >{{errorMsg}}</view>
+
+    <!-- 骨架（首次加载或切城市后无缓存） -->
+    <block wx:elif="{{skeleton}}">
+      <view class="tm-summary skeleton-summary">
+        <view class="tm-temp-block">
+          <view class="sk-bar sk-bar-lg"></view>
+          <view class="sk-bar sk-bar-sm"></view>
+        </view>
+        <view class="tm-meta-grid">
+          <view class="meta-cell" wx:for="{{6}}" wx:key="*this">
+            <view class="sk-bar sk-bar-xs"></view>
+            <view class="sk-bar sk-bar-md"></view>
+          </view>
+        </view>
+      </view>
+      <view class="tm-chart-wrap">
+        <view class="sk-bar sk-bar-sm" style="margin-bottom: 8px;"></view>
+        <view class="sk-chart"></view>
+      </view>
+    </block>
+
+    <!-- 真实内容：两套常驻，按 tab 显隐，避免 canvas 重建 -->
+    <block wx:else>
+      <!-- 天气视图 -->
+      <view hidden="{{tab !== 'weather'}}" class="tm-view">
+        <block wx:if="{{weather && weather.weatherDaily}}">
+          <view class="tm-summary">
+            <view class="tm-temp-block">
+              <view class="tm-temp-row">
+                <text class="hi">{{ tu.fmt(weather.weatherDaily.tempMax, tempUnit) }}°</text>
+                <text class="sep">/</text>
+                <text class="lo">{{ tu.fmt(weather.weatherDaily.tempMin, tempUnit) }}°</text>
+              </view>
+              <text class="tm-temp-label">最高 / 最低</text>
+            </view>
+            <view class="tm-meta-grid">
+              <view class="meta-cell">
+                <text class="meta-label">日出</text>
+                <text class="meta-value">{{weather.weatherDaily.sunrise || '--'}}</text>
+              </view>
+              <view class="meta-cell">
+                <text class="meta-label">日落</text>
+                <text class="meta-value">{{weather.weatherDaily.sunset || '--'}}</text>
+              </view>
+              <view class="meta-cell">
+                <text class="meta-label">湿度</text>
+                <text class="meta-value">{{weather.weatherDaily.humidity}}%</text>
+              </view>
+              <view class="meta-cell">
+                <text class="meta-label">降水</text>
+                <text class="meta-value">{{weather.weatherDaily.precip}}mm</text>
+              </view>
+              <view class="meta-cell">
+                <text class="meta-label">气压</text>
+                <text class="meta-value">{{weather.weatherDaily.pressure}}hPa</text>
+              </view>
+              <view class="meta-cell">
+                <text class="meta-label">月相</text>
+                <text class="meta-value">{{weather.weatherDaily.moonPhase || '--'}}</text>
+              </view>
+            </view>
+          </view>
+        </block>
+        <view class="tm-chart-wrap">
+          <text class="tm-chart-title">24 小时温度</text>
+          <canvas type="2d" id="tmWeatherCanvas" class="tm-canvas"></canvas>
+        </view>
+      </view>
+
+      <!-- 空气视图 -->
+      <view hidden="{{tab !== 'air'}}" class="tm-view">
+        <block wx:if="{{air && air.airHourly && air.airHourly.length}}">
+          <view class="tm-air-summary">
+            <view class="aqi-circle" style="background: {{air.summary.color}}33; color: {{air.summary.color}}; border-color: {{air.summary.color}};">
+              <text class="aqi-num">{{air.summary.aqi}}</text>
+              <text class="aqi-cat">{{air.summary.category}}</text>
+            </view>
+            <view class="tm-air-meta">
+              <view class="row">
+                <text class="meta-label">日均 AQI</text>
+                <text class="meta-value">{{air.summary.avg}}</text>
+              </view>
+              <view class="row">
+                <text class="meta-label">峰值</text>
+                <text class="meta-value">{{air.summary.peak}}</text>
+              </view>
+              <view class="row">
+                <text class="meta-label">主要污染物</text>
+                <text class="meta-value">{{air.summary.primary || 'NA'}}</text>
+              </view>
+            </view>
+          </view>
+        </block>
+        <view class="tm-chart-wrap">
+          <text class="tm-chart-title">24 小时 AQI</text>
+          <canvas type="2d" id="tmAirCanvas" class="tm-canvas"></canvas>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

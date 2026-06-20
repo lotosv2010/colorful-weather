@@ -141,6 +141,11 @@
         city="{{city}}"
         district="{{district}}"
       />
+      <weather-timemachine
+        cityId="{{cityId}}"
+        tempUnit="{{tempUnit}}"
+        themeColor="{{themeColor}}"
+      />
     </view>
   </bottom-sheet>
 

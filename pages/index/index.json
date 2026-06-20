@@ -10,6 +10,7 @@
     "city-search": "../../components/city-search/index",
     "weather-tide": "../../components/tide/index",
     "weather-solar": "../../components/solar/index",
-    "bottom-sheet": "../../components/bottom-sheet/index"
+    "bottom-sheet": "../../components/bottom-sheet/index",
+    "weather-timemachine": "../../components/timemachine/index"
   }
 }

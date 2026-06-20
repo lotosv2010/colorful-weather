@@ -29,6 +29,7 @@ const TTL = {
   SOLAR:       6 * HOUR,  // 太阳辐射：6 小时
   TIDE:        8 * HOUR,  // 潮汐：8 小时
   STORM:      20 * MIN,   // 台风：20 分钟
+  HISTORICAL: 24 * HOUR,  // 历史数据：24 小时（同一日期数据不变）
 };
 
 /**
@@ -120,6 +121,10 @@ module.exports = {
   moon:       (data, tc) => cachedRequest(`${BASE_URL}/astronomy/moon`, 'GET', data, tc, TTL.ASTRONOMY),
   tide:       (data, tc) => cachedRequest(`${BASE_URL}/ocean/tide`, 'GET', data, tc, TTL.TIDE),
   solarRadiation: (lat, lon, data = {}, tc) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/solarradiation/v1/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc, TTL.SOLAR),
+  // 历史天气再分析（最近 10 天，需 LocationID）
+  historicalWeather: (data, tc) => cachedRequest(`${BASE_URL}/historical/weather`, 'GET', data, tc, TTL.HISTORICAL),
+  // 历史空气质量（最近 10 天，需 LocationID）
+  historicalAir:     (data, tc) => cachedRequest(`${BASE_URL}/historical/air`, 'GET', data, tc, TTL.HISTORICAL),
   // GeoAPI 数据版权禁止缓存，始终实时请求
   cityLookup: (data, tc) => request(`${GEO_URL}/city/lookup`, 'GET', data, tc),
   topCity:    (data = {}, tc) => request(`${GEO_URL}/city/top`, 'GET', data, tc),

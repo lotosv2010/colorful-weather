@@ -1,0 +1,274 @@
+/* components/timemachine/index.wxss */
+.weather-tm {
+  background-color: rgb(34, 37, 48);
+  padding: 15px;
+  border-radius: 15px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+
+.weather-tm-header {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.weather-tm-header .title-wrap {
+  display: flex;
+  align-items: center;
+}
+.weather-tm-header .title {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.weather-tm-header .hint {
+  color: #A6A9AD;
+  font-size: 0.7rem;
+}
+
+/* 右上角 spinner */
+.tm-spinner {
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--theme, #1296db);
+  border-radius: 50%;
+  animation: tm-spin 0.7s linear infinite;
+}
+@keyframes tm-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Tabs */
+.tm-tabs {
+  display: flex;
+  background-color: rgb(46, 48, 61);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 12px;
+}
+.tm-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 0.75rem;
+  padding: 8px 0;
+  color: #A6A9AD;
+  border-radius: 8px;
+  transition: background-color 0.2s, color 0.2s;
+}
+.tm-tab.active {
+  background-color: var(--theme, #1296db);
+  color: #fff;
+  font-weight: 500;
+}
+
+/* 日期 */
+.tm-dates {
+  white-space: nowrap;
+  margin-bottom: 12px;
+}
+.tm-date {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background-color: rgb(46, 48, 61);
+  border-radius: 10px;
+  margin-right: 8px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+}
+.tm-date.active {
+  background-color: rgba(68, 179, 255, 0.18);
+  border-color: var(--theme, #1296db);
+}
+.tm-date .d-week {
+  font-size: 0.65rem;
+  color: #A6A9AD;
+}
+.tm-date.active .d-week {
+  color: #fff;
+}
+.tm-date .d-day {
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.tm-empty {
+  text-align: center;
+  color: #8C9AA5;
+  font-size: 0.75rem;
+  padding: 30px 0;
+}
+
+/* 内容区固定高度：summary(110) + 间距(12) + chart-wrap(题24 + canvas160 + padding20) */
+.tm-body {
+  min-height: 326px;
+  position: relative;
+}
+.tm-view {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 骨架 */
+.sk-bar {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 100%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: tm-shimmer 1.4s ease-in-out infinite;
+}
+.sk-bar-lg { width: 80%; height: 22px; margin-bottom: 8px; }
+.sk-bar-md { width: 60%; height: 14px; }
+.sk-bar-sm { width: 40%; height: 12px; }
+.sk-bar-xs { width: 30%; height: 10px; margin-bottom: 6px; }
+.skeleton-summary .tm-temp-block {
+  align-items: flex-start;
+  padding: 8px 12px;
+}
+.skeleton-summary .tm-meta-grid {
+  align-items: flex-start;
+}
+.sk-chart {
+  width: 100%;
+  height: 160px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 100%);
+  background-size: 200% 100%;
+  animation: tm-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes tm-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 天气摘要 */
+.tm-summary {
+  display: flex;
+  background-color: rgb(46, 48, 61);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  min-height: 110px;
+  box-sizing: border-box;
+}
+.tm-temp-block {
+  width: 38%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+.tm-temp-row {
+  display: flex;
+  align-items: baseline;
+  font-weight: 300;
+}
+.tm-temp-row .hi {
+  font-size: 1.6rem;
+  color: #FF8C00;
+}
+.tm-temp-row .lo {
+  font-size: 1.6rem;
+  color: #6CB4EE;
+}
+.tm-temp-row .sep {
+  margin: 0 6px;
+  color: #A6A9AD;
+  font-size: 1rem;
+}
+.tm-temp-label {
+  font-size: 0.65rem;
+  color: #A6A9AD;
+  margin-top: 4px;
+}
+.tm-meta-grid {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 12px;
+}
+.tm-meta-grid .meta-cell {
+  width: 33.33%;
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.meta-label {
+  font-size: 0.6rem;
+  color: #A6A9AD;
+}
+.meta-value {
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+/* 空气摘要 */
+.tm-air-summary {
+  display: flex;
+  align-items: center;
+  background-color: rgb(46, 48, 61);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  min-height: 110px;
+  box-sizing: border-box;
+}
+.aqi-circle {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid;
+  flex-shrink: 0;
+}
+.aqi-num {
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.4rem;
+}
+.aqi-cat {
+  font-size: 0.65rem;
+  margin-top: 2px;
+}
+.tm-air-meta {
+  flex: 1;
+  padding-left: 16px;
+}
+.tm-air-meta .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.75rem;
+}
+.tm-air-meta .row .meta-label {
+  font-size: 0.7rem;
+}
+
+/* 图表 */
+.tm-chart-wrap {
+  background-color: rgb(46, 48, 61);
+  border-radius: 10px;
+  padding: 10px;
+}
+.tm-chart-title {
+  font-size: 0.7rem;
+  color: #A6A9AD;
+  margin-bottom: 6px;
+  display: block;
+}
+.tm-canvas {
+  width: 100%;
+  height: 160px;
+  display: block;
+}

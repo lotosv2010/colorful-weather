@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const cache = require('../../utils/cache');
 const prefs = require('../../utils/prefs');
@@ -46,6 +46,7 @@ Page({
     tempUnit: 'C',
     themeColor: '#1296db',
     offline: false,
+    cityId: '',
   },
   onSheetChange(e) {
     this.setData({ sheetExpanded: e.detail.expanded });
@@ -121,6 +122,7 @@ Page({
           province: defaultCity.adm1 || '',
           district: defaultCity.name || '',
           locationLabel: this._buildLocationLabel(defaultCity.name, defaultCity.adm2, defaultCity.adm1),
+          cityId: defaultCity.id || '',
         });
         await this.getWeather();
       } else {
@@ -141,11 +143,23 @@ Page({
         district,
         locationLabel: this._buildLocationLabel(district, city, province),
       });
+      this._resolveCityId(`${longitude},${latitude}`);
       await this.getWeather();
     } catch (error) {
       console.log(error)
       this.showToast();
     }
+  },
+  // 通过经纬度反查 LocationID（供历史接口使用，失败不阻断主流程）
+  async _resolveCityId(location) {
+    try {
+      // GeoAPI 坐标精度限制为两位小数
+      const [lon, lat] = location.split(',');
+      const loc = `${Number(lon).toFixed(2)},${Number(lat).toFixed(2)}`;
+      const res = await cityLookup({ location: loc });
+      const id = res && res.code === '200' && res.location && res.location[0] ? res.location[0].id : '';
+      if (id) this.setData({ cityId: id });
+    } catch (_) {}
   },
   formatHourly(data=[]) {
     return data?.map(h => {
@@ -328,6 +342,7 @@ Page({
       locationLabel: this._buildLocationLabel(district, city, province),
       latitude: selected.lat,
       longitude: selected.lon,
+      cityId: selected.id ? String(selected.id) : '',
       selectorVisible: false,
     });
     this.getWeather().catch(console.error);
