@@ -245,6 +245,12 @@ page {
 
 /* 紧凑卡片样式已迁移到 components/compact-weather/index.wxss */
 
+/* 天气装饰层包裹器 */
+.decor-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 /* 紧凑卡中部 / 描述：复用 weather-header 系列样式 */
 .weather-header-container {
   display: flex;

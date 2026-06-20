@@ -1,0 +1,4 @@
+<!--components/weather-particles/index.wxml-->
+<view class="particles-layer" style="opacity: {{1 - sheetProgress}};">
+  <canvas type="2d" id="particleCanvas" class="particle-canvas" />
+</view>

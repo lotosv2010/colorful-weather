@@ -5,6 +5,7 @@ const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
 const { navigateTo } = require('../../utils/route');
 const { resolveTheme, resolveThemeBg } = require('../../utils/autoTheme');
+const { resolveWeatherEffect } = require('../../utils/weatherEffect');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -48,6 +49,7 @@ Page({
     tempUnit: 'C',
     themeColor: '#1296db',
     weatherBg: 'rgba(34, 37, 48, 0.85)',
+    weatherEffect: { particle: null, decor: null },
     offline: false,
     cityId: '',
     loading: true,
@@ -96,8 +98,10 @@ Page({
     if (p.cardBgMode === 'auto' && icon) {
       weatherBg = resolveThemeBg(icon, this.data.astronomySun?.sunrise, this.data.astronomySun?.sunset);
     }
-    if (p.tempUnit === this.data.tempUnit && themeColor === this.data.themeColor && weatherBg === this.data.weatherBg) return;
-    this.setData({ tempUnit: p.tempUnit, themeColor, weatherBg });
+    const weatherEffect = resolveWeatherEffect(icon);
+    if (p.tempUnit === this.data.tempUnit && themeColor === this.data.themeColor && weatherBg === this.data.weatherBg &&
+        weatherEffect.particle === this.data.weatherEffect.particle && weatherEffect.decor === this.data.weatherEffect.decor) return;
+    this.setData({ tempUnit: p.tempUnit, themeColor, weatherBg, weatherEffect });
   },
   _buildLocationLabel(district, city, province) {
     const parts = [];
@@ -129,6 +133,10 @@ Page({
       if (p.cardBgMode === 'auto') {
         const bg = resolveThemeBg(icon, this.data.astronomySun?.sunrise, this.data.astronomySun?.sunset);
         if (bg !== this.data.weatherBg) updates.weatherBg = bg;
+      }
+      const weatherEffect = resolveWeatherEffect(icon);
+      if (weatherEffect.particle !== this.data.weatherEffect.particle || weatherEffect.decor !== this.data.weatherEffect.decor) {
+        updates.weatherEffect = weatherEffect;
       }
       if (Object.keys(updates).length) this.setData(updates);
     }, 10 * 60 * 1000);
@@ -304,6 +312,7 @@ Page({
         showMinutelyEntry,
         minutelySummary: minutelyRes?.summary || '',
         minutelyType,
+        weatherEffect: resolveWeatherEffect(weatherData?.now?.icon),
         loading: false,
         errorMsg: ''
       });

@@ -1,0 +1,102 @@
+<!--components/weather-decor/index.wxml-->
+<!-- 卡片右上方天气装饰，根据 weatherEffect 渲染不同装饰元素 -->
+<view class="decor {{mode === 'full' ? 'decor-full' : 'decor-compact'}}" wx:if="{{weatherEffect}}">
+
+  <!-- 晴天光斑 -->
+  <block wx:if="{{weatherEffect === 'sun-spots'}}">
+    <view class="decor-item spot spot-1"></view>
+    <view class="decor-item spot spot-2"></view>
+    <view class="decor-item spot spot-3"></view>
+  </block>
+
+  <!-- 晴间多云：云 + 光斑 -->
+  <block wx:if="{{weatherEffect === 'cloud-spot'}}">
+    <view class="decor-item spot spot-1"></view>
+    <view class="decor-item emoji emoji-cloud-1">☁️</view>
+  </block>
+
+  <!-- 多云/阴：云朵漂移 -->
+  <block wx:if="{{weatherEffect === 'clouds'}}">
+    <view class="decor-item emoji emoji-cloud-1">☁️</view>
+    <view class="decor-item emoji emoji-cloud-2">⛅</view>
+  </block>
+
+  <!-- 小雨：2-3 水滴 -->
+  <block wx:if="{{weatherEffect === 'drops'}}">
+    <view class="decor-item emoji emoji-drop-1">💧</view>
+    <view class="decor-item emoji emoji-drop-2">💧</view>
+  </block>
+
+  <!-- 大雨：4 水滴 -->
+  <block wx:if="{{weatherEffect === 'drops-heavy'}}">
+    <view class="decor-item emoji emoji-drop-1">💧</view>
+    <view class="decor-item emoji emoji-drop-2">💧</view>
+    <view class="decor-item emoji emoji-drop-3">💧</view>
+    <view class="decor-item emoji emoji-drop-4">💧</view>
+  </block>
+
+  <!-- 小雪 -->
+  <block wx:if="{{weatherEffect === 'snowflakes'}}">
+    <view class="decor-item emoji emoji-snow-1">❄️</view>
+    <view class="decor-item emoji emoji-snow-2">❄️</view>
+    <view class="decor-item emoji emoji-snow-3">🌨️</view>
+  </block>
+
+  <!-- 大雪 -->
+  <block wx:if="{{weatherEffect === 'snowflakes-heavy'}}">
+    <view class="decor-item emoji emoji-snow-1">❄️</view>
+    <view class="decor-item emoji emoji-snow-2">❄️</view>
+    <view class="decor-item emoji emoji-snow-3">🌨️</view>
+    <view class="decor-item emoji emoji-snow-4">❄️</view>
+  </block>
+
+  <!-- 雨夹雪 -->
+  <block wx:if="{{weatherEffect === 'drops-snow'}}">
+    <view class="decor-item emoji emoji-drop-1">💧</view>
+    <view class="decor-item emoji emoji-snow-1">❄️</view>
+    <view class="decor-item emoji emoji-drop-2">💧</view>
+  </block>
+
+  <!-- 雷暴：闪电 + 雨滴 -->
+  <block wx:if="{{weatherEffect === 'lightning-drops'}}">
+    <view class="decor-item emoji emoji-lightning">⚡</view>
+    <view class="decor-item emoji emoji-drop-1">💧</view>
+    <view class="decor-item emoji emoji-drop-2">💧</view>
+  </block>
+
+  <!-- 雾 -->
+  <block wx:if="{{weatherEffect === 'fog-circles'}}">
+    <view class="decor-item fog-circle fog-1"></view>
+    <view class="decor-item fog-circle fog-2"></view>
+    <view class="decor-item emoji emoji-fog">🌫️</view>
+  </block>
+
+  <!-- 霾 -->
+  <block wx:if="{{weatherEffect === 'haze-circles'}}">
+    <view class="decor-item fog-circle haze-1"></view>
+    <view class="decor-item fog-circle haze-2"></view>
+  </block>
+
+  <!-- 沙尘 -->
+  <block wx:if="{{weatherEffect === 'sand-dots'}}">
+    <view class="decor-item sand-dot sand-1"></view>
+    <view class="decor-item sand-dot sand-2"></view>
+  </block>
+
+  <!-- 台风 -->
+  <block wx:if="{{weatherEffect === 'wind-icon'}}">
+    <view class="decor-item emoji emoji-wind">🌀</view>
+  </block>
+
+  <!-- 高温：太阳脉冲 -->
+  <block wx:if="{{weatherEffect === 'sun-glow'}}">
+    <view class="decor-item spot spot-hot-1"></view>
+    <view class="decor-item emoji emoji-sun">☀️</view>
+  </block>
+
+  <!-- 低温 -->
+  <block wx:if="{{weatherEffect === 'snowflake'}}">
+    <view class="decor-item emoji emoji-snow-1">❄️</view>
+  </block>
+
+</view>

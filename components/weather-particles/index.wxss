@@ -1,0 +1,18 @@
+/* components/weather-particles/index.wxss */
+/* 全屏粒子动效层，位于地图(z:1)和 bottom-sheet(z:10) 之间 */
+
+.particles-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.particle-canvas {
+  width: 100%;
+  height: 100%;
+}

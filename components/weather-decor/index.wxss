@@ -1,0 +1,283 @@
+/* components/weather-decor/index.wxss */
+/* 卡片右上方天气装饰层 */
+
+.decor {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.decor-item {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ========== emoji 通用 ========== */
+.decor-item.emoji {
+  font-size: 28rpx;
+  opacity: 0.35;
+  will-change: transform, opacity;
+}
+
+.decor-full .decor-item.emoji {
+  font-size: 36rpx;
+  opacity: 0.3;
+}
+
+/* ========== 光斑圆点 ========== */
+.spot {
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 220, 100, 0.5) 0%, transparent 70%);
+  will-change: opacity;
+}
+
+.spot-1 {
+  width: 80rpx;
+  height: 80rpx;
+  top: 10rpx;
+  right: 20rpx;
+  animation: spot-pulse 3s ease-in-out infinite;
+}
+
+.spot-2 {
+  width: 50rpx;
+  height: 50rpx;
+  top: 60rpx;
+  right: 80rpx;
+  animation: spot-pulse 4s ease-in-out 1s infinite;
+}
+
+.spot-3 {
+  width: 35rpx;
+  height: 35rpx;
+  top: 30rpx;
+  right: 120rpx;
+  animation: spot-pulse 3.5s ease-in-out 0.5s infinite;
+}
+
+.spot-hot-1 {
+  width: 100rpx;
+  height: 100rpx;
+  top: 0;
+  right: 10rpx;
+  background: radial-gradient(circle, rgba(255, 80, 80, 0.35) 0%, transparent 70%);
+  animation: spot-pulse 2.5s ease-in-out infinite;
+}
+
+/* ========== 云朵漂移 ========== */
+.emoji-cloud-1 {
+  top: 8rpx;
+  right: 30rpx;
+  animation: cloud-drift 6s ease-in-out infinite;
+}
+
+.emoji-cloud-2 {
+  top: 40rpx;
+  right: 90rpx;
+  animation: cloud-drift 8s ease-in-out 2s infinite reverse;
+  opacity: 0.25;
+}
+
+/* ========== 水滴下落 ========== */
+.emoji-drop-1 {
+  top: -10rpx;
+  right: 40rpx;
+  animation: drop-fall 2s ease-in infinite;
+}
+
+.emoji-drop-2 {
+  top: -10rpx;
+  right: 80rpx;
+  animation: drop-fall 2.4s ease-in 0.6s infinite;
+}
+
+.emoji-drop-3 {
+  top: -10rpx;
+  right: 20rpx;
+  animation: drop-fall 1.8s ease-in 0.3s infinite;
+}
+
+.emoji-drop-4 {
+  top: -10rpx;
+  right: 100rpx;
+  animation: drop-fall 2.2s ease-in 1s infinite;
+}
+
+/* ========== 雪花飘落 ========== */
+.emoji-snow-1 {
+  top: -15rpx;
+  right: 30rpx;
+  animation: snow-drift 4s ease-in-out infinite;
+}
+
+.emoji-snow-2 {
+  top: -15rpx;
+  right: 80rpx;
+  animation: snow-drift 5s ease-in-out 1.5s infinite;
+}
+
+.emoji-snow-3 {
+  top: -15rpx;
+  right: 55rpx;
+  animation: snow-drift 4.5s ease-in-out 0.8s infinite;
+  font-size: 22rpx;
+}
+
+.emoji-snow-4 {
+  top: -15rpx;
+  right: 110rpx;
+  animation: snow-drift 5.5s ease-in-out 2.5s infinite;
+}
+
+/* ========== 闪电 ========== */
+.emoji-lightning {
+  top: 0;
+  right: 50rpx;
+  font-size: 36rpx;
+  opacity: 0;
+  animation: lightning-flash 4s ease-in-out infinite;
+}
+
+/* ========== 雾/霾圆 ========== */
+.fog-circle {
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(180, 180, 180, 0.25) 0%, transparent 70%);
+  will-change: transform;
+}
+
+.fog-1 {
+  width: 100rpx;
+  height: 100rpx;
+  top: 10rpx;
+  right: 10rpx;
+  animation: fog-drift 7s ease-in-out infinite;
+}
+
+.fog-2 {
+  width: 70rpx;
+  height: 70rpx;
+  top: 50rpx;
+  right: 80rpx;
+  animation: fog-drift 9s ease-in-out 3s infinite reverse;
+}
+
+.haze-1 {
+  width: 90rpx;
+  height: 90rpx;
+  top: 10rpx;
+  right: 10rpx;
+  background: radial-gradient(circle, rgba(180, 140, 80, 0.2) 0%, transparent 70%);
+  animation: fog-drift 7s ease-in-out infinite;
+}
+
+.haze-2 {
+  width: 60rpx;
+  height: 60rpx;
+  top: 50rpx;
+  right: 70rpx;
+  background: radial-gradient(circle, rgba(180, 140, 80, 0.15) 0%, transparent 70%);
+  animation: fog-drift 9s ease-in-out 2s infinite reverse;
+}
+
+.emoji-fog {
+  top: 30rpx;
+  right: 40rpx;
+  opacity: 0.25;
+  animation: fog-drift 8s ease-in-out infinite;
+}
+
+/* ========== 沙尘点 ========== */
+.sand-dot {
+  border-radius: 50%;
+  background: rgba(200, 170, 100, 0.3);
+  will-change: transform;
+}
+
+.sand-1 {
+  width: 16rpx;
+  height: 16rpx;
+  top: 20rpx;
+  right: 40rpx;
+  animation: sand-blow 5s ease-in-out infinite;
+}
+
+.sand-2 {
+  width: 12rpx;
+  height: 12rpx;
+  top: 50rpx;
+  right: 80rpx;
+  animation: sand-blow 6s ease-in-out 2s infinite;
+}
+
+/* ========== 台风旋转 ========== */
+.emoji-wind {
+  top: 10rpx;
+  right: 30rpx;
+  font-size: 40rpx;
+  animation: wind-spin 3s linear infinite;
+}
+
+/* ========== 太阳 ========== */
+.emoji-sun {
+  top: 15rpx;
+  right: 40rpx;
+  font-size: 32rpx;
+  animation: spot-pulse 3s ease-in-out infinite;
+}
+
+/* ========== 关键帧动画 ========== */
+
+@keyframes spot-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+@keyframes cloud-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-20rpx); }
+}
+
+@keyframes drop-fall {
+  0% { transform: translateY(-20rpx); opacity: 0; }
+  10% { opacity: 0.5; }
+  85% { opacity: 0.5; }
+  100% { transform: translateY(160rpx); opacity: 0; }
+}
+
+@keyframes snow-drift {
+  0% { transform: translate(0, -15rpx); opacity: 0; }
+  10% { opacity: 0.45; }
+  50% { transform: translate(-18rpx, 70rpx); opacity: 0.45; }
+  85% { opacity: 0.45; }
+  100% { transform: translate(10rpx, 150rpx); opacity: 0; }
+}
+
+@keyframes lightning-flash {
+  0%, 100% { opacity: 0; }
+  8% { opacity: 0; }
+  9% { opacity: 0.7; }
+  11% { opacity: 0; }
+  13% { opacity: 0.5; }
+  15% { opacity: 0; }
+}
+
+@keyframes fog-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-25rpx); }
+}
+
+@keyframes sand-blow {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-15rpx, 5rpx); }
+  75% { transform: translate(10rpx, -3rpx); }
+}
+
+@keyframes wind-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

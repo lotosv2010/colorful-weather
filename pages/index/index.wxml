@@ -15,6 +15,13 @@
     enable-rotate="{{mapInteractive}}"
   />
 
+  <!-- 天气粒子动效层 -->
+  <weather-particles
+    wx:if="{{weatherEffect.particle}}"
+    weatherEffect="{{weatherEffect.particle}}"
+    sheetProgress="{{sheetProgress}}"
+  />
+
   <!-- 离线模式横幅 -->
   <view wx:if="{{offline}}" class="offline-banner">
     <text class="offline-dot"></text>
@@ -69,26 +76,31 @@
 
     <!-- 紧凑卡片 -->
     <view slot="compact" style="opacity: {{1 - sheetProgress}};">
-      <compact-weather
-        weather="{{currentWeather}}"
-        locationLabel="{{locationLabel}}"
-        dateNow="{{dateNow}}"
-        desc="{{desc}}"
-        tempUnit="{{tempUnit}}"
-        loading="{{loading}}"
-        errorMsg="{{errorMsg}}"
-        weatherBg="{{weatherBg}}"
-        bind:getnow="getWeather"
-        bind:retry="onRetry"
-        bind:showselector="showSelector"
-        bind:refresh="onRefresh"
-      />
+      <view class="decor-wrapper">
+        <weather-decor wx:if="{{weatherEffect.decor}}" weatherEffect="{{weatherEffect.decor}}" mode="compact" />
+        <compact-weather
+          weather="{{currentWeather}}"
+          locationLabel="{{locationLabel}}"
+          dateNow="{{dateNow}}"
+          desc="{{desc}}"
+          tempUnit="{{tempUnit}}"
+          loading="{{loading}}"
+          errorMsg="{{errorMsg}}"
+          weatherBg="{{weatherBg}}"
+          bind:getnow="getWeather"
+          bind:retry="onRetry"
+          bind:showselector="showSelector"
+          bind:refresh="onRefresh"
+        />
+      </view>
     </view>
 
     <!-- 全部卡片列表 -->
     <view slot="full" class="full-list">
       <block wx:if="{{!loading && !errorMsg}}">
-      <weather-temp
+      <view class="decor-wrapper">
+        <weather-decor wx:if="{{weatherEffect.decor}}" weatherEffect="{{weatherEffect.decor}}" mode="full" />
+        <weather-temp
         weather="{{currentWeather}}"
         city="{{district}}"
         date="{{dateNow}}"
@@ -105,6 +117,7 @@
         bind:minutelytap="onMinutelyTap"
         class="weather-temp"
       />
+      </view>
       <weather-hourly hourly="{{hourly}}" tempUnit="{{tempUnit}}" bind:itemtap="onHourlyTap" />
       <weather-daily
         daily="{{daily}}"
