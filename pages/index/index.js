@@ -56,7 +56,12 @@ Page({
     errorMsg: '',
   },
   onSheetChange(e) {
-    this.setData({ sheetExpanded: e.detail.expanded });
+    const expanded = e.detail.expanded;
+    this.setData({
+      sheetExpanded: expanded,
+      // 抽屉收起时恢复地图交互，展开时锁定
+      mapInteractive: !expanded,
+    });
   },
   onSheetProgress(e) {
     this.setData({ sheetProgress: e.detail.progress });
@@ -65,7 +70,10 @@ Page({
     this.setData({ mapInteractive: false });
   },
   onSheetDragEnd() {
-    this.setData({ mapInteractive: true });
+    // 仅在抽屉收起时恢复地图交互，展开状态保持锁定
+    if (!this.data.sheetExpanded) {
+      this.setData({ mapInteractive: true });
+    }
   },
   onExpandSheet() {
     const sheet = this.selectComponent('#sheet');

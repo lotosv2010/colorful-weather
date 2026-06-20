@@ -4,7 +4,7 @@
     class="compact-layer"
     style="{{weatherBg ? 'background-color:' + weatherBg : ''}}"
     bindtouchstart="onTouchStart"
-    bindtouchmove="onTouchMove"
+    catchtouchmove="onTouchMove"
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchEnd"
   >
@@ -23,7 +23,7 @@
     <view
       class="full-handle"
       bindtouchstart="onTouchStart"
-      bindtouchmove="onTouchMove"
+      catchtouchmove="onTouchMove"
       bindtouchend="onTouchEnd"
       bindtouchcancel="onTouchEnd"
     ></view>
