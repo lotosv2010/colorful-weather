@@ -3,6 +3,7 @@
   "usingComponents": {
     "weather30-card": "../../components/weather30-card/index",
     "weather30-chart": "../../components/weather30-chart/index",
-    "page-header": "/components/page-header/index"
+    "page-header": "/components/page-header/index",
+    "error-state": "../../components/error-state/index"
   }
 }

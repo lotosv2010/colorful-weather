@@ -2,6 +2,7 @@
   "navigationBarTitleText": "生活预报",
   "usingComponents": {
     "weather-icon": "/components/icon/index",
-    "page-header": "/components/page-header/index"
+    "page-header": "/components/page-header/index",
+    "error-state": "../../components/error-state/index"
   }
 }

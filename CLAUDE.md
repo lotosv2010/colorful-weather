@@ -49,6 +49,7 @@ components/
   hourly-wind-chart/               逐小时风速图表 + 风向箭头（Canvas 2D）
   weather30-card/                  30 天预报单日卡片
   weather30-chart/                 30 天温度趋势双折线图（Canvas 2D）
+  error-state/                     错误状态视图（错误文字 + 重试按钮，支持 compact 模式）
   timemachine/                     时光机：tabs 切换天气 / 空气，最近 10 天日期 + 24h Canvas 图表（骨架屏 + 异步竞态保护）
 utils/
   api.js                           和风天气接口封装（19 个函数，含缓存与历史天气 / 空气）
@@ -100,6 +101,10 @@ static/
 ### 骨架屏
 
 首页加载时显示骨架屏替代 `wx.showLoading`。`loading` 状态控制 compact 卡片和 full-list 区域在骨架屏与真实内容间切换。shimmer 动画定义在 `index.wxss`（`@keyframes sk-shimmer`），timemachine 组件有独立的骨架屏实现。
+
+### 错误恢复
+
+首页和所有子页统一使用 `components/error-state` 组件展示错误状态 + 重试按钮。首页定位失败时自动弹出城市搜索面板（`selectorVisible`），引导用户手动选城。各子页 JS 中实现 `onRetry()` 方法处理重试逻辑。
 
 ### 图标渲染
 

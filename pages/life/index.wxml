@@ -34,7 +34,7 @@
   </view>
 
   <view wx:if="{{loading}}" class="tip">加载中…</view>
-  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+  <error-state wx:elif="{{errorMsg}}" errorMsg="{{errorMsg}}" bind:retry="onRetry" />
   <view wx:elif="{{!list.length}}" class="tip">暂无该指数数据</view>
 
   <!-- 时间线 -->

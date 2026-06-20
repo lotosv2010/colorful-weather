@@ -1,7 +1,7 @@
 <!--pages/typhoon/index.wxml-->
 <view class="typhoon-page">
   <view wx:if="{{loading}}" class="tip">加载中...</view>
-  <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
+  <error-state wx:elif="{{errorMsg}}" errorMsg="{{errorMsg}}" bind:retry="onRetry" />
 
   <block wx:if="{{!loading && !errorMsg}}">
     <!-- 台风列表 -->

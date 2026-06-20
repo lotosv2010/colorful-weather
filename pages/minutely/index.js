@@ -160,6 +160,12 @@ Page({
     ctx.stroke();
   },
 
+  // 重试：清除错误并重新加载
+  onRetry() {
+    this.setData({ loading: true, errorMsg: '' });
+    this.fetchData(this._location);
+  },
+
   onShareAppMessage() {
     const { city, district, province, summary } = this.data;
     const loc = this._location || '';

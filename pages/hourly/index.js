@@ -83,6 +83,12 @@ Page({
     }
   },
 
+  // 重试：清除错误并重新加载
+  onRetry() {
+    this.setData({ loading: true, errorMsg: '' });
+    this.fetchData();
+  },
+
   onChartSelect(e) {
     const { index } = e.detail;
     const detail = this.data.hourly[index];

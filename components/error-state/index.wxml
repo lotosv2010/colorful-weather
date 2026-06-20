@@ -1,0 +1,4 @@
+<view class="error-state {{compact ? 'error-state-compact' : ''}}">
+  <text class="error-text">{{errorMsg}}</text>
+  <view class="retry-btn" catchtap="onRetry">重试</view>
+</view>

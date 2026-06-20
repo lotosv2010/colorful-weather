@@ -311,6 +311,12 @@ Page({
     }));
   },
 
+  // 重试：清除错误并重新加载
+  onRetry() {
+    this.setData({ loading: true, errorMsg: '' });
+    this.fetchStormList();
+  },
+
   onShareAppMessage() {
     return {
       title: '台风路径实时追踪',

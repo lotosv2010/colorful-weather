@@ -84,8 +84,8 @@
           />
         </view>
       </view>
-      <!-- 天气主区域：骨架屏 / 真实内容 -->
-      <block wx:if="{{!loading}}">
+      <!-- 天气主区域：骨架屏 / 错误状态 / 真实内容 -->
+      <block wx:if="{{!loading && !errorMsg}}">
         <view class="weather-header-container">
           <view class="weather-header-main">
             <i class="weather-header-svg icon-color-{{ic.category(currentWeather.icon || 100)}} qi-{{currentWeather.icon || 100}}-fill"></i>
@@ -99,6 +99,9 @@
           </view>
           <view class="weather-header-desc">{{ desc || '' }}</view>
         </view>
+      </block>
+      <block wx:elif="{{errorMsg}}">
+        <error-state compact errorMsg="{{errorMsg}}" bind:retry="onRetry" />
       </block>
       <block wx:else>
         <view class="sk-compact">
@@ -116,7 +119,7 @@
 
     <!-- 全部卡片列表 -->
     <view slot="full" class="full-list">
-      <block wx:if="{{!loading}}">
+      <block wx:if="{{!loading && !errorMsg}}">
       <weather-temp
         weather="{{currentWeather}}"
         city="{{district}}"
@@ -162,6 +165,9 @@
         tempUnit="{{tempUnit}}"
         themeColor="{{themeColor}}"
       />
+      </block>
+      <block wx:elif="{{errorMsg}}">
+        <error-state errorMsg="{{errorMsg}}" bind:retry="onRetry" />
       </block>
       <block wx:else>
         <view class="sk-full-list">

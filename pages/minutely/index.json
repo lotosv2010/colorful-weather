@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "分钟级降水",
   "usingComponents": {
-    "page-header": "/components/page-header/index"
+    "page-header": "/components/page-header/index",
+    "error-state": "../../components/error-state/index"
   }
 }

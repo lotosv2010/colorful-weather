@@ -125,6 +125,12 @@ Page({
     this.refreshList();
   },
 
+  // 重试：清除错误并重新加载
+  onRetry() {
+    this.setData({ loading: true, errorMsg: '' });
+    this.loadIndices();
+  },
+
   _shareParams() {
     const { location, province, city, district, activeType } = this.data;
     return { location, province, city, district, type: activeType };

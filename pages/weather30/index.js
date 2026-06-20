@@ -201,6 +201,12 @@ Page({
     return { rainDays, snowDays, maxTemp, maxDate, minTemp, minDate };
   },
 
+  // 重试：清除错误并重新加载
+  onRetry() {
+    this.setData({ loading: true, errorMsg: '' });
+    this.fetchData();
+  },
+
   onTabChange(e) {
     const tab = e.currentTarget.dataset.tab;
     this.setData({ activeTab: tab });

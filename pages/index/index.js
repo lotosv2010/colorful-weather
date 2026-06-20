@@ -48,6 +48,7 @@ Page({
     offline: false,
     cityId: '',
     loading: true,
+    errorMsg: '',
   },
   onSheetChange(e) {
     this.setData({ sheetExpanded: e.detail.expanded });
@@ -72,6 +73,14 @@ Page({
   onRefresh() {
     cache.clear();
     this.getWeather();
+  },
+  onRetry() {
+    this.setData({ errorMsg: '' });
+    if (this.data.latitude && this.data.longitude) {
+      this.getWeather();
+    } else {
+      this.init();
+    }
   },
   _syncPrefs() {
     const p = prefs.getPrefs();
@@ -101,12 +110,6 @@ Page({
     if (this._unsubPrefs) this._unsubPrefs();
     if (this._unsubNet) this._unsubNet();
   },
-  showToast() {
-    wx.showToast({
-      title: `数据加载失败，请稍后再试`,
-      icon: 'none'
-    });
-  },
   async init(opts = {}) {
     if (this._fetching) return;
     const { forceLocate = false } = opts;
@@ -131,7 +134,14 @@ Page({
         await this.getNow();
       }
     } catch (error) {
-      this.showToast();
+      console.error(error);
+      const msg = String(error?.errMsg || error?.message || '');
+      const isLocateFail = msg.includes('getLocation') || msg.includes('auth deny') || msg.includes('auth denied');
+      this.setData({
+        loading: false,
+        errorMsg: isLocateFail ? '定位失败，请手动选择城市' : '数据加载失败，请稍后再试',
+        ...(isLocateFail ? { selectorVisible: true } : {}),
+      });
     }
   },
   async getNow() {
@@ -147,11 +157,10 @@ Page({
       this._resolveCityId(`${longitude},${latitude}`);
       await this.getWeather();
     } catch (error) {
-      console.log(error)
-      this.showToast();
+      console.error(error)
+      this.setData({ loading: false, errorMsg: '城市解析失败，请稍后再试' });
     }
   },
-  // 通过经纬度反查 LocationID（供历史接口使用，失败不阻断主流程）
   async _resolveCityId(location) {
     try {
       // GeoAPI 坐标精度限制为两位小数
@@ -265,12 +274,12 @@ Page({
         showMinutelyEntry,
         minutelySummary: minutelyRes?.summary || '',
         minutelyType,
-        loading: false
+        loading: false,
+        errorMsg: ''
       });
     } catch (error) {
-      console.log(error)
-      this.setData({ loading: false });
-      this.showToast();
+      console.error(error)
+      this.setData({ loading: false, errorMsg: '数据加载失败，请稍后再试' });
     } finally {
       this._fetching = false;
     }
