@@ -84,23 +84,39 @@
           />
         </view>
       </view>
-      <view class="weather-header-container">
-        <view class="weather-header-main">
-          <i class="weather-header-svg icon-color-{{ic.category(currentWeather.icon || 100)}} qi-{{currentWeather.icon || 100}}-fill"></i>
-          <view class="weather-header-left">
-            <view class="weather-header-temp">
-              {{ tu.fmt(currentWeather.temp, tempUnit) }}
-              <text class="weather-header-unit">°</text>
+      <!-- 天气主区域：骨架屏 / 真实内容 -->
+      <block wx:if="{{!loading}}">
+        <view class="weather-header-container">
+          <view class="weather-header-main">
+            <i class="weather-header-svg icon-color-{{ic.category(currentWeather.icon || 100)}} qi-{{currentWeather.icon || 100}}-fill"></i>
+            <view class="weather-header-left">
+              <view class="weather-header-temp">
+                {{ tu.fmt(currentWeather.temp, tempUnit) }}
+                <text class="weather-header-unit">°</text>
+              </view>
+              <view class="weather-header-text">{{ currentWeather.text || '' }}</view>
             </view>
-            <view class="weather-header-text">{{ currentWeather.text || '' }}</view>
           </view>
+          <view class="weather-header-desc">{{ desc || '' }}</view>
         </view>
-        <view class="weather-header-desc">{{ desc || '' }}</view>
-      </view>
+      </block>
+      <block wx:else>
+        <view class="sk-compact">
+          <view class="sk-compact-main">
+            <view class="sk-circle"></view>
+            <view class="sk-compact-left">
+              <view class="sk-bar sk-bar-temp"></view>
+              <view class="sk-bar sk-bar-text"></view>
+            </view>
+          </view>
+          <view class="sk-bar sk-bar-desc"></view>
+        </view>
+      </block>
     </view>
 
     <!-- 全部卡片列表 -->
     <view slot="full" class="full-list">
+      <block wx:if="{{!loading}}">
       <weather-temp
         weather="{{currentWeather}}"
         city="{{district}}"
@@ -146,6 +162,71 @@
         tempUnit="{{tempUnit}}"
         themeColor="{{themeColor}}"
       />
+      </block>
+      <block wx:else>
+        <view class="sk-full-list">
+          <!-- weather-temp 骨架 -->
+          <view class="sk-card sk-card-temp">
+            <view class="sk-row">
+              <view class="sk-bar sk-bar-lg"></view>
+              <view class="sk-bar sk-bar-md" style="margin-left: auto;"></view>
+            </view>
+            <view class="sk-row" style="margin-top: 16rpx;">
+              <view class="sk-bar sk-bar-sm"></view>
+            </view>
+          </view>
+          <!-- hourly 骨架 -->
+          <view class="sk-card">
+            <view class="sk-bar sk-bar-sm" style="margin-bottom: 16rpx;"></view>
+            <view class="sk-scroll-row">
+              <view class="sk-scroll-item" wx:for="{{6}}" wx:key="*this">
+                <view class="sk-bar sk-bar-xs"></view>
+                <view class="sk-circle-sm"></view>
+                <view class="sk-bar sk-bar-xs"></view>
+              </view>
+            </view>
+          </view>
+          <!-- daily 骨架 -->
+          <view class="sk-card">
+            <view class="sk-bar sk-bar-sm" style="margin-bottom: 16rpx;"></view>
+            <view class="sk-row" wx:for="{{4}}" wx:key="*this" style="margin-top: {{index > 0 ? '16rpx' : '0'}};">
+              <view class="sk-bar sk-bar-xs"></view>
+              <view class="sk-bar sk-bar-xs" style="margin: 0 16rpx;"></view>
+              <view class="sk-bar sk-bar-fill" style="flex: 1;"></view>
+              <view class="sk-bar sk-bar-xs" style="margin-left: 16rpx;"></view>
+            </view>
+          </view>
+          <!-- air 骨架 -->
+          <view class="sk-card">
+            <view class="sk-row">
+              <view class="sk-circle-lg"></view>
+              <view style="flex: 1; margin-left: 24rpx;">
+                <view class="sk-bar sk-bar-md"></view>
+                <view class="sk-bar sk-bar-sm" style="margin-top: 12rpx;"></view>
+              </view>
+            </view>
+          </view>
+          <!-- astronomy 骨架 -->
+          <view class="sk-card">
+            <view class="sk-bar sk-bar-sm"></view>
+            <view class="sk-bar sk-bar-fill" style="margin-top: 16rpx; height: 120rpx;"></view>
+          </view>
+          <!-- life 骨架 -->
+          <view class="sk-card">
+            <view class="sk-grid-4">
+              <view class="sk-grid-item" wx:for="{{4}}" wx:key="*this">
+                <view class="sk-circle-sm"></view>
+                <view class="sk-bar sk-bar-xs" style="margin-top: 12rpx;"></view>
+              </view>
+            </view>
+          </view>
+          <!-- timemachine 骨架 -->
+          <view class="sk-card">
+            <view class="sk-bar sk-bar-md"></view>
+            <view class="sk-bar sk-bar-fill" style="margin-top: 16rpx; height: 200rpx;"></view>
+          </view>
+        </view>
+      </block>
     </view>
   </bottom-sheet>
 

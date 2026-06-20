@@ -345,3 +345,159 @@ page {
   display: block;
   margin-bottom: 16rpx;
 }
+
+/* ========== 骨架屏样式 ========== */
+
+@keyframes sk-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.sk-bar {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.04) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+}
+
+.sk-bar-lg { width: 80%; height: 22px; }
+.sk-bar-md { width: 60%; height: 14px; }
+.sk-bar-sm { width: 40%; height: 12px; }
+.sk-bar-xs { width: 30%; height: 10px; }
+.sk-bar-fill { width: 100%; }
+
+.sk-circle {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.sk-circle-sm {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.sk-circle-lg {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* compact 卡片骨架屏 */
+.sk-compact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 0 8rpx;
+}
+
+.sk-compact-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 144rpx;
+}
+
+.sk-compact-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-left: 20rpx;
+  height: 100%;
+}
+
+.sk-bar-temp {
+  width: 120rpx;
+  height: 48rpx;
+}
+
+.sk-bar-text {
+  width: 80rpx;
+  height: 24rpx;
+  margin-top: 12rpx;
+}
+
+.sk-bar-desc {
+  width: 200rpx;
+  height: 20rpx;
+  margin-top: 24rpx;
+}
+
+/* full-list 骨架屏 */
+.sk-full-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.sk-card {
+  background: rgba(34, 37, 48, 0.95);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.sk-card-temp {
+  padding: 32rpx 24rpx;
+}
+
+.sk-row {
+  display: flex;
+  align-items: center;
+}
+
+.sk-scroll-row {
+  display: flex;
+  gap: 24rpx;
+  overflow: hidden;
+}
+
+.sk-scroll-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  flex-shrink: 0;
+  width: 80rpx;
+}
+
+.sk-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24rpx;
+}
+
+.sk-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

@@ -1,6 +1,6 @@
 # 霁色天气 — 功能进度
 
-> 最后更新：2026-06-20
+> 最后更新：2026-06-20（文档同步刷新）
 
 ## 已完成
 
@@ -58,6 +58,16 @@
 - [x] 原生地图 + 历史轨迹实线 / 预测轨迹虚线
 - [x] 缩放控件 + 预测表格
 
+### 时光机卡片（components/timemachine）
+- [x] tabs 切换：天气时光机 / 空气质量时光机
+- [x] 最近 10 天日期横向选择（不含今天）
+- [x] 天气视图：日最高/最低 + 日出日落 + 湿度 / 降水 / 气压 / 月相 + 24h 温度折线（Canvas 2D，渐变填充 + 最高低点标记）
+- [x] 空气视图：日均 AQI 圆形指示（按等级取色）+ 峰值 / 主要污染物 + 24h AQI 柱状图（按等级配色）
+- [x] 内置按日期 + tab 缓存，避免重复请求
+- [x] 体验优化：固定内容区高度 + 骨架屏 + 切 tab 保留旧数据 + 右上角 spinner，解决 iOS 切 tab 滚动跳回与 Android 闪烁
+- [x] hidden 切 tab 后失效 ctx + nextTick 重绘，修复 24h 温度图复显丢失
+- [x] 异步竞态保护：tab/日期变化后丢弃过期请求结果
+
 ### 设置与多城市（pages/settings）
 - [x] 用户偏好 store（`utils/prefs.js`）：温度单位 / 主题色 / 默认城市 / 收藏城市，订阅机制供页面响应
 - [x] 设置页：℃/℉ 切换、主题色（5 种预设）、默认城市设置 / 清除 / 置顶 / 移除
@@ -68,9 +78,13 @@
 - [x] 主题色通过 CSS 变量 `--theme` 注入页面根节点，作用于顶部定位按钮、设置页选中态
 
 ### 基础设施
-- [x] 本地缓存层（utils/cache.js，TTL 基于 wx.setStorage）
-- [x] 21 个 API 封装函数（utils/api.js：天气 / 空气 / 生活 / 天文 / 预警 / 分钟级 / 30 天 / 台风 / 潮汐 / 太阳辐射 / GeoAPI）
-- [x] WXS 工具模块（iconColor / moonPhase / fmt）
+- [x] 本地缓存层（utils/cache.js，TTL 基于 wx.setStorage，支持 stale 降级）
+- [x] API 封装函数（utils/api.js：19 个函数，天气 / 空气 / 生活 / 天文 / 预警 / 分钟级 / 30 天 / 台风 / 潮汐 / 太阳辐射 / GeoAPI / 历史天气 / 历史空气）
+- [x] 网络状态管理（utils/network.js，在线/离线追踪 + 订阅通知）
+- [x] 用户偏好 store（utils/prefs.js，温度单位 / 主题色 / 默认城市 / 收藏城市）
+- [x] 分享辅助（utils/share.js，卡片 / 朋友圈路径构造）
+- [x] 温度单位换算（utils/temp.js + utils/tempUnit.wxs，JS/WXML 双版本）
+- [x] WXS 工具模块（iconColor / moonPhase / fmt / tempUnit）
 - [x] 生活指数元数据（utils/lifeMeta.js）
 - [x] AQI 等级元数据（utils/airMeta.js）
 - [x] 风向角度转方位工具（utils/wind.js）
@@ -89,7 +103,8 @@
 - [x] `utils/api.js` 和风天气 KEY 抽离至 `utils/config.local.js`（已 gitignore）
 - [x] `app.js` 腾讯地图 KEY 抽离至 `utils/config.local.js`
 - [x] `project.private.config.json` 加入 `.gitignore` 并 `git rm --cached`
-- [ ] 进一步：迁移到云函数代理，避免密钥随 wxapkg 泄露（P1）
+- [x] 新增 `utils/config.example.js` 配置示例供新开发者参考
+- [-] 进一步：迁移到云函数代理，避免密钥随 wxapkg 泄露（P1）
 
 ### 功能增强
 - [x] 多城市管理：收藏 / 置顶 / 取消
@@ -101,19 +116,19 @@
 - [x] 分享菜单：开启 `onShareAppMessage` / `onShareTimeline`，覆盖首页 / hourly / weather30 / air / warning / minutely / typhoon / life
 - [x] city-search 顶部「当前定位」行（样式与历史 / 收藏一致）
 - [-] ~~订阅消息：降水提醒、预警推送（`wx.requestSubscribeMessage`）~~ —— 不做
-- [ ] 天气时光机：查询历史某天的天气实况（温度、天气现象、风向风速等）
-- [ ] 空气质量时光机：查询历史某天的空气质量（AQI、污染物浓度等）
+- [x] 天气时光机：最近 10 天历史天气实况，集成在首页时光机卡片
+- [x] 空气质量时光机：最近 10 天历史 AQI，集成在首页时光机卡片
 
 ### UI / 体验
 - [ ] 天气动效背景（雨滴 / 雪花 / 晴天光斑），替代静态地图
 - [ ] 主题色随天气 / 时段（白天 / 黄昏 / 夜晚）动态切换
-- [ ] 首屏骨架屏 / 占位，替代全屏 `wx.showLoading`
+- [x] 首屏骨架屏 / 占位，替代全屏 `wx.showLoading`
 - [ ] 错误恢复 UI：API 失败时提供重试按钮 / 错误状态视图
 - [ ] 定位权限拒绝兜底：引导用户手动选择城市
 
 ### 重构 / 待决策
-- [ ] `solar` / `tide` 组件去留：当前未引用（commit b60a065 已隐藏入口），决定恢复 / 删除
-- [ ] 抽 `utils/route.js`：8 个页面重复拼接 `location/province/city/district` 跳转参数
+- [ ] `solar` / `tide` 组件去留：组件代码保留，`pages/index/index.json` 中已注册但 `index.wxml` 无引用（commit b60a065 隐藏入口），决定恢复 / 删除
+- [ ] 抽 `utils/route.js`：8 个页面重复拼接 `location/province/city/district` 跳转参数（当前不存在此文件）
 
 ### 工程化
 - [ ] ESLint 配置实际可用的 rules（当前仅启用 parser）

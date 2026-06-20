@@ -47,6 +47,7 @@ Page({
     themeColor: '#1296db',
     offline: false,
     cityId: '',
+    loading: true,
   },
   onSheetChange(e) {
     this.setData({ sheetExpanded: e.detail.expanded });
@@ -219,9 +220,7 @@ Page({
     try {
       // 取消上一批未完成的请求，避免城市切换时旧数据覆盖新结果
       abortPending();
-      wx.showLoading({
-        title: '数据加载中...',
-      });
+      this.setData({ loading: true });
       let location = '101010100';
       const {longitude, latitude} = this.data;
       location = `${longitude},${latitude}`;
@@ -265,13 +264,14 @@ Page({
         alerts,
         showMinutelyEntry,
         minutelySummary: minutelyRes?.summary || '',
-        minutelyType
+        minutelyType,
+        loading: false
       });
     } catch (error) {
       console.log(error)
+      this.setData({ loading: false });
       this.showToast();
     } finally {
-      wx.hideLoading();
       this._fetching = false;
     }
   },

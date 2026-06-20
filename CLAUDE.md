@@ -22,7 +22,8 @@
 ```
 app.js / app.json / app.wxss       小程序入口与全局配置
 pages/
-  index/                           首页：天气主视图
+  index/                           首页：地图底图 + 底部抽屉天气主视图
+  settings/                        设置页：温度单位、主题色、默认城市、收藏城市管理
   life/                            生活指数详情页（16 种指数、时间轴、定义卡片）
   air/                             空气质量详情页（AQI 环图、污染物、逐小时 / 逐日预报）
   warning/                         天气预警详情页（颜色标识、紧急程度）
@@ -32,24 +33,32 @@ pages/
   typhoon/                         台风路径页（原生地图、历史 / 预测轨迹、预测表格）
 components/
   temp/                            当前温度 + 头部信息（预警横幅、分钟级 / 台风入口）
+  bottom-sheet/                    底部可拖拽抽屉（Apple Home Bar 风格，上拉展开 / 下拉折叠）
   hourly/                          24 小时预报横向滚动（首页摘要）
   daily/                           7 天预报列表（温度条可视化）
   air/                             空气质量 AQI 环图（Canvas 2D）
   life/                            生活指数四宫格（运动 / 穿衣 / 洗车 / 紫外线）
   icon/                            SVG 图标渲染（运行时替换 hex 颜色 → base64）
   astronomy/                       日出日落曲线 + 月相（Canvas 2D）
-  city-search/                     城市搜索浮层（热门城市、搜索历史、防抖搜索）
+  city-search/                     城市搜索浮层（热门城市、搜索历史、防抖搜索、收藏管理）
   page-header/                     子页通用城市 / 省区头部
-  solar/                           太阳辐射 GHI 图表（Canvas 2D）
-  tide/                            潮汐高度图表（Canvas 2D，高低潮标记）
+  solar/                           太阳辐射 GHI 图表（Canvas 2D，当前未引用）
+  tide/                            潮汐高度图表（Canvas 2D，高低潮标记，当前未引用）
   hourly-temp-chart/               逐小时温度折线图（Canvas 2D，可滚动）
   hourly-precip-chart/             逐小时降水柱状 + 概率折线图（Canvas 2D）
   hourly-wind-chart/               逐小时风速图表 + 风向箭头（Canvas 2D）
   weather30-card/                  30 天预报单日卡片
   weather30-chart/                 30 天温度趋势双折线图（Canvas 2D）
+  timemachine/                     时光机：tabs 切换天气 / 空气，最近 10 天日期 + 24h Canvas 图表（骨架屏 + 异步竞态保护）
 utils/
-  api.js                           和风天气接口封装（18 个函数，含缓存）
-  cache.js                         wx.setStorage TTL 缓存层
+  api.js                           和风天气接口封装（19 个函数，含缓存与历史天气 / 空气）
+  cache.js                         wx.setStorage TTL 缓存层（支持 stale 降级）
+  network.js                       网络状态 store（在线/离线追踪 + 订阅通知）
+  prefs.js                         用户偏好 store（温度单位 / 主题色 / 默认城市 / 收藏城市）
+  share.js                         分享辅助（卡片 / 朋友圈分享路径构造）
+  temp.js                          温度单位换算（℃ ↔ ℉，与 tempUnit.wxs 一致）
+  config.local.js                  本地密钥配置（已 gitignore，不进版本库）
+  config.example.js                配置示例（供新开发者参考）
   util.js                          日期格式化、RGBA 转 hex、亮度文字色
   lifeMeta.js                      生活指数定义与等级颜色映射
   airMeta.js                       AQI 等级定义与污染物元数据
@@ -57,6 +66,7 @@ utils/
   iconColor.wxs                    WXS：天气图标 code → 颜色分类
   moonPhase.wxs                    WXS：月相 code → emoji / 名称
   fmt.wxs                          WXS：安全取值、UV 文本映射
+  tempUnit.wxs                     WXS：温度单位换算（供 WXML 内直接使用）
 libs/
   qqmap-wx-jssdk.min.js            腾讯地图 SDK
 static/
@@ -69,14 +79,27 @@ static/
 
 ### 数据流（pages/index/index.js）
 
-1. `onLoad` → `init()`：实例化腾讯地图 SDK，调用 `wx.getLocation()` 取经纬度。
+1. `onLoad` → `init()`：检查默认城市（`prefs.js`），有则直接加载；无则调用 `wx.getLocation()` 定位。
 2. `getNow()`：通过 `qqmapsdk.reverseGeocoder` 解析当前城市名，再触发 `getWeather()`。
-3. `getWeather()`：使用 `Promise.all` 并发请求 9 个接口（实时 / 生活指数 / 24h / 7d / 空气 / 日出日落 / 月相 / 预警 / 分钟级降水），将结果分发到对应组件。
-4. 城市切换通过 `city-search` 组件触发 `onSelectCity`，更新经纬度后再次拉取。
+3. `getWeather()`：使用 `Promise.all` 并发请求 9 个接口（实时 / 生活指数 / 24h / 7d / 空气 / 日出日落 / 月相 / 预警 / 分钟级降水），将结果分发到对应组件。切换城市时先 `abortPending()` 取消未完成请求。
+4. 城市切换通过 `city-search` 组件触发 `onSelectCity`，更新经纬度后再次拉取；重新定位时 `cache.clear()` 清除旧位置缓存。
+5. 温度单位通过 `prefs.js` 订阅机制下发，子页通过 `tempUnit` 属性接收。
 
 ### 组件职责
 
-所有展示组件均为受控展示组件：父页通过 properties 单向传入数据，组件内不发起请求。仅 `temp` 通过 `triggerEvent('getnow')` 通知父级刷新。
+所有展示组件均为受控展示组件：父页通过 properties 单向传入数据，组件内不发起请求。仅 `temp` 通过 `triggerEvent('getnow')` 通知父级刷新，`city-search` 通过 `triggerEvent('selectcity')` 通知城市切换。
+
+### 用户偏好（utils/prefs.js）
+
+`prefs.js` 提供 `tempUnit`（℃/℉）、`themeColor`（6 种预设）、`defaultCityId`、`cities`（收藏列表）。通过 `subscribe(fn)` 订阅变更，页面响应式更新。主题色通过 CSS 变量 `--theme` 注入页面根节点。
+
+### 离线降级
+
+`network.js` 追踪在线/离线状态。断网时 `cache.getStale()` 返回过期缓存，首页显示「离线模式」横幅。
+
+### 骨架屏
+
+首页加载时显示骨架屏替代 `wx.showLoading`。`loading` 状态控制 compact 卡片和 full-list 区域在骨架屏与真实内容间切换。shimmer 动画定义在 `index.wxss`（`@keyframes sk-shimmer`），timemachine 组件有独立的骨架屏实现。
 
 ### 图标渲染
 
@@ -93,12 +116,13 @@ static/
 
 ## 安全与密钥
 
-⚠️ 当前仓库中以下密钥**以明文形式硬编码**，建议处理：
+密钥已抽离至 `utils/config.local.js`（已加入 `.gitignore`，不进版本库）：
 
-- `utils/api.js`：和风天气 KEY
-- `app.js`：腾讯地图 KEY
+- `utils/api.js` 通过 `require('./config.local')` 读取和风天气 KEY
+- `app.js` 通过 `require('./utils/config.local')` 读取腾讯地图 KEY
+- 新开发者参考 `utils/config.example.js` 创建本地配置
 
-如需重构，应抽离至独立的非追踪配置文件，或通过云函数代理调用。
+⚠️ 密钥仍会随 wxapkg 包泄露，后续可考虑迁移至云函数代理。
 
 ## 已知待办与潜在问题
 
