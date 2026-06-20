@@ -13,6 +13,9 @@ const THEME_PRESETS = [
 const DEFAULTS = {
   tempUnit: 'C',
   themeColor: '#1296db',
+  manualThemeColor: '#1296db',
+  themeMode: 'auto', // 'auto' | 'manual'
+  cardBgMode: 'auto', // 'auto' | 'manual'
   defaultCityId: null,
   cities: [],
 };

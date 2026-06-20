@@ -2,6 +2,12 @@ Component({
   options: {
     multipleSlots: true,
   },
+  properties: {
+    weatherBg: {
+      type: String,
+      value: ''
+    }
+  },
   data: {
     progress: 0,
     expanded: false,

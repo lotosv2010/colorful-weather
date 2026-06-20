@@ -41,7 +41,7 @@
     </view>
   </view>
 
-  <bottom-sheet id="sheet" bind:change="onSheetChange" bind:progress="onSheetProgress" bind:dragstart="onSheetDragStart" bind:dragend="onSheetDragEnd">
+  <bottom-sheet id="sheet" weatherBg="{{weatherBg}}" bind:change="onSheetChange" bind:progress="onSheetProgress" bind:dragstart="onSheetDragStart" bind:dragend="onSheetDragEnd">
     <!-- 紧凑卡片上方外侧胶囊 -->
     <view slot="compact-above" class="compact-above-row" style="opacity: {{1 - sheetProgress}};">
       <view wx:if="{{air.aqi}}" class="capsule aqi-capsule" catchtap="onAirTap">
@@ -68,53 +68,21 @@
     </view>
 
     <!-- 紧凑卡片 -->
-    <view slot="compact" class="compact">
-      <view class="compact-top" style="opacity: {{1 - sheetProgress}};">
-        <view class="compact-location" catchtap="showSelector">
-          <icon class="compact-location-icon" type="search" color="#fff" size="24"></icon>
-          <view class="compact-location-text">{{ locationLabel || '定位中…' }}</view>
-        </view>
-        <view class="compact-date">
-          <view>{{ dateNow }}</view>
-          <weather-icon
-            class="compact-refresh"
-            colors="{{['rgb(181, 187, 204)']}}"
-            src="/static/icons/refresh.svg"
-            catchtap="onRefresh"
-          />
-        </view>
-      </view>
-      <!-- 天气主区域：骨架屏 / 错误状态 / 真实内容 -->
-      <block wx:if="{{!loading && !errorMsg}}">
-        <view class="weather-header-container">
-          <view class="weather-header-main">
-            <i class="weather-header-svg icon-color-{{ic.category(currentWeather.icon || 100)}} qi-{{currentWeather.icon || 100}}-fill"></i>
-            <view class="weather-header-left">
-              <view class="weather-header-temp">
-                {{ tu.fmt(currentWeather.temp, tempUnit) }}
-                <text class="weather-header-unit">°</text>
-              </view>
-              <view class="weather-header-text">{{ currentWeather.text || '' }}</view>
-            </view>
-          </view>
-          <view class="weather-header-desc">{{ desc || '' }}</view>
-        </view>
-      </block>
-      <block wx:elif="{{errorMsg}}">
-        <error-state compact errorMsg="{{errorMsg}}" bind:retry="onRetry" />
-      </block>
-      <block wx:else>
-        <view class="sk-compact">
-          <view class="sk-compact-main">
-            <view class="sk-circle"></view>
-            <view class="sk-compact-left">
-              <view class="sk-bar sk-bar-temp"></view>
-              <view class="sk-bar sk-bar-text"></view>
-            </view>
-          </view>
-          <view class="sk-bar sk-bar-desc"></view>
-        </view>
-      </block>
+    <view slot="compact" style="opacity: {{1 - sheetProgress}};">
+      <compact-weather
+        weather="{{currentWeather}}"
+        locationLabel="{{locationLabel}}"
+        dateNow="{{dateNow}}"
+        desc="{{desc}}"
+        tempUnit="{{tempUnit}}"
+        loading="{{loading}}"
+        errorMsg="{{errorMsg}}"
+        weatherBg="{{weatherBg}}"
+        bind:getnow="getWeather"
+        bind:retry="onRetry"
+        bind:showselector="showSelector"
+        bind:refresh="onRefresh"
+      />
     </view>
 
     <!-- 全部卡片列表 -->
@@ -131,6 +99,7 @@
         showMinutelyEntry="{{showMinutelyEntry}}"
         minutelyType="{{minutelyType}}"
         minutelySummary="{{minutelySummary}}"
+        weatherBg="{{weatherBg}}"
         bind:getnow="getWeather"
         bind:gowarning="gotoWarning"
         bind:minutelytap="onMinutelyTap"

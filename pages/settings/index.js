@@ -4,6 +4,8 @@ Page({
   data: {
     tempUnit: 'C',
     themeColor: '#1296db',
+    themeMode: 'auto',
+    cardBgMode: 'auto',
     themePresets: prefs.THEME_PRESETS,
     defaultCityId: null,
     cities: [],
@@ -19,6 +21,8 @@ Page({
     this.setData({
       tempUnit: p.tempUnit,
       themeColor: p.themeColor,
+      themeMode: p.themeMode || 'manual',
+      cardBgMode: p.cardBgMode || 'auto',
       defaultCityId: p.defaultCityId,
       cities: p.cities,
     });
@@ -29,7 +33,24 @@ Page({
   },
   onThemeTap(e) {
     const { color } = e.currentTarget.dataset;
-    if (color !== this.data.themeColor) prefs.setPrefs({ themeColor: color });
+    if (color !== this.data.themeColor) {
+      prefs.setPrefs({ themeColor: color, manualThemeColor: color });
+    }
+  },
+  onThemeModeTap(e) {
+    const { mode } = e.currentTarget.dataset;
+    if (mode === this.data.themeMode) return;
+    if (mode === 'manual') {
+      const manual = prefs.getPrefs().manualThemeColor || '#1296db';
+      prefs.setPrefs({ themeMode: 'manual', themeColor: manual });
+    } else {
+      prefs.setPrefs({ themeMode: 'auto' });
+    }
+  },
+  onCardBgModeTap(e) {
+    const { mode } = e.currentTarget.dataset;
+    if (mode === this.data.cardBgMode) return;
+    prefs.setPrefs({ cardBgMode: mode });
   },
   onDefaultCityTap(e) {
     const { id } = e.currentTarget.dataset;

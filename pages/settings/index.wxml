@@ -10,7 +10,11 @@
 
   <view class="section">
     <view class="section-title">主题色</view>
-    <view class="theme-row">
+    <view class="seg">
+      <view class="seg-item {{themeMode === 'manual' ? 'seg-item-active' : ''}}" bindtap="onThemeModeTap" data-mode="manual">手动选择</view>
+      <view class="seg-item {{themeMode === 'auto' ? 'seg-item-active' : ''}}" bindtap="onThemeModeTap" data-mode="auto">随天气自动</view>
+    </view>
+    <view wx:if="{{themeMode === 'manual'}}" class="theme-row">
       <view
         wx:for="{{themePresets}}"
         wx:key="color"
@@ -22,7 +26,18 @@
         <text wx:if="{{item.color === themeColor}}" class="theme-check">✓</text>
       </view>
     </view>
-    <view class="section-tip">{{themePresets[0].name}} 等，作用于强调按钮、链接等高亮元素</view>
+    <view wx:if="{{themeMode === 'manual'}}" class="section-tip">{{themePresets[0].name}} 等，作用于强调按钮、链接等高亮元素</view>
+    <view wx:if="{{themeMode === 'auto'}}" class="section-tip">主题色将根据当前天气状况和时段自动调整</view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">卡片背景</view>
+    <view class="seg">
+      <view class="seg-item {{cardBgMode === 'auto' ? 'seg-item-active' : ''}}" bindtap="onCardBgModeTap" data-mode="auto">随天气自动</view>
+      <view class="seg-item {{cardBgMode === 'manual' ? 'seg-item-active' : ''}}" bindtap="onCardBgModeTap" data-mode="manual">固定深色</view>
+    </view>
+    <view wx:if="{{cardBgMode === 'auto'}}" class="section-tip">卡片背景将根据当前天气状况自动调整色调</view>
+    <view wx:if="{{cardBgMode === 'manual'}}" class="section-tip">使用固定的深色背景，不随天气变化</view>
   </view>
 
   <view class="section">

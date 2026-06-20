@@ -1,7 +1,7 @@
 <!--components/temp/index.wxml-->
 <wxs src="/utils/iconColor.wxs" module="ic" />
 <wxs src="/utils/tempUnit.wxs" module="tu" />
-<view class="weather-header">
+<view class="weather-header" style="{{weatherBg ? 'background-color:' + weatherBg : ''}}">
   <view class="weather-handle">
     <view class="weather-handle-bar"></view>
   </view>
@@ -21,22 +21,17 @@
       </view>
     </view>
     <view class="weather-header-desc">{{desc}}</view>
-    <view wx:if="{{alerts.length}}" class="weather-alert" bindtap="gotoWarning">
+    <view wx:if="{{alerts.length}}" class="weather-alert" style="{{weatherBgSub ? 'background-color:' + weatherBgSub : ''}}" bindtap="gotoWarning">
       <i class="weather-alert-icon qi-9999"></i>
       <text class="weather-alert-text">{{alerts.length > 1 ? '多种天气预警正在发生' : alerts[0].headline}}</text>
       <text class="weather-alert-arrow">›</text>
     </view>
-    <view class="weather-entry" wx:if="{{showMinutelyEntry}}" bindtap="onMinutelyTap">
+    <view class="weather-entry" wx:if="{{showMinutelyEntry}}" style="{{weatherBgSub ? 'background-color:' + weatherBgSub : ''}}" bindtap="onMinutelyTap">
       <i class="weather-entry-icon qi-{{minutelyType === 'snow' ? 499 : 399}}-fill"></i>
       <text class="weather-entry-text">{{minutelySummary || '分钟级雨量'}}</text>
       <text class="weather-entry-arrow">›</text>
     </view>
-    <view class="weather-entry weather-entry-typhoon" wx:if="{{showTyphoonEntry}}" bindtap="onTyphoonTap">
-      <i class="weather-entry-icon qi-1803"></i>
-      <text class="weather-entry-text">{{typhoonSummary || '台风路径'}}</text>
-      <text class="weather-entry-arrow">›</text>
-    </view>
-    <view class="weather-header-other">
+    <view class="weather-header-other" style="{{weatherBgSub ? 'background-color:' + weatherBgSub : ''}}">
       <view class="weather-header-other-left">
         <i class="weather-header-fxd qi-2150"></i>
         <text>{{weather.windDir}} {{weather.windScale}}级</text>

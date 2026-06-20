@@ -4,6 +4,7 @@ const cache = require('../../utils/cache');
 const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
 const { navigateTo } = require('../../utils/route');
+const { resolveTheme, resolveThemeBg } = require('../../utils/autoTheme');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -46,6 +47,7 @@ Page({
     mapInteractive: true,
     tempUnit: 'C',
     themeColor: '#1296db',
+    weatherBg: 'rgba(34, 37, 48, 0.85)',
     offline: false,
     cityId: '',
     loading: true,
@@ -85,8 +87,17 @@ Page({
   },
   _syncPrefs() {
     const p = prefs.getPrefs();
-    if (p.tempUnit === this.data.tempUnit && p.themeColor === this.data.themeColor) return;
-    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor });
+    let themeColor = p.themeColor;
+    let weatherBg = 'rgba(34, 37, 48, 0.85)';
+    const icon = this.data.currentWeather?.icon;
+    if (p.themeMode === 'auto' && icon) {
+      themeColor = resolveTheme(icon, this.data.astronomySun?.sunrise, this.data.astronomySun?.sunset);
+    }
+    if (p.cardBgMode === 'auto' && icon) {
+      weatherBg = resolveThemeBg(icon, this.data.astronomySun?.sunrise, this.data.astronomySun?.sunset);
+    }
+    if (p.tempUnit === this.data.tempUnit && themeColor === this.data.themeColor && weatherBg === this.data.weatherBg) return;
+    this.setData({ tempUnit: p.tempUnit, themeColor, weatherBg });
   },
   _buildLocationLabel(district, city, province) {
     const parts = [];
@@ -104,12 +115,30 @@ Page({
     this._unsubNet = network.subscribe(({ online }) => {
       this.setData({ offline: !online });
     });
+    // 10 分钟定时器：捕捉时段切换（白天→黄昏→夜晚）
+    this._themeTimer = setInterval(() => {
+      const p = prefs.getPrefs();
+      if (p.themeMode !== 'auto' && p.cardBgMode !== 'auto') return;
+      const icon = this.data.currentWeather?.icon;
+      if (!icon) return;
+      const updates = {};
+      if (p.themeMode === 'auto') {
+        const color = resolveTheme(icon, this.data.astronomySun?.sunrise, this.data.astronomySun?.sunset);
+        if (color !== this.data.themeColor) updates.themeColor = color;
+      }
+      if (p.cardBgMode === 'auto') {
+        const bg = resolveThemeBg(icon, this.data.astronomySun?.sunrise, this.data.astronomySun?.sunset);
+        if (bg !== this.data.weatherBg) updates.weatherBg = bg;
+      }
+      if (Object.keys(updates).length) this.setData(updates);
+    }, 10 * 60 * 1000);
     // 实例化API核心类
     this.init();
   },
   onUnload() {
     if (this._unsubPrefs) this._unsubPrefs();
     if (this._unsubNet) this._unsubNet();
+    if (this._themeTimer) clearInterval(this._themeTimer);
   },
   async init(opts = {}) {
     if (this._fetching) return;
@@ -278,6 +307,19 @@ Page({
         loading: false,
         errorMsg: ''
       });
+
+      // 自动主题色：天气数据更新后重新计算
+      const p = prefs.getPrefs();
+      const updates = {};
+      if (p.themeMode === 'auto') {
+        const autoColor = resolveTheme(weatherData?.now?.icon, sunData?.sunrise, sunData?.sunset);
+        if (autoColor !== this.data.themeColor) updates.themeColor = autoColor;
+      }
+      if (p.cardBgMode === 'auto') {
+        const autoBg = resolveThemeBg(weatherData?.now?.icon, sunData?.sunrise, sunData?.sunset);
+        if (autoBg !== this.data.weatherBg) updates.weatherBg = autoBg;
+      }
+      if (Object.keys(updates).length) this.setData(updates);
     } catch (error) {
       console.error(error)
       this.setData({ loading: false, errorMsg: '数据加载失败，请稍后再试' });

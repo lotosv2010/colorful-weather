@@ -12,6 +12,7 @@
     "weather-solar": "../../components/solar/index",
     "bottom-sheet": "../../components/bottom-sheet/index",
     "weather-timemachine": "../../components/timemachine/index",
-    "error-state": "../../components/error-state/index"
+    "error-state": "../../components/error-state/index",
+    "compact-weather": "../../components/compact-weather/index"
   }
 }

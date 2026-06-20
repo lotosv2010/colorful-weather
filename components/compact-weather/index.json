@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "weather-icon": "/components/icon/index",
+    "error-state": "/components/error-state/index"
+  }
+}

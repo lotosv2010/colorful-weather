@@ -130,9 +130,6 @@
   font-size: 1rem;
   color: rgb(181, 187, 204);
 }
-.weather-entry-typhoon .weather-entry-icon {
-  color: #FF9800;
-}
 .weather-header-desc {
   font-size: 0.8rem;
   text-align: center;

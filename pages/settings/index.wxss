@@ -59,6 +59,7 @@ page {
   display: flex;
   gap: 24rpx;
   flex-wrap: wrap;
+  margin-top: 20rpx;
 }
 .theme-chip {
   width: 72rpx;

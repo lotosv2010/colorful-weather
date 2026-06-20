@@ -243,51 +243,7 @@ page {
   height: 24rpx;
 }
 
-/* 紧凑卡片 */
-.compact {
-  padding: 8px 16px 28px;
-  box-sizing: border-box;
-}
-
-.compact-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: rgb(181, 187, 204);
-}
-
-.compact-location {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
-}
-
-.compact-location-icon {
-  margin-right: 10rpx;
-}
-
-.compact-location-text {
-  font-size: 32rpx;
-  line-height: 32rpx;
-  color: #fff;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.compact-date {
-  display: flex;
-  align-items: center;
-}
-
-.compact-refresh {
-  width: 1rem;
-  height: 1rem;
-  margin-left: 5px;
-}
+/* 紧凑卡片样式已迁移到 components/compact-weather/index.wxss */
 
 /* 紧凑卡中部 / 描述：复用 weather-header 系列样式 */
 .weather-header-container {
@@ -412,45 +368,7 @@ page {
   flex-shrink: 0;
 }
 
-/* compact 卡片骨架屏 */
-.sk-compact {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20rpx 0 8rpx;
-}
-
-.sk-compact-main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 144rpx;
-}
-
-.sk-compact-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  margin-left: 20rpx;
-  height: 100%;
-}
-
-.sk-bar-temp {
-  width: 120rpx;
-  height: 48rpx;
-}
-
-.sk-bar-text {
-  width: 80rpx;
-  height: 24rpx;
-  margin-top: 12rpx;
-}
-
-.sk-bar-desc {
-  width: 200rpx;
-  height: 20rpx;
-  margin-top: 24rpx;
-}
+/* compact 卡片骨架屏样式已迁移到 components/compact-weather/index.wxss */
 
 /* full-list 骨架屏 */
 .sk-full-list {
