@@ -12,3 +12,9 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules/
+
+# 微信开发者工具个人配置
+project.private.config.json
+
+# 本地密钥
+utils/config.local.js

@@ -1,4 +1,5 @@
 const cache = require('./cache');
+const config = require('./config.local');
 
 // 接口地址
 const BASE_URL = 'https://m97fbtc2ed.re.qweatherapi.com/v7';
@@ -7,7 +8,7 @@ const GEO_URL = 'https://m97fbtc2ed.re.qweatherapi.com/geo/v2';
 // 空气质量预报地址
 const AIR_URL = 'https://m97fbtc2ed.re.qweatherapi.com/airquality/v1';
 // 应用key
-const KEY = '9f00952418204e51997981c77fc3192a';
+const KEY = config.qweatherKey;
 
 // 缓存时长（毫秒）
 const MIN = 60 * 1000;
