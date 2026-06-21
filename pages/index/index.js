@@ -149,8 +149,10 @@ Page({
         id: 1,
         latitude: Number(latitude),
         longitude: Number(longitude),
-        width: 20,
-        height: 30,
+        width: 24,
+        height: 32,
+        anchor: { x: 0.5, y: 1 },
+        callout: {},
       }],
     });
     try {
@@ -167,10 +169,11 @@ Page({
       const info = wx.getSystemInfoSync();
       const screenW = info.windowWidth || 375;
       const screenH = info.windowHeight || 667;
-      // tips 自适应宽度，估算约 280px（实际由内容撑开，这里用于边界检测）
+      // tips 自适应宽度，估算约 240px（实际由内容撑开，这里用于边界检测）
       const tipEstW = 240;
-      const tipH = 120;
-      const pinH = 30;
+      const tipH = 110;
+      // 图钉锚点在底部中心，所以 y 就是图钉底部位置
+      const gap = 4;
       const margin = 12;
       let tipX, tipY, caretX;
       if (x != null && y != null && !isNaN(x) && !isNaN(y)) {
@@ -178,16 +181,18 @@ Page({
         tipX = x - tipEstW / 2;
         if (tipX < margin) tipX = margin;
         if (tipX + tipEstW > screenW - margin) tipX = screenW - tipEstW - margin;
-        // caretX：点击点相对于 tips 左边的偏移，减去尖头自身半宽(14rpx≈7px)
-        caretX = x - tipX - 7;
+        // caretX：点击点相对于 tips 左边的偏移
+        caretX = x - tipX;
         if (caretX < 12) caretX = 12;
-        if (caretX > tipEstW - 28) caretX = tipEstW - 28;
-        tipY = y - pinH - tipH - 8;
-        if (tipY < 60) tipY = y + pinH / 2 + 8;
+        if (caretX > tipEstW - 12) caretX = tipEstW - 12;
+        // tips 显示在图钉正上方，紧贴图钉
+        tipY = y - tipH - gap;
+        // 如果上方空间不足，显示在图钉下方
+        if (tipY < 60) tipY = y + gap;
       } else {
         tipX = margin;
         tipY = Math.round(screenH * 0.35);
-        caretX = tipEstW / 2 - 7;
+        caretX = tipEstW / 2;
       }
       this.setData({
         mapTipsVisible: true,

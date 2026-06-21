@@ -26,6 +26,7 @@
     class="map-tips"
     style="background-color: {{weatherBg}}; left: {{mapTipsData.tipX}}px; top: {{mapTipsData.tipY}}px;"
   >
+    <view class="map-tips-caret" style="left: {{mapTipsData.caretX}}px; border-top-color: {{weatherBg}};"></view>
     <view class="map-tips-header">
       <view class="map-tips-location">{{mapTipsData.locationLabel}}</view>
       <view class="map-tips-close" catchtap="onMapTipsClose">✕</view>
