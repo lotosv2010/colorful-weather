@@ -21,6 +21,101 @@ page {
   z-index: 1;
 }
 
+/* 地图点击 tips */
+.map-tips {
+  position: absolute;
+  z-index: 50;
+  padding: 20rpx 20rpx 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.35);
+  max-width: 480rpx;
+  min-width: 280rpx;
+  text-align: center;
+}
+
+.map-tips-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.map-tips-location {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.map-tips-close {
+  position: absolute;
+  right: -8rpx;
+  top: -8rpx;
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.map-tips-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.map-tips-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 16rpx;
+}
+
+.map-tips-icon {
+  font-size: 56rpx;
+  line-height: 1;
+  color: #fff;
+}
+
+.map-tips-body {
+  min-width: 0;
+  text-align: center;
+}
+
+.map-tips-temp {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 8rpx;
+  text-align: left;
+}
+
+.map-tips-text-row {
+  display: flex;
+  align-items: center;
+}
+
+.map-tips-text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.map-tips-arrow {
+  font-size: 36rpx;
+  color: rgba(255, 255, 255, 0.7);
+  margin-left: 10rpx;
+  line-height: 1;
+}
+
 /* 离线模式横幅：顶部安全区下方，居中胶囊 */
 .offline-banner {
   position: fixed;

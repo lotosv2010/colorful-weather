@@ -3,6 +3,7 @@
 <wxs src="/utils/tempUnit.wxs" module="tu" />
 <view class="page" style="--theme:{{themeColor}}">
   <map
+    id="bgMap"
     class="bg-map"
     longitude="{{longitude}}"
     latitude="{{latitude}}"
@@ -13,9 +14,35 @@
     enable-scroll="{{mapInteractive}}"
     enable-zoom="{{mapInteractive}}"
     enable-rotate="{{mapInteractive}}"
-    markers="{{markers}}"
+    markers="{{mapMarkers}}"
     bindtap="onMapTap"
-  />
+    bindpoitap="onMapPoiTap"
+  >
+  </map>
+
+  <!-- 地图点击 tips：普通 view 叠在地图上方，跟随点击位置 -->
+  <view
+    wx:if="{{mapTipsVisible}}"
+    class="map-tips"
+    style="background-color: {{weatherBg}}; left: {{mapTipsData.tipX}}px; top: {{mapTipsData.tipY}}px;"
+  >
+    <view class="map-tips-header">
+      <view class="map-tips-location">{{mapTipsData.locationLabel}}</view>
+      <view class="map-tips-close" catchtap="onMapTipsClose">✕</view>
+    </view>
+    <view class="map-tips-content" catchtap="onMapTipsTap">
+      <view class="map-tips-icon-wrap">
+        <text class="map-tips-icon qi-{{mapTipsData.icon || 100}}-fill" style="color: {{mapTipsData.iconColor}};"></text>
+      </view>
+      <view class="map-tips-body">
+        <view class="map-tips-temp">{{mapTipsData.temp}}</view>
+        <view class="map-tips-text-row">
+          <text class="map-tips-text">{{mapTipsData.text}}</text>
+          <text class="map-tips-arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
 
   <!-- 天气粒子动效层 -->
   <weather-particles

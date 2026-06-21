@@ -84,7 +84,7 @@ static/
 1. `onLoad` → `init()`：检查默认城市（`prefs.js`），有则直接加载；无则调用 `wx.getLocation()` 定位。
 2. `getNow()`：通过 `qqmapsdk.reverseGeocoder` 解析当前城市名，再触发 `getWeather()`。
 3. `getWeather()`：使用 `Promise.all` 并发请求 9 个接口（实时 / 生活指数 / 24h / 7d / 空气 / 日出日落 / 月相 / 预警 / 分钟级降水），将结果分发到对应组件。切换城市时先 `abortPending()` 取消未完成请求。
-4. 城市切换有三种触发方式：① `city-search` 组件 `onSelectCity`；② 定位按钮 `onLocateTap`；③ 地图点击 `onMapTap`（取 tap 坐标 → 逆地理编码 → 更新 markers + callout → 加载天气）。重新定位和搜索选城时清除 markers。
+4. 城市切换有三种触发方式：① `city-search` 组件 `onSelectCity`；② 定位按钮 `onLocateTap`；③ 地图点击 `onMapTap`（轻量查询：位置 + 实时天气 → cover-view tips 展示摘要 → 点击 tips 展开抽屉全量查询）。重新定位和搜索选城时清除 tips。
 5. 温度单位通过 `prefs.js` 订阅机制下发，子页通过 `tempUnit` 属性接收。
 
 ### 组件职责

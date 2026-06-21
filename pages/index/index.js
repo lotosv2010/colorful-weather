@@ -55,15 +55,20 @@ Page({
     cityId: '',
     loading: true,
     errorMsg: '',
-    markers: [],
+    mapTipsVisible: false,
+    mapTipsData: {},
+    mapMarkers: [],
   },
   onSheetChange(e) {
     const expanded = e.detail.expanded;
-    this.setData({
+    const updates = {
       sheetExpanded: expanded,
-      // 抽屉收起时恢复地图交互，展开时锁定
       mapInteractive: !expanded,
-    });
+    };
+    if (expanded) {
+      updates.mapTipsVisible = false;
+    }
+    this.setData(updates);
   },
   onSheetProgress(e) {
     this.setData({ sheetProgress: e.detail.progress });
@@ -83,7 +88,7 @@ Page({
   },
   onLocateTap() {
     cache.clear();
-    this.setData({ markers: [] });
+    this.setData({ mapTipsVisible: false, mapTipsData: {}, mapMarkers: [] });
     this.init({ forceLocate: true });
   },
   onRefresh() {
@@ -100,42 +105,175 @@ Page({
   },
   async onMapTap(e) {
     const { longitude, latitude } = e.detail;
-    if (this._fetching || longitude == null || latitude == null) return;
-    // 收起抽屉
-    const sheet = this.selectComponent('#sheet');
-    if (sheet) sheet.collapse();
-    // 取消旧请求，更新坐标
-    abortPending();
-    this.setData({ latitude, longitude, loading: true, errorMsg: '' });
+    if (this._mapLoading || longitude == null || latitude == null) return;
+    const sysInfo = wx.getSystemInfoSync();
+    const screenW = sysInfo.windowWidth || 375;
+    const screenH = sysInfo.windowHeight || 667;
+    let tapX = null;
+    let tapY = null;
     try {
-      const { city, province, district } = await this.getCity(`${latitude},${longitude}`);
+      const mapCtx = wx.createMapContext('bgMap', this);
+      // 同时获取地图可见范围和中心点
+      const [region, center] = await Promise.all([
+        new Promise((res, rej) => mapCtx.getRegion({ success: res, fail: rej })),
+        new Promise((res, rej) => mapCtx.getCenterLocation({ success: res, fail: rej })),
+      ]);
+      const { northeast, southwest } = region;
+      const lngSpan = northeast.longitude - southwest.longitude;
+      const latSpan = northeast.latitude - southwest.latitude;
+      if (lngSpan > 0 && latSpan > 0) {
+        // 以地图中心为基准做相对偏移，减小墨卡托累计误差
+        const dLng = longitude - center.longitude;
+        const dLat = latitude - center.latitude;
+        const pxPerLng = screenW / lngSpan;
+        const pxPerLat = screenH / latSpan;
+        tapX = screenW / 2 + dLng * pxPerLng;
+        tapY = screenH / 2 - dLat * pxPerLat;
+      }
+    } catch (_) {}
+    await this._fetchMapTips(longitude, latitude, tapX, tapY);
+  },
+  onMapPoiTap(e) {
+    const { longitude, latitude } = e.detail;
+    if (this._mapLoading || longitude == null || latitude == null) return;
+    // POI 点击没有屏幕坐标，用屏幕中上方兜底
+    const info = wx.getSystemInfoSync();
+    this._fetchMapTips(longitude, latitude, info.windowWidth / 2, info.windowHeight * 0.4);
+  },
+  async _fetchMapTips(longitude, latitude, x, y) {
+    this._mapLoading = true;
+    this.setData({
+      mapTipsVisible: false,
+      mapTipsData: {},
+      mapMarkers: [{
+        id: 1,
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+        width: 20,
+        height: 30,
+      }],
+    });
+    try {
+      const qqLocation = `${latitude},${longitude}`;
+      const qwLocation = `${Number(longitude).toFixed(2)},${Number(latitude).toFixed(2)}`;
+      const [cityInfo, weatherRes] = await Promise.all([
+        this.getCity(qqLocation),
+        now({ location: qwLocation }),
+      ]);
+      const { city, province, district } = cityInfo;
+      const nw = weatherRes?.now || {};
+      const locationLabel = this._buildLocationLabel(district, city, province);
+      const temp = this._formatTemp(nw.temp, this.data.tempUnit);
+      const info = wx.getSystemInfoSync();
+      const screenW = info.windowWidth || 375;
+      const screenH = info.windowHeight || 667;
+      // tips 自适应宽度，估算约 280px（实际由内容撑开，这里用于边界检测）
+      const tipEstW = 240;
+      const tipH = 120;
+      const pinH = 30;
+      const margin = 12;
+      let tipX, tipY, caretX;
+      if (x != null && y != null && !isNaN(x) && !isNaN(y)) {
+        // tips 以点击点为中心水平对齐
+        tipX = x - tipEstW / 2;
+        if (tipX < margin) tipX = margin;
+        if (tipX + tipEstW > screenW - margin) tipX = screenW - tipEstW - margin;
+        // caretX：点击点相对于 tips 左边的偏移，减去尖头自身半宽(14rpx≈7px)
+        caretX = x - tipX - 7;
+        if (caretX < 12) caretX = 12;
+        if (caretX > tipEstW - 28) caretX = tipEstW - 28;
+        tipY = y - pinH - tipH - 8;
+        if (tipY < 60) tipY = y + pinH / 2 + 8;
+      } else {
+        tipX = margin;
+        tipY = Math.round(screenH * 0.35);
+        caretX = tipEstW / 2 - 7;
+      }
       this.setData({
-        city,
-        province,
-        district,
-        locationLabel: this._buildLocationLabel(district, city, province),
-        markers: [{
-          id: 1,
+        mapTipsVisible: true,
+        mapTipsData: {
           latitude,
           longitude,
-          width: 24,
-          height: 34,
-          callout: {
-            content: this._buildLocationLabel(district, city, province),
-            display: 'ALWAYS',
-            borderRadius: 8,
-            padding: 8,
-            bgColor: '#ffffffee',
-            fontSize: 13,
-          },
-        }],
+          city,
+          province,
+          district,
+          locationLabel,
+          icon: nw.icon || '100',
+          iconColor: this._iconColor(nw.icon || '100'),
+          temp,
+          text: nw.text || '',
+          tipX,
+          tipY,
+          caretX,
+        },
       });
-      this._resolveCityId(`${longitude},${latitude}`);
-      await this.getWeather();
     } catch (error) {
       console.error(error);
-      this.setData({ loading: false, errorMsg: '城市解析失败，请稍后再试' });
+      this.setData({ mapTipsVisible: false, mapMarkers: [] });
+      wx.showToast({ title: '城市解析失败', icon: 'none' });
+    } finally {
+      this._mapLoading = false;
     }
+  },
+  _iconColor(code) {
+    const c = parseInt(code, 10);
+    const map = {
+      sunny: '#FDB813', partlyCloudy: '#F0A500', cloudy: '#7B9BB5',
+      overcast: '#5A7080', rainLight: '#5BA3D9', rainHeavy: '#1E4D8C',
+      thunder: '#7B3FA0', sleet: '#6AAFD6', snow: '#A8D8EA',
+      snowHeavy: '#D0EEF8', fog: '#9E9E9E', haze: '#B5854A',
+      sand: '#C49A3C', typhoon: '#E53935', hot: '#DC143C',
+      cold: '#81D4FA', default: '#8C9AA5',
+    };
+    let cat = 'default';
+    if (c === 100 || c === 150) cat = 'sunny';
+    else if (c === 101 || c === 151) cat = 'partlyCloudy';
+    else if (c === 102 || c === 103 || c === 152 || c === 153) cat = 'cloudy';
+    else if (c === 104 || c === 154) cat = 'overcast';
+    else if (c === 302 || c === 303 || c === 304) cat = 'thunder';
+    else if (c === 300 || c === 305 || c === 309 || c === 313 || c === 399 || c === 350 || c === 351) cat = 'rainLight';
+    else if (c === 301 || c === 306 || c === 307 || c === 308 || c === 310 || c === 311 || c === 312 || c === 314 || c === 315 || c === 316 || c === 317 || c === 318) cat = 'rainHeavy';
+    else if (c === 404 || c === 405) cat = 'sleet';
+    else if (c === 400 || c === 406 || c === 407 || c === 408 || c === 456 || c === 457 || c === 499) cat = 'snow';
+    else if (c === 401 || c === 402 || c === 403 || c === 409 || c === 410) cat = 'snowHeavy';
+    else if (c === 500 || c === 501 || c === 502 || c === 509 || c === 510 || c === 514 || c === 515) cat = 'fog';
+    else if (c === 503 || c === 504 || c === 511 || c === 512 || c === 513) cat = 'haze';
+    else if (c === 507 || c === 508) cat = 'sand';
+    else if (c >= 800 && c <= 807) cat = 'typhoon';
+    else if (c === 900) cat = 'hot';
+    else if (c === 901) cat = 'cold';
+    return map[cat] || map.default;
+  },
+  _formatTemp(c, unit) {
+    if (c === '' || c === null || c === undefined) return '--';
+    const n = Number(c);
+    if (isNaN(n)) return '--';
+    const v = unit === 'F' ? n * 9 / 5 + 32 : n;
+    return `${Math.round(v)}°`;
+  },
+  onMapTipsTap() {
+    const d = this.data.mapTipsData;
+    if (!d || !d.latitude) return;
+    // 用 tips 中暂存的坐标和城市信息更新主数据，再全量查询
+    this.setData({
+      mapTipsVisible: false,
+      mapTipsData: {},
+      mapMarkers: [],
+      latitude: d.latitude,
+      longitude: d.longitude,
+      city: d.city,
+      province: d.province,
+      district: d.district,
+      locationLabel: d.locationLabel,
+      cityId: '',
+    });
+    this._resolveCityId(`${d.longitude},${d.latitude}`);
+    const sheet = this.selectComponent('#sheet');
+    if (sheet) sheet.expand();
+    this.getWeather().catch(console.error);
+  },
+  onMapTipsClose() {
+    this.setData({ mapTipsVisible: false, mapTipsData: {}, mapMarkers: [] });
   },
   _syncPrefs() {
     const p = prefs.getPrefs();
@@ -154,12 +292,7 @@ Page({
     this.setData({ tempUnit: p.tempUnit, themeColor, weatherBg, weatherEffect });
   },
   _buildLocationLabel(district, city, province) {
-    const parts = [];
-    const push = (v) => { if (v && !parts.includes(v)) parts.push(v); };
-    push(district);
-    push(city);
-    push(province);
-    return parts.join('，');
+    return district || city || province || '';
   },
   // 事件处理函数
   onLoad() {
@@ -326,7 +459,9 @@ Page({
       this.setData({ loading: true });
       let location = '101010100';
       const {longitude, latitude} = this.data;
-      location = `${longitude},${latitude}`;
+      if (longitude && latitude) {
+        location = `${Number(longitude).toFixed(2)},${Number(latitude).toFixed(2)}`;
+      }
       const today = this.formatDateStr(new Date());
       const tc = _pendingTasks; // 当前批次 taskCollector
       const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes] = await Promise.all([
@@ -462,7 +597,9 @@ Page({
       longitude: selected.lon,
       cityId: selected.id ? String(selected.id) : '',
       selectorVisible: false,
-      markers: [],
+      mapTipsVisible: false,
+      mapTipsData: {},
+      mapMarkers: [],
     });
     this.getWeather().catch(console.error);
   },
