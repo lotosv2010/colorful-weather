@@ -208,10 +208,11 @@ Component({
         const res = await cityLookup({ location: keyword, number: 20 });
         if (res.code === '200') {
           this.setData({ results: res.location || [] });
-        } else if (res.code === '404') {
-          this.setData({ results: [], errorMsg: '未找到匹配城市' });
+        } else if (res.code === '404' || res.code === '400') {
+          // 404: 未找到匹配城市；400: 无此地址（No Such Location）
+          this.setData({ results: [], errorMsg: '未找到该地址' });
         } else {
-          this.setData({ results: [], errorMsg: `搜索失败(${res.code})` });
+          this.setData({ results: [], errorMsg: '搜索失败，请稍后重试' });
         }
       } catch (e) {
         this.setData({ results: [], errorMsg: '网络异常' });
