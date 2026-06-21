@@ -33,17 +33,6 @@ page {
   text-align: center;
 }
 
-.map-tips-caret {
-  position: absolute;
-  bottom: -16rpx;
-  width: 0;
-  height: 0;
-  border-left: 16rpx solid transparent;
-  border-right: 16rpx solid transparent;
-  border-top: 16rpx solid rgba(34, 37, 48, 0.85);
-  transform: translateX(-50%);
-}
-
 .map-tips-header {
   position: relative;
   display: flex;

@@ -106,14 +106,19 @@ Page({
   async onMapTap(e) {
     const { longitude, latitude } = e.detail;
     if (this._mapLoading || longitude == null || latitude == null) return;
-    const sysInfo = wx.getSystemInfoSync();
-    const screenW = sysInfo.windowWidth || 375;
-    const screenH = sysInfo.windowHeight || 667;
+    await this._handleMapClick(longitude, latitude);
+  },
+  async onMapPoiTap(e) {
+    const { longitude, latitude } = e.detail;
+    if (this._mapLoading || longitude == null || latitude == null) return;
+    await this._handleMapClick(longitude, latitude);
+  },
+  async _handleMapClick(longitude, latitude) {
+    // 计算屏幕坐标：通过地图可视区域和点击经纬度换算
     let tapX = null;
     let tapY = null;
     try {
       const mapCtx = wx.createMapContext('bgMap', this);
-      // 同时获取地图可见范围和中心点
       const [region, center] = await Promise.all([
         new Promise((res, rej) => mapCtx.getRegion({ success: res, fail: rej })),
         new Promise((res, rej) => mapCtx.getCenterLocation({ success: res, fail: rej })),
@@ -121,6 +126,9 @@ Page({
       const { northeast, southwest } = region;
       const lngSpan = northeast.longitude - southwest.longitude;
       const latSpan = northeast.latitude - southwest.latitude;
+      const windowInfo = wx.getWindowInfo();
+      const screenW = windowInfo.windowWidth || 375;
+      const screenH = windowInfo.windowHeight || 667;
       if (lngSpan > 0 && latSpan > 0) {
         // 以地图中心为基准做相对偏移，减小墨卡托累计误差
         const dLng = longitude - center.longitude;
@@ -132,13 +140,6 @@ Page({
       }
     } catch (_) {}
     await this._fetchMapTips(longitude, latitude, tapX, tapY);
-  },
-  onMapPoiTap(e) {
-    const { longitude, latitude } = e.detail;
-    if (this._mapLoading || longitude == null || latitude == null) return;
-    // POI 点击没有屏幕坐标，用屏幕中上方兜底
-    const info = wx.getSystemInfoSync();
-    this._fetchMapTips(longitude, latitude, info.windowWidth / 2, info.windowHeight * 0.4);
   },
   async _fetchMapTips(longitude, latitude, x, y) {
     this._mapLoading = true;
@@ -166,33 +167,31 @@ Page({
       const nw = weatherRes?.now || {};
       const locationLabel = this._buildLocationLabel(district, city, province);
       const temp = this._formatTemp(nw.temp, this.data.tempUnit);
-      const info = wx.getSystemInfoSync();
-      const screenW = info.windowWidth || 375;
-      const screenH = info.windowHeight || 667;
+      const windowInfo = wx.getWindowInfo();
+      const screenW = windowInfo.windowWidth || 375;
+      const screenH = windowInfo.windowHeight || 667;
       // tips 自适应宽度，估算约 240px（实际由内容撑开，这里用于边界检测）
       const tipEstW = 240;
       const tipH = 110;
-      // 图钉锚点在底部中心，所以 y 就是图钉底部位置
       const gap = 4;
       const margin = 12;
-      let tipX, tipY, caretX;
+      let tipX, tipY;
       if (x != null && y != null && !isNaN(x) && !isNaN(y)) {
-        // tips 以点击点为中心水平对齐
+        // tips 位置：以点击点为中心
         tipX = x - tipEstW / 2;
+        // 水平边界约束
         if (tipX < margin) tipX = margin;
         if (tipX + tipEstW > screenW - margin) tipX = screenW - tipEstW - margin;
-        // caretX：点击点相对于 tips 左边的偏移
-        caretX = x - tipX;
-        if (caretX < 12) caretX = 12;
-        if (caretX > tipEstW - 12) caretX = tipEstW - 12;
-        // tips 显示在图钉正上方，紧贴图钉
+        // 垂直定位：优先显示在图钉上方
         tipY = y - tipH - gap;
-        // 如果上方空间不足，显示在图钉下方
-        if (tipY < 60) tipY = y + gap;
+        if (tipY < 60) {
+          // 上方空间不足，显示在图钉下方
+          tipY = y + gap;
+        }
       } else {
+        // 无坐标时居中显示
         tipX = margin;
         tipY = Math.round(screenH * 0.35);
-        caretX = tipEstW / 2;
       }
       this.setData({
         mapTipsVisible: true,
@@ -209,7 +208,6 @@ Page({
           text: nw.text || '',
           tipX,
           tipY,
-          caretX,
         },
       });
     } catch (error) {
