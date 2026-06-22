@@ -3,12 +3,18 @@ const network = require('./network');
 const config = require('./config.local');
 const monitor = require('./monitor');
 
-// 接口地址
-const BASE_URL = 'https://m97fbtc2ed.re.qweatherapi.com/v7';
+// 接口域名
+const HOST = 'https://m97fbtc2ed.re.qweatherapi.com';
+// 天气数据基地址
+const BASE_URL = `${HOST}/v7`;
 // GeoAPI 地址
-const GEO_URL = 'https://m97fbtc2ed.re.qweatherapi.com/geo/v2';
+const GEO_URL = `${HOST}/geo/v2`;
 // 空气质量预报地址
-const AIR_URL = 'https://m97fbtc2ed.re.qweatherapi.com/airquality/v1';
+const AIR_URL = `${HOST}/airquality/v1`;
+// 天气预警地址
+const ALERT_URL = `${HOST}/weatheralert/v1`;
+// 太阳辐射地址
+const SOLAR_URL = `${HOST}/solarradiation/v1`;
 // 应用key
 const KEY = config.qweatherKey;
 
@@ -158,11 +164,11 @@ module.exports = {
   air:        (location, tc, opts) => cachedRequest(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {}, tc, TTL.AIR, opts),
   airHourly:  (location, tc, opts) => cachedRequest(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_HOURLY, opts),
   airDaily:   (location, tc, opts) => cachedRequest(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_DAILY, opts),
-  warning:    (location, tc, opts) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.WARNING, opts),
+  warning:    (location, tc, opts) => cachedRequest(`${ALERT_URL}/current/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.WARNING, opts),
   sun:        (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/sun`, 'GET', data, tc, TTL.ASTRONOMY, opts),
   moon:       (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/moon`, 'GET', data, tc, TTL.ASTRONOMY, opts),
   tide:       (data, tc, opts) => cachedRequest(`${BASE_URL}/ocean/tide`, 'GET', data, tc, TTL.TIDE, opts),
-  solarRadiation: (lat, lon, data = {}, tc, opts) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/solarradiation/v1/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc, TTL.SOLAR, opts),
+  solarRadiation: (lat, lon, data = {}, tc, opts) => cachedRequest(`${SOLAR_URL}/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc, TTL.SOLAR, opts),
   // 历史天气再分析（最近 10 天，需 LocationID）
   historicalWeather: (data, tc, opts) => cachedRequest(`${BASE_URL}/historical/weather`, 'GET', data, tc, TTL.HISTORICAL, opts),
   // 历史空气质量（最近 10 天，需 LocationID）
