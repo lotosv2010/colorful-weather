@@ -1,5 +1,6 @@
 const prefs = require('../../utils/prefs');
 const monitor = require('../../utils/monitor');
+const cache = require('../../utils/cache');
 
 Page({
   data: {
@@ -75,5 +76,20 @@ Page({
   onTogglePin(e) {
     const { id } = e.currentTarget.dataset;
     prefs.togglePin(id);
+  },
+  onClearCache() {
+    wx.showModal({
+      title: '清除缓存',
+      content: '将清除所有已缓存的天气数据，下次刷新会重新拉取。',
+      confirmText: '清除',
+      success: (res) => {
+        if (!res.confirm) return;
+        cache.clear();
+        // 通知首页下次 onShow 强刷
+        const app = getApp();
+        if (app && app.globalData) app.globalData.needForceRefresh = true;
+        wx.showToast({ title: '已清除', icon: 'success' });
+      },
+    });
   },
 });

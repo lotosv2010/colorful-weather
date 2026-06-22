@@ -147,3 +147,28 @@ page {
   background: rgba(212, 56, 13, 0.18);
   color: #ff7875;
 }
+
+.cache-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 0;
+}
+.cache-info {
+  flex: 1;
+  min-width: 0;
+}
+.cache-name {
+  font-size: 28rpx;
+  color: rgb(228, 232, 245);
+}
+.cache-sub {
+  font-size: 22rpx;
+  color: rgb(140, 148, 168);
+  margin-top: 6rpx;
+}
+.cache-arrow {
+  font-size: 36rpx;
+  color: rgb(140, 148, 168);
+  margin-left: 16rpx;
+}

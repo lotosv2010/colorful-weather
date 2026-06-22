@@ -66,4 +66,15 @@
     <view class="section-tip" wx:if="{{cities.length}}">点击城市设为 / 取消默认。设为默认后，下次启动会直接加载该城市</view>
   </view>
 
+  <view class="section">
+    <view class="section-title">缓存</view>
+    <view class="cache-row" bindtap="onClearCache">
+      <view class="cache-info">
+        <view class="cache-name">清除天气缓存</view>
+        <view class="cache-sub">下次刷新会重新拉取所有数据</view>
+      </view>
+      <view class="cache-arrow">›</view>
+    </view>
+  </view>
+
 </view>

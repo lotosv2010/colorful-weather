@@ -15,6 +15,7 @@ const KEY = config.qweatherKey;
 // 缓存时长（毫秒）
 const MIN = 60 * 1000;
 const HOUR = 3600 * 1000;
+const DAY = 24 * HOUR;
 const TTL = {
   NOW:        20 * MIN,   // 实时天气：20 分钟
   HOURLY:     30 * MIN,   // 逐小时预报：30 分钟
@@ -24,13 +25,13 @@ const TTL = {
   AIR:        30 * MIN,   // 实时空气质量：30 分钟
   AIR_HOURLY: 30 * MIN,   // 空气质量小时预报：30 分钟
   AIR_DAILY:   8 * HOUR,  // 空气质量日预报：8 小时
-  WARNING:    10 * MIN,   // 天气预警：10 分钟
-  MINUTELY:    5 * MIN,   // 分钟级降水：5 分钟
+  WARNING:     3 * MIN,   // 天气预警：3 分钟（紧急性强，缩短延迟）
+  MINUTELY:    2 * MIN,   // 分钟级降水：2 分钟（数据本身仅覆盖未来 2h）
   ASTRONOMY:   2 * HOUR,  // 日出日落 / 月相：2 小时
   SOLAR:       6 * HOUR,  // 太阳辐射：6 小时
   TIDE:        8 * HOUR,  // 潮汐：8 小时
   STORM:      20 * MIN,   // 台风：20 分钟
-  HISTORICAL: 24 * HOUR,  // 历史数据：24 小时（同一日期数据不变）
+  HISTORICAL:  7 * DAY,   // 历史数据：7 天（同一日期的过去数据不会变化）
 };
 
 /**
@@ -67,24 +68,55 @@ const request = (url, method, data, taskCollector = null) => {
   });
 };
 
+// 经纬度归一化：保留 2 位小数（约 1km 精度），消除调用方传入精度不一致导致的缓存 miss
+// 同时用于 URL 路径中的 lat/lon 段（如 airquality / weatheralert）
+const _round2 = (s) => {
+  const n = Number(s);
+  return Number.isFinite(n) ? n.toFixed(2) : s;
+};
+const _normalizeLocation = (loc) => {
+  if (typeof loc !== 'string' || !loc.includes(',')) return loc;
+  const [a, b] = loc.split(',');
+  return `${_round2(a)},${_round2(b)}`;
+};
+
 // 生成缓存 key：URL 路径 + 去掉 key 字段后的排序参数
+// - location 参数统一保留 2 位小数（避免不同调用方精度差异导致同一城市生成不同 key）
+// - URL 路径末尾形如 .../{lat}/{lon} 的也做同样归一化（airquality / weatheralert）
 const makeCacheKey = (url, data) => {
-  const path = url.replace(/^https?:\/\/[^/]+/, '');
+  let path = url.replace(/^https?:\/\/[^/]+/, '');
+  path = path.replace(/\/(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)(?=\/?$)/, (_, a, b) => `/${_round2(a)}/${_round2(b)}`);
   const params = Object.keys(data)
     .filter(k => k !== 'key')
     .sort()
-    .map(k => `${k}=${data[k]}`)
+    .map(k => `${k}=${k === 'location' ? _normalizeLocation(data[k]) : data[k]}`)
     .join('&');
   return params ? `${path}?${params}` : path;
 };
 
-// 带缓存的请求：命中直接返回，未命中则发起请求并在成功时写缓存
-// 请求失败时回落到 stale 缓存（标记 _stale: true），并通知 network 进入离线态
-const cachedRequest = (url, method, data, tc, ttl) => {
+// 进行中的请求 Map：相同 cacheKey 在同一时刻只发一次请求，避免快速切城市/重复点刷新引发的请求风暴
+const _pending = new Map();
+
+// 带缓存的请求：
+// - opts.force: true 时跳过有效缓存（仍可走 stale 降级）
+// - 相同 key 同时段共享同一个 in-flight Promise（dedup）
+// - 请求失败时回落到 stale 缓存（标记 _stale: true），并通知 network 进入离线态
+const cachedRequest = (url, method, data, tc, ttl, opts = {}) => {
   const key = makeCacheKey(url, data);
-  const hit = cache.get(key);
-  if (hit) return Promise.resolve(hit);
-  return request(url, method, data, tc).then(res => {
+  const force = !!opts.force;
+
+  if (!force) {
+    const hit = cache.get(key);
+    if (hit) return Promise.resolve(hit);
+  }
+
+  // in-flight dedup：同一 key 的非 force 请求合并，避免快速切城市/重复点刷新引发请求风暴
+  // force 请求需要真正跳过缓存，不参与 dedup（防止强制刷新被静默吞掉）
+  if (!force && _pending.has(key)) {
+    return _pending.get(key);
+  }
+
+  const p = request(url, method, data, tc).then(res => {
     // code 为 '200' 或无 code 字段（air / warning 等）时缓存
     if (res && (res.code == null || res.code === '200')) {
       cache.set(key, res, ttl);
@@ -98,7 +130,12 @@ const cachedRequest = (url, method, data, tc, ttl) => {
       return { ...stale, _stale: true };
     }
     throw err;
+  }).finally(() => {
+    _pending.delete(key);
   });
+
+  _pending.set(key, p);
+  return p;
 };
 
 // 将 "lon,lat" 转为 airquality v1 URL 路径所需的 "lat/lon"
@@ -108,28 +145,28 @@ const toAirPath = (lonLat) => {
 };
 
 module.exports = {
-  now:        (data, tc) => cachedRequest(`${BASE_URL}/weather/now`, 'GET', data, tc, TTL.NOW),
-  sevenDay:   (data, tc) => cachedRequest(`${BASE_URL}/weather/7d`, 'GET', data, tc, TTL.DAILY),
-  indices:    (data, tc) => cachedRequest(`${BASE_URL}/indices/1d`, 'GET', data, tc, TTL.INDICES),
-  indices3d:  (data, tc) => cachedRequest(`${BASE_URL}/indices/3d`, 'GET', data, tc, TTL.INDICES),
-  hourly:     (data, tc) => cachedRequest(`${BASE_URL}/weather/24h`, 'GET', data, tc, TTL.HOURLY),
-  minutely:   (data, tc) => cachedRequest(`${BASE_URL}/minutely/5m`, 'GET', data, tc, TTL.MINUTELY),
-  stormList:  (data, tc) => cachedRequest(`${BASE_URL}/tropical/storm-list`, 'GET', data, tc, TTL.STORM),
-  stormForecast: (data, tc) => cachedRequest(`${BASE_URL}/tropical/storm-forecast`, 'GET', data, tc, TTL.STORM),
-  stormTrack: (data, tc) => cachedRequest(`${BASE_URL}/tropical/storm-track`, 'GET', data, tc, TTL.STORM),
-  weather30d: (data, tc) => cachedRequest(`${BASE_URL}/weather/30d`, 'GET', data, tc, TTL.DAILY_30),
-  air:        (location, tc) => cachedRequest(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {}, tc, TTL.AIR),
-  airHourly:  (location, tc) => cachedRequest(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_HOURLY),
-  airDaily:   (location, tc) => cachedRequest(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_DAILY),
-  warning:    (location, tc) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.WARNING),
-  sun:        (data, tc) => cachedRequest(`${BASE_URL}/astronomy/sun`, 'GET', data, tc, TTL.ASTRONOMY),
-  moon:       (data, tc) => cachedRequest(`${BASE_URL}/astronomy/moon`, 'GET', data, tc, TTL.ASTRONOMY),
-  tide:       (data, tc) => cachedRequest(`${BASE_URL}/ocean/tide`, 'GET', data, tc, TTL.TIDE),
-  solarRadiation: (lat, lon, data = {}, tc) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/solarradiation/v1/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc, TTL.SOLAR),
+  now:        (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/now`, 'GET', data, tc, TTL.NOW, opts),
+  sevenDay:   (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/7d`, 'GET', data, tc, TTL.DAILY, opts),
+  indices:    (data, tc, opts) => cachedRequest(`${BASE_URL}/indices/1d`, 'GET', data, tc, TTL.INDICES, opts),
+  indices3d:  (data, tc, opts) => cachedRequest(`${BASE_URL}/indices/3d`, 'GET', data, tc, TTL.INDICES, opts),
+  hourly:     (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/24h`, 'GET', data, tc, TTL.HOURLY, opts),
+  minutely:   (data, tc, opts) => cachedRequest(`${BASE_URL}/minutely/5m`, 'GET', data, tc, TTL.MINUTELY, opts),
+  stormList:  (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-list`, 'GET', data, tc, TTL.STORM, opts),
+  stormForecast: (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-forecast`, 'GET', data, tc, TTL.STORM, opts),
+  stormTrack: (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-track`, 'GET', data, tc, TTL.STORM, opts),
+  weather30d: (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/30d`, 'GET', data, tc, TTL.DAILY_30, opts),
+  air:        (location, tc, opts) => cachedRequest(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {}, tc, TTL.AIR, opts),
+  airHourly:  (location, tc, opts) => cachedRequest(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_HOURLY, opts),
+  airDaily:   (location, tc, opts) => cachedRequest(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_DAILY, opts),
+  warning:    (location, tc, opts) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/weatheralert/v1/current/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.WARNING, opts),
+  sun:        (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/sun`, 'GET', data, tc, TTL.ASTRONOMY, opts),
+  moon:       (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/moon`, 'GET', data, tc, TTL.ASTRONOMY, opts),
+  tide:       (data, tc, opts) => cachedRequest(`${BASE_URL}/ocean/tide`, 'GET', data, tc, TTL.TIDE, opts),
+  solarRadiation: (lat, lon, data = {}, tc, opts) => cachedRequest(`https://m97fbtc2ed.re.qweatherapi.com/solarradiation/v1/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc, TTL.SOLAR, opts),
   // 历史天气再分析（最近 10 天，需 LocationID）
-  historicalWeather: (data, tc) => cachedRequest(`${BASE_URL}/historical/weather`, 'GET', data, tc, TTL.HISTORICAL),
+  historicalWeather: (data, tc, opts) => cachedRequest(`${BASE_URL}/historical/weather`, 'GET', data, tc, TTL.HISTORICAL, opts),
   // 历史空气质量（最近 10 天，需 LocationID）
-  historicalAir:     (data, tc) => cachedRequest(`${BASE_URL}/historical/air`, 'GET', data, tc, TTL.HISTORICAL),
+  historicalAir:     (data, tc, opts) => cachedRequest(`${BASE_URL}/historical/air`, 'GET', data, tc, TTL.HISTORICAL, opts),
   // GeoAPI 数据版权禁止缓存，始终实时请求
   cityLookup: (data, tc) => request(`${GEO_URL}/city/lookup`, 'GET', data, tc),
   topCity:    (data = {}, tc) => request(`${GEO_URL}/city/top`, 'GET', data, tc),

@@ -1,6 +1,5 @@
 const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
-const cache = require('../../utils/cache');
 const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
 const { navigateTo } = require('../../utils/route');
@@ -88,13 +87,11 @@ Page({
     if (sheet) sheet.expand();
   },
   onLocateTap() {
-    cache.clear();
     this.setData({ mapTipsVisible: false, mapTipsData: {}, mapMarkers: [] });
-    this.init({ forceLocate: true });
+    this.init({ forceLocate: true, force: true });
   },
   onRefresh() {
-    cache.clear();
-    this.getWeather();
+    this.getWeather({ force: true });
   },
   onRetry() {
     this.setData({ errorMsg: '' });
@@ -349,11 +346,20 @@ Page({
       }
       if (Object.keys(updates).length) this.setData(updates);
     }, 10 * 60 * 1000);
-    // 实例化API核心类
-    this.init();
+    // 冷启动若标记了强刷，在 init 路径透传 force；onShow 看到 false 后不会重复触发
+    const force = !!app.globalData.needForceRefresh;
+    app.globalData.needForceRefresh = false;
+    this.init({ force });
   },
   onReady() {
     monitor.recordPageLoad('/pages/index/index', this._loadStart);
+  },
+  onShow() {
+    // 仅处理「页面已存在 + 应用从后台回到前台超过阈值」场景；冷启动由 onLoad 接管
+    if (!app.globalData.needForceRefresh) return;
+    app.globalData.needForceRefresh = false;
+    if (this._fetching || !this.data.latitude || !this.data.longitude) return;
+    this.getWeather({ force: true }).catch(console.error);
   },
   onUnload() {
     if (this._unsubPrefs) this._unsubPrefs();
@@ -362,7 +368,7 @@ Page({
   },
   async init(opts = {}) {
     if (this._fetching) return;
-    const { forceLocate = false } = opts;
+    const { forceLocate = false, force = false } = opts;
     try {
       this.qqmapsdk = new QQMapWX({
         key: app.globalData.lbs.key
@@ -378,10 +384,10 @@ Page({
           locationLabel: this._buildLocationLabel(defaultCity.name, defaultCity.adm2, defaultCity.adm1),
           cityId: defaultCity.id || '',
         });
-        await this.getWeather();
+        await this.getWeather({ force });
       } else {
         await this.getLocation();
-        await this.getNow();
+        await this.getNow({ force });
       }
     } catch (error) {
       console.error(error);
@@ -395,7 +401,7 @@ Page({
       });
     }
   },
-  async getNow() {
+  async getNow(opts = {}) {
     try {
       const {longitude, latitude} = this.data;
       const { city, province, district } = await this.getCity(`${latitude},${longitude}`);
@@ -406,7 +412,7 @@ Page({
         locationLabel: this._buildLocationLabel(district, city, province),
       });
       this._resolveCityId(`${longitude},${latitude}`);
-      await this.getWeather();
+      await this.getWeather(opts);
     } catch (error) {
       console.error(error);
       monitor.recordError('page', error?.message || '城市解析失败', { page: '/pages/index/index', stack: error?.stack });
@@ -474,7 +480,7 @@ Page({
       pollutants
     };
   },
-  async getWeather() {
+  async getWeather(opts = {}) {
     // 防止并发重复调用
     if (this._fetching) return;
     this._fetching = true;
@@ -489,16 +495,18 @@ Page({
       }
       const today = this.formatDateStr(new Date());
       const tc = _pendingTasks; // 当前批次 taskCollector
+      const { force = false } = opts;
+      const reqOpts = force ? { force: true } : undefined;
       const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes] = await Promise.all([
-        now({location}, tc),
-        this.getIndices(location, tc),
-        hourly({location}, tc),
-        sevenDay({location}, tc),
-        air(location, tc),
-        sun({location, date: today}, tc),
-        moon({location, date: today}, tc),
-        warning(location, tc).catch(() => null),
-        minutely({location}, tc).catch(() => null)
+        now({location}, tc, reqOpts),
+        this.getIndices(location, tc, reqOpts),
+        hourly({location}, tc, reqOpts),
+        sevenDay({location}, tc, reqOpts),
+        air(location, tc, reqOpts),
+        sun({location, date: today}, tc, reqOpts),
+        moon({location, date: today}, tc, reqOpts),
+        warning(location, tc, reqOpts).catch(() => null),
+        minutely({location}, tc, reqOpts).catch(() => null)
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
@@ -591,8 +599,8 @@ Page({
       });
     });
   },
-  getIndices(location, tc) {
-    return indices({ location, type: 0 }, tc);
+  getIndices(location, tc, opts) {
+    return indices({ location, type: 0 }, tc, opts);
   },
   // 显示组件
   showSelector() {
