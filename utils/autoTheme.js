@@ -85,7 +85,9 @@ const COLOR_MAP = {
 const resolveTheme = (weatherIcon, sunriseISO, sunsetISO) => {
   const category = getWeatherCategory(weatherIcon);
   const period = getTimePeriod(sunriseISO, sunsetISO);
-  return COLOR_MAP[category]?.[period] || COLOR_MAP.default[period];
+  const themeColor = COLOR_MAP[category]?.[period] || COLOR_MAP.default[period];
+  console.log(`Auto theme resolved: category=${category}, period=${period}, color=${themeColor}`);
+  return themeColor;
 };
 
 // 卡片背景色映射表：天气分类 × 时段（渐变色，左下角亮度低，右上角亮度高）
@@ -113,9 +115,10 @@ const BG_MAP = {
 const resolveThemeBg = (weatherIcon, sunriseISO, sunsetISO) => {
   const category = getWeatherCategory(weatherIcon);
   const period = getTimePeriod(sunriseISO, sunsetISO);
-  return BG_MAP[category]?.[period] || BG_MAP.default[period];
+  const bgColor = BG_MAP[category]?.[period] || BG_MAP.default[period];
+  console.log(`Auto theme background resolved: category=${category}, period=${period}, bg=${bgColor}`);
+  return bgColor;
 };
-
 module.exports = {
   resolveTheme,
   resolveThemeBg,
