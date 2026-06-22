@@ -286,11 +286,32 @@ Component({
         ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
-        ctx.fillStyle = '#fff';
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         const label = fmtTemp(list[idx].temp, unit) + '°';
-        const ty = k === 0 ? Math.max(padT + 12, p.y - 10) : Math.min(padT + chartH - 4, p.y + 16);
+        const ty = p.y - 10;
+        // 绘制标签背景
+        const metrics = ctx.measureText(label);
+        const bgW = metrics.width + 8;
+        const bgH = 16;
+        const bgX = p.x - bgW / 2;
+        const bgY = ty - bgH + 3;
+        const r = 3;
+        ctx.fillStyle = k === 0 ? 'rgba(255, 140, 0, 0.85)' : 'rgba(108, 180, 238, 0.85)';
+        ctx.beginPath();
+        ctx.moveTo(bgX + r, bgY);
+        ctx.lineTo(bgX + bgW - r, bgY);
+        ctx.arcTo(bgX + bgW, bgY, bgX + bgW, bgY + r, r);
+        ctx.lineTo(bgX + bgW, bgY + bgH - r);
+        ctx.arcTo(bgX + bgW, bgY + bgH, bgX + bgW - r, bgY + bgH, r);
+        ctx.lineTo(bgX + r, bgY + bgH);
+        ctx.arcTo(bgX, bgY + bgH, bgX, bgY + bgH - r, r);
+        ctx.lineTo(bgX, bgY + r);
+        ctx.arcTo(bgX, bgY, bgX + r, bgY, r);
+        ctx.closePath();
+        ctx.fill();
+        // 绘制标签文字
+        ctx.fillStyle = '#fff';
         ctx.fillText(label, p.x, ty);
       });
     },
