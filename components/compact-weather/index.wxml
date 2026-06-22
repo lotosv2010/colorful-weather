@@ -23,10 +23,7 @@
       <view class="weather-header-main">
         <i class="weather-header-svg icon-color-{{ic.category(weather.icon || 100)}} qi-{{weather.icon || 100}}-fill"></i>
         <view class="weather-header-left">
-          <view class="weather-header-temp">
-            {{ tu.fmt(weather.temp, tempUnit) }}
-            <text class="weather-header-unit">°</text>
-          </view>
+          <view class="weather-header-temp">{{ tu.fmt(weather.temp, tempUnit) }}°</view>
           <view class="weather-header-text">{{ weather.text || '' }}</view>
         </view>
       </view>

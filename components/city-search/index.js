@@ -27,6 +27,10 @@ Component({
       observer() {
         if (this.data.show) this.loadCurrent();
       }
+    },
+    tempUnit: {
+      type: String,
+      value: 'C'
     }
   },
   data: {

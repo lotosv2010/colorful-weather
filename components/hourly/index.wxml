@@ -6,10 +6,7 @@
     <view class="weather-hourly-item" wx:for="{{hourlyList}}" wx:key="fxTime"
       bindtap="onItemTap" data-index="{{index}}">
       <i class="weather-hourly-icon icon-color-{{ic.category(item.icon)}} qi-{{item.icon}}-fill"></i>
-      <view class="weather-hourly-temp">
-        <text class="value">{{ tu.fmt(item.temp, tempUnit) }}</text>
-        <text class="unit">°</text>
-      </view>
+      <view class="weather-hourly-temp">{{ tu.fmt(item.temp, tempUnit) }}°</view>
       <view wx:if="{{item.windArrowVisible}}" class="weather-hourly-windDir" style="transform: rotate({{item.windArrowRotate}}deg)">
         <weather-icon class="wind-arrow" colors="{{['rgb(68, 179, 255)']}}" src="/static/icons/fx.svg" />
       </view>

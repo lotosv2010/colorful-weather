@@ -35,7 +35,7 @@
         <text class="map-tips-icon qi-{{mapTipsData.icon || 100}}-fill" style="color: {{mapTipsData.iconColor}};"></text>
       </view>
       <view class="map-tips-body">
-        <view class="map-tips-temp">{{mapTipsData.temp}}</view>
+        <view class="map-tips-temp">{{tu.fmt(mapTipsData.temp, tempUnit)}}°</view>
         <view class="map-tips-text-row">
           <text class="map-tips-text">{{mapTipsData.text}}</text>
           <text class="map-tips-arrow">›</text>
@@ -247,5 +247,5 @@
     </view>
   </bottom-sheet>
 
-  <city-search show="{{selectorVisible}}" current="{{ {name: district, adm1: province, adm2: city, lat: latitude, lon: longitude} }}" bind:select="onSelectCity" bind:close="hideSelector" />
+  <city-search show="{{selectorVisible}}" tempUnit="{{tempUnit}}" current="{{ {name: district, adm1: province, adm2: city, lat: latitude, lon: longitude} }}" bind:select="onSelectCity" bind:close="hideSelector" />
 </view>

@@ -1,4 +1,5 @@
 <wxs src="../../utils/iconColor.wxs" module="ic" />
+<wxs src="../../utils/tempUnit.wxs" module="tu" />
 <view class="city-search {{show ? 'show' : ''}}" catchtap="onClose">
   <view class="panel" catchtap="noop">
     <view wx:if="{{show}}" class="search-bar">
@@ -36,7 +37,7 @@
                 <text class="pin-tag">定位</text>
               </view>
               <view class="row sub">
-                <text class="weather-temp">{{currentItem.weather.temp || '--'}}°</text>
+                <text class="weather-temp">{{tu.fmt(currentItem.weather.temp, tempUnit)}}°</text>
                 <text class="city-path">{{currentItem.adm1}}{{currentItem.adm2 && currentItem.adm2 !== currentItem.adm1 ? ' · ' + currentItem.adm2 : ''}}</text>
               </view>
             </view>
@@ -80,7 +81,7 @@
                 <text wx:if="{{item.pinned}}" class="pin-tag">置顶</text>
               </view>
               <view class="row sub">
-                <text class="weather-temp">{{item.weather.temp || '--'}}°</text>
+                <text class="weather-temp">{{tu.fmt(item.weather.temp, tempUnit)}}°</text>
                 <text class="city-path">{{item.adm1}}{{item.adm2 && item.adm2 !== item.adm1 ? ' · ' + item.adm2 : ''}}</text>
               </view>
             </view>
@@ -125,7 +126,7 @@
                 <text class="city-name">{{item.name}}</text>
               </view>
               <view class="row sub">
-                <text class="weather-temp">{{item.weather.temp || '--'}}°</text>
+                <text class="weather-temp">{{tu.fmt(item.weather.temp, tempUnit)}}°</text>
                 <text class="city-path">{{item.adm1}} · {{item.country}}</text>
               </view>
             </view>

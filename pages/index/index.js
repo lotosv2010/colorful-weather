@@ -7,6 +7,7 @@ const { navigateTo } = require('../../utils/route');
 const { resolveTheme, resolveThemeBg } = require('../../utils/autoTheme');
 const { resolveWeatherEffect } = require('../../utils/weatherEffect');
 const monitor = require('../../utils/monitor');
+const { fmt: fmtTemp } = require('../../utils/temp');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -166,7 +167,7 @@ Page({
       const { city, province, district } = cityInfo;
       const nw = weatherRes?.now || {};
       const locationLabel = this._buildLocationLabel(district, city, province);
-      const temp = this._formatTemp(nw.temp, this.data.tempUnit);
+      const temp = nw.temp;
       const windowInfo = wx.getWindowInfo();
       const screenW = windowInfo.windowWidth || 375;
       const screenH = windowInfo.windowHeight || 667;
@@ -246,13 +247,6 @@ Page({
     else if (c === 900) cat = 'hot';
     else if (c === 901) cat = 'cold';
     return map[cat] || map.default;
-  },
-  _formatTemp(c, unit) {
-    if (c === '' || c === null || c === undefined) return '--';
-    const n = Number(c);
-    if (isNaN(n)) return '--';
-    const v = unit === 'F' ? n * 9 / 5 + 32 : n;
-    return `${Math.round(v)}°`;
   },
   onMapTipsTap() {
     const d = this.data.mapTipsData;
@@ -542,15 +536,18 @@ Page({
       // 自动主题色：天气数据更新后重新计算
       const p = prefs.getPrefs();
       const updates = {};
+      const prefsPatch = {};
       if (p.themeMode === 'auto') {
         const autoColor = resolveTheme(weatherData?.now?.icon, sunData?.sunrise, sunData?.sunset);
         if (autoColor !== this.data.themeColor) updates.themeColor = autoColor;
+        if (autoColor !== p.themeColor) prefsPatch.themeColor = autoColor;
       }
       if (p.cardBgMode === 'auto') {
         const autoBg = resolveThemeBg(weatherData?.now?.icon, sunData?.sunrise, sunData?.sunset);
         if (autoBg !== this.data.weatherBg) updates.weatherBg = autoBg;
       }
       if (Object.keys(updates).length) this.setData(updates);
+      if (Object.keys(prefsPatch).length) prefs.setPrefs(prefsPatch);
     } catch (error) {
       console.error(error);
       monitor.recordError('page', error?.message || '天气数据加载失败', { page: '/pages/index/index', stack: error?.stack });
@@ -652,7 +649,7 @@ Page({
   },
   onShareAppMessage() {
     const { locationLabel, currentWeather, tempUnit } = this.data;
-    const tempStr = currentWeather && currentWeather.temp != null ? `${currentWeather.temp}°${tempUnit}` : '';
+    const tempStr = currentWeather && currentWeather.temp != null ? `${fmtTemp(currentWeather.temp, tempUnit)}°` : '';
     const text = currentWeather && currentWeather.text ? `${currentWeather.text} ${tempStr}` : '实时天气';
     return {
       title: `${locationLabel || '我的位置'}：${text}`,
@@ -661,7 +658,7 @@ Page({
   },
   onShareTimeline() {
     const { locationLabel, currentWeather, tempUnit } = this.data;
-    const tempStr = currentWeather && currentWeather.temp != null ? `${currentWeather.temp}°${tempUnit}` : '';
+    const tempStr = currentWeather && currentWeather.temp != null ? `${fmtTemp(currentWeather.temp, tempUnit)}°` : '';
     return {
       title: `${locationLabel || '我的位置'} 天气 ${tempStr}`,
       query: ''

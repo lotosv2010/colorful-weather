@@ -78,13 +78,10 @@
   position: relative;
 }
 .weather-header-unit {
-  font-size: 1rem;
-  height: 1rem;
-  line-height: 1rem;
+  font-size: 0.55em;
   position: absolute;
-  top: 0px;
-  right: -12px;
-  margin-left: 5px;
+  top: 0;
+  right: -4px;
 }
 .weather-header-text {
   font-size: 1.2rem;
