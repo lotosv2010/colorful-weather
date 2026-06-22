@@ -8,7 +8,7 @@
 }
 
 .detail-card-active {
-  border-color: #44B3FF;
+  border-color: var(--theme, #44B3FF);
 }
 
 .card-row {

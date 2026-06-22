@@ -88,25 +88,25 @@ const resolveTheme = (weatherIcon, sunriseISO, sunsetISO) => {
   return COLOR_MAP[category]?.[period] || COLOR_MAP.default[period];
 };
 
-// 卡片背景色映射表：天气分类 × 时段（深色调，保持文字可读性）
+// 卡片背景色映射表：天气分类 × 时段（渐变色，左下角亮度低，右上角亮度高）
 const BG_MAP = {
-  sunny:        { day: 'rgba(25, 60, 100, 0.85)', dusk: 'rgba(80, 45, 20, 0.85)', night: 'rgba(15, 25, 45, 0.85)' },
-  partlyCloudy: { day: 'rgba(35, 55, 80, 0.85)',  dusk: 'rgba(70, 45, 25, 0.85)', night: 'rgba(20, 30, 50, 0.85)' },
-  cloudy:       { day: 'rgba(45, 55, 70, 0.85)',   dusk: 'rgba(60, 50, 35, 0.85)', night: 'rgba(25, 30, 42, 0.85)' },
-  overcast:     { day: 'rgba(50, 55, 65, 0.85)',   dusk: 'rgba(55, 48, 40, 0.85)', night: 'rgba(22, 25, 32, 0.85)' },
-  thunder:      { day: 'rgba(60, 30, 80, 0.85)',   dusk: 'rgba(55, 25, 55, 0.85)', night: 'rgba(35, 15, 50, 0.85)' },
-  rainLight:    { day: 'rgba(30, 55, 85, 0.85)',   dusk: 'rgba(45, 50, 65, 0.85)', night: 'rgba(18, 35, 55, 0.85)' },
-  rainHeavy:    { day: 'rgba(15, 40, 70, 0.85)',   dusk: 'rgba(25, 35, 50, 0.85)', night: 'rgba(10, 22, 40, 0.85)' },
-  sleet:        { day: 'rgba(35, 55, 80, 0.85)',   dusk: 'rgba(50, 50, 60, 0.85)', night: 'rgba(20, 35, 50, 0.85)' },
-  snow:         { day: 'rgba(55, 65, 80, 0.85)',   dusk: 'rgba(65, 58, 50, 0.85)', night: 'rgba(30, 40, 55, 0.85)' },
-  snowHeavy:    { day: 'rgba(65, 75, 90, 0.85)',   dusk: 'rgba(70, 65, 58, 0.85)', night: 'rgba(40, 48, 60, 0.85)' },
-  fog:          { day: 'rgba(60, 60, 60, 0.85)',   dusk: 'rgba(55, 50, 45, 0.85)', night: 'rgba(30, 30, 30, 0.85)' },
-  haze:         { day: 'rgba(70, 55, 35, 0.85)',   dusk: 'rgba(60, 45, 30, 0.85)', night: 'rgba(35, 28, 20, 0.85)' },
-  sand:         { day: 'rgba(75, 60, 30, 0.85)',   dusk: 'rgba(60, 48, 25, 0.85)', night: 'rgba(35, 30, 18, 0.85)' },
-  typhoon:      { day: 'rgba(100, 30, 30, 0.85)',  dusk: 'rgba(75, 25, 25, 0.85)', night: 'rgba(50, 15, 15, 0.85)' },
-  hot:          { day: 'rgba(90, 25, 35, 0.85)',   dusk: 'rgba(70, 25, 30, 0.85)', night: 'rgba(45, 15, 20, 0.85)' },
-  cold:         { day: 'rgba(40, 60, 80, 0.85)',   dusk: 'rgba(45, 50, 60, 0.85)', night: 'rgba(20, 35, 50, 0.85)' },
-  default:      { day: 'rgba(34, 37, 48, 0.85)',   dusk: 'rgba(34, 37, 48, 0.85)', night: 'rgba(34, 37, 48, 0.85)' },
+  sunny:        { day: 'linear-gradient(315deg, rgb(25, 45, 85) 0%, rgb(55, 85, 145) 100%)', dusk: 'linear-gradient(315deg, rgb(50, 30, 15) 0%, rgb(95, 65, 35) 100%)', night: 'linear-gradient(315deg, rgb(12, 18, 35) 0%, rgb(28, 40, 65) 100%)' },
+  partlyCloudy: { day: 'linear-gradient(315deg, rgb(30, 45, 70) 0%, rgb(60, 85, 120) 100%)', dusk: 'linear-gradient(315deg, rgb(45, 30, 18) 0%, rgb(80, 58, 35) 100%)', night: 'linear-gradient(315deg, rgb(15, 22, 40) 0%, rgb(32, 45, 70) 100%)' },
+  cloudy:       { day: 'linear-gradient(315deg, rgb(38, 45, 58) 0%, rgb(72, 82, 100) 100%)', dusk: 'linear-gradient(315deg, rgb(42, 35, 25) 0%, rgb(78, 65, 48) 100%)', night: 'linear-gradient(315deg, rgb(18, 22, 30) 0%, rgb(38, 45, 58) 100%)' },
+  overcast:     { day: 'linear-gradient(315deg, rgb(40, 44, 52) 0%, rgb(75, 80, 92) 100%)',  dusk: 'linear-gradient(315deg, rgb(38, 32, 25) 0%, rgb(72, 60, 48) 100%)', night: 'linear-gradient(315deg, rgb(16, 18, 24) 0%, rgb(35, 38, 48) 100%)' },
+  thunder:      { day: 'linear-gradient(315deg, rgb(45, 20, 65) 0%, rgb(95, 48, 125) 100%)',  dusk: 'linear-gradient(315deg, rgb(40, 18, 40) 0%, rgb(78, 38, 78) 100%)', night: 'linear-gradient(315deg, rgb(22, 10, 35) 0%, rgb(48, 22, 68) 100%)' },
+  rainLight:    { day: 'linear-gradient(315deg, rgb(28, 45, 72) 0%, rgb(58, 82, 118) 100%)',  dusk: 'linear-gradient(315deg, rgb(32, 35, 45) 0%, rgb(62, 68, 82) 100%)', night: 'linear-gradient(315deg, rgb(12, 25, 40) 0%, rgb(30, 48, 72) 100%)' },
+  rainHeavy:    { day: 'linear-gradient(315deg, rgb(15, 30, 55) 0%, rgb(32, 58, 98) 100%)',   dusk: 'linear-gradient(315deg, rgb(18, 25, 35) 0%, rgb(40, 50, 65) 100%)', night: 'linear-gradient(315deg, rgb(8, 15, 28) 0%, rgb(18, 32, 52) 100%)' },
+  sleet:        { day: 'linear-gradient(315deg, rgb(30, 45, 70) 0%, rgb(60, 82, 115) 100%)',  dusk: 'linear-gradient(315deg, rgb(35, 35, 42) 0%, rgb(65, 65, 75) 100%)', night: 'linear-gradient(315deg, rgb(15, 25, 38) 0%, rgb(32, 45, 65) 100%)' },
+  snow:         { day: 'linear-gradient(315deg, rgb(42, 50, 65) 0%, rgb(82, 92, 115) 100%)',   dusk: 'linear-gradient(315deg, rgb(45, 38, 32) 0%, rgb(82, 72, 62) 100%)', night: 'linear-gradient(315deg, rgb(20, 28, 38) 0%, rgb(42, 55, 72) 100%)' },
+  snowHeavy:    { day: 'linear-gradient(315deg, rgb(48, 55, 72) 0%, rgb(92, 102, 125) 100%)',  dusk: 'linear-gradient(315deg, rgb(48, 42, 38) 0%, rgb(88, 80, 72) 100%)', night: 'linear-gradient(315deg, rgb(25, 32, 42) 0%, rgb(52, 62, 78) 100%)' },
+  fog:          { day: 'linear-gradient(315deg, rgb(55, 60, 42) 0%, rgb(105, 112, 78) 100%)',  dusk: 'linear-gradient(315deg, rgb(38, 35, 28) 0%, rgb(72, 65, 55) 100%)', night: 'linear-gradient(315deg, rgb(20, 20, 20) 0%, rgb(42, 42, 42) 100%)' },
+  haze:         { day: 'linear-gradient(315deg, rgb(52, 40, 25) 0%, rgb(98, 78, 48) 100%)',    dusk: 'linear-gradient(315deg, rgb(40, 30, 20) 0%, rgb(75, 58, 38) 100%)', night: 'linear-gradient(315deg, rgb(22, 18, 12) 0%, rgb(48, 38, 28) 100%)' },
+  sand:         { day: 'linear-gradient(315deg, rgb(55, 42, 20) 0%, rgb(102, 82, 42) 100%)',   dusk: 'linear-gradient(315deg, rgb(40, 32, 18) 0%, rgb(75, 60, 35) 100%)', night: 'linear-gradient(315deg, rgb(22, 18, 10) 0%, rgb(48, 42, 25) 100%)' },
+  typhoon:      { day: 'linear-gradient(315deg, rgb(72, 20, 20) 0%, rgb(138, 42, 42) 100%)',   dusk: 'linear-gradient(315deg, rgb(52, 18, 18) 0%, rgb(98, 35, 35) 100%)', night: 'linear-gradient(315deg, rgb(32, 10, 10) 0%, rgb(65, 22, 22) 100%)' },
+  hot:          { day: 'linear-gradient(315deg, rgb(65, 18, 25) 0%, rgb(125, 38, 48) 100%)',   dusk: 'linear-gradient(315deg, rgb(48, 18, 22) 0%, rgb(88, 32, 38) 100%)', night: 'linear-gradient(315deg, rgb(28, 10, 15) 0%, rgb(58, 22, 28) 100%)' },
+  cold:         { day: 'linear-gradient(315deg, rgb(30, 45, 65) 0%, rgb(58, 82, 112) 100%)',   dusk: 'linear-gradient(315deg, rgb(32, 35, 42) 0%, rgb(62, 68, 78) 100%)', night: 'linear-gradient(315deg, rgb(15, 25, 35) 0%, rgb(32, 45, 65) 100%)' },
+  default:      { day: 'linear-gradient(315deg, rgb(28, 30, 38) 0%, rgb(55, 58, 72) 100%)',    dusk: 'linear-gradient(315deg, rgb(28, 30, 38) 0%, rgb(55, 58, 72) 100%)', night: 'linear-gradient(315deg, rgb(28, 30, 38) 0%, rgb(55, 58, 72) 100%)' },
 };
 
 // 卡片背景色：根据天气图标和日出日落时间解析

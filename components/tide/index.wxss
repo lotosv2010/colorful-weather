@@ -22,7 +22,7 @@
 }
 
 .nav-btn {
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
   font-size: 1.2rem;
   padding: 0 4px;
 }
@@ -79,7 +79,7 @@
 
 .tide-trend.rising {
   background: rgba(68, 179, 255, 0.15);
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
 }
 
 .tide-trend.falling {
@@ -103,7 +103,7 @@
 
 .next-time {
   font-size: 1rem;
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
 }
 
 /* 曲线 */
@@ -151,7 +151,7 @@
 }
 
 .tide-card.next {
-  border-color: rgb(68, 179, 255);
+  border-color: var(--theme, rgb(68, 179, 255));
   background: rgba(68, 179, 255, 0.1);
 }
 
@@ -160,7 +160,7 @@
 }
 
 .tide-card.high .card-arrow {
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
 }
 
 .tide-card.low .card-arrow {
@@ -182,7 +182,7 @@
 }
 
 .tide-card.high .card-height {
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
 }
 
 .card-unit {

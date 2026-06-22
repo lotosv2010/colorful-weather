@@ -293,6 +293,10 @@ Page({
     if (p.tempUnit === this.data.tempUnit && themeColor === this.data.themeColor && weatherBg === this.data.weatherBg &&
         weatherEffect.particle === this.data.weatherEffect.particle && weatherEffect.decor === this.data.weatherEffect.decor) return;
     this.setData({ tempUnit: p.tempUnit, themeColor, weatherBg, weatherEffect });
+    // 同步自动主题色到 prefs，使设置页等其他页面也能获取到
+    if (p.themeMode === 'auto' && themeColor !== p.themeColor) {
+      prefs.setPrefs({ themeColor });
+    }
   },
   _buildLocationLabel(district, city, province) {
     let displayCity = city;

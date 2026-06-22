@@ -14,7 +14,7 @@
   margin-bottom: 10px;
 }
 .weather-daily-header .action.more {
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
   text-decoration: none;
 }
 .weather-daily-item {

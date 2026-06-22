@@ -1,7 +1,7 @@
 <!--components/compact-weather/index.wxml-->
 <wxs src="/utils/iconColor.wxs" module="ic" />
 <wxs src="/utils/tempUnit.wxs" module="tu" />
-<view class="compact" style="{{weatherBg ? 'background-color:' + weatherBg : ''}}">
+<view class="compact" style="{{weatherBg ? 'background:' + weatherBg : ''}}">
   <view class="compact-top">
     <view class="compact-location" catchtap="onShowSelector">
       <icon class="compact-location-icon" type="search" color="#fff" size="24"></icon>

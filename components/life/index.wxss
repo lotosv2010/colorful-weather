@@ -22,11 +22,11 @@
   gap: 12rpx;
 }
 .weather-life-header .action {
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
   padding: 4rpx 8rpx;
 }
 .weather-life-header .action.more {
-  color: rgb(68, 179, 255);
+  color: var(--theme, rgb(68, 179, 255));
 }
 .weather-life-main{
   display: flex;

@@ -2,14 +2,14 @@
   <!-- 紧凑层：始终位于底部，不再随展开 fade -->
   <view
     class="compact-layer"
-    style="{{weatherBg ? 'background-color:' + weatherBg : ''}}"
+    style="{{weatherBg ? 'background:' + weatherBg : ''}}"
     bindtouchstart="onTouchStart"
     catchtouchmove="onTouchMove"
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchEnd"
   >
     <view class="compact-above"><slot name="compact-above"></slot></view>
-    <view class="compact-handle" style="{{weatherBg ? 'background-color:' + weatherBg : ''}}">
+    <view class="compact-handle">
       <view class="handle-bar"></view>
     </view>
     <slot name="compact"></slot>
