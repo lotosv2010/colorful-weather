@@ -234,32 +234,36 @@ Component({
       ctx.globalAlpha = 1;
 
       // 日出标记点和标签
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.6;
-      ctx.beginPath();
-      ctx.arc(riseX, baseY, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(this.data.sunrise, riseX, baseY + 16);
-      ctx.fillStyle = 'rgb(166, 169, 173)';
-      ctx.fillText('日出', riseX, baseY + 28);
+      if (riseMin != null) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath();
+        ctx.arc(riseX, baseY, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.data.sunrise, riseX, baseY + 16);
+        ctx.fillStyle = 'rgb(166, 169, 173)';
+        ctx.fillText('日出', riseX, baseY + 28);
+      }
 
       // 日落标记点和标签
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.6;
-      ctx.beginPath();
-      ctx.arc(setX, baseY, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(this.data.sunset, setX, baseY + 16);
-      ctx.fillStyle = 'rgb(166, 169, 173)';
-      ctx.fillText('日落', setX, baseY + 28);
+      if (setMin != null) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath();
+        ctx.arc(setX, baseY, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.data.sunset, setX, baseY + 16);
+        ctx.fillStyle = 'rgb(166, 169, 173)';
+        ctx.fillText('日落', setX, baseY + 28);
+      }
 
       // 画夜间曲线（虚线）：午夜 → 日出
       if (nightBefore.length >= 2) {
@@ -300,8 +304,14 @@ Component({
       const h = this._moonH;
       const color = '#6CB4EE';
 
-      const riseMin = this.timeStrToMinutes(this.data.moonrise);
-      const setMin = this.timeStrToMinutes(this.data.moonset);
+      let riseMin = this.timeStrToMinutes(this.data.moonrise);
+      let setMin = this.timeStrToMinutes(this.data.moonset);
+      const hasMoonset = setMin != null;
+
+      // moonset 为空时，月落在次日凌晨，当天显示到 23:59
+      if (riseMin != null && setMin == null) {
+        setMin = 23 * 60 + 59;
+      }
       const now = new Date();
       const nowMin = now.getHours() * 60 + now.getMinutes();
 
@@ -391,32 +401,36 @@ Component({
       ctx.globalAlpha = 1;
 
       // 月升标记点和标签
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.6;
-      ctx.beginPath();
-      ctx.arc(riseX, baseY, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(this.data.moonrise, riseX, baseY + 16);
-      ctx.fillStyle = 'rgb(166, 169, 173)';
-      ctx.fillText('月出', riseX, baseY + 28);
+      if (riseMin != null) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath();
+        ctx.arc(riseX, baseY, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.data.moonrise, riseX, baseY + 16);
+        ctx.fillStyle = 'rgb(166, 169, 173)';
+        ctx.fillText('月出', riseX, baseY + 28);
+      }
 
       // 月落标记点和标签
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.6;
-      ctx.beginPath();
-      ctx.arc(setX, baseY, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#fff';
-      ctx.font = '12px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(this.data.moonset, setX, baseY + 16);
-      ctx.fillStyle = 'rgb(166, 169, 173)';
-      ctx.fillText('月落', setX, baseY + 28);
+      if (hasMoonset) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath();
+        ctx.arc(setX, baseY, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.data.moonset, setX, baseY + 16);
+        ctx.fillStyle = 'rgb(166, 169, 173)';
+        ctx.fillText('月落', setX, baseY + 28);
+      }
 
       // 画夜间曲线（虚线）
       if (nightBefore.length >= 2) {

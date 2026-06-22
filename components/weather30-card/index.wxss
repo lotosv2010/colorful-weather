@@ -20,11 +20,30 @@
 /* 周+日期 */
 .row-date {
   padding-bottom: 8rpx;
+  justify-content: space-between;
 }
 
 .date-text {
   font-size: 26rpx;
   color: #fff;
+}
+
+/* 最高/最低温度 tag */
+.temp-tag {
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  margin-left: 12rpx;
+}
+
+.tag-hot {
+  background: rgba(255, 140, 0, 0.2);
+  color: #FF8C00;
+}
+
+.tag-cold {
+  background: rgba(91, 163, 217, 0.2);
+  color: #5BA3D9;
 }
 
 /* icon + 天气 + 温度 */

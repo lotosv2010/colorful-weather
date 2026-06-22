@@ -29,7 +29,7 @@
     <view wx:if="{{activeTab === 'list'}}" class="list-container">
       <scroll-view scroll-y scroll-into-view="{{scrollToDate}}" scroll-with-animation class="list-scroll">
         <view id="card-{{item.fxDate}}" wx:for="{{daily}}" wx:key="fxDate">
-          <weather30-card item="{{item}}" tempUnit="{{tempUnit}}" active="{{activeDate === item.fxDate}}" />
+          <weather30-card item="{{item}}" tempUnit="{{tempUnit}}" active="{{activeDate === item.fxDate}}" maxTemp="{{summary.maxTemp}}" minTemp="{{summary.minTemp}}" />
         </view>
       </scroll-view>
     </view>

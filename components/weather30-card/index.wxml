@@ -8,6 +8,8 @@
   <!-- 第1行: 周 + 日期 -->
   <view class="card-row row-date">
     <text class="date-text">{{item.week}} {{item.dateLabel}}</text>
+    <view wx:if="{{item.tempMax == maxTemp}}" class="temp-tag tag-hot">最高</view>
+    <view wx:if="{{item.tempMin == minTemp}}" class="temp-tag tag-cold">最低</view>
   </view>
 
   <!-- 第2行: icon + 最高～最低温度 -->

@@ -295,7 +295,31 @@ Page({
     this.setData({ tempUnit: p.tempUnit, themeColor, weatherBg, weatherEffect });
   },
   _buildLocationLabel(district, city, province) {
-    return district || city || province || '';
+    let displayCity = city;
+    let displayProvince = province;
+
+    // 直辖市：province === city，去掉重复的省级
+    if (province && city && province === city) {
+      displayProvince = '';
+    }
+
+    // district === city，去掉重复的市级
+    if (district && city && district === city) {
+      displayCity = '';
+    }
+
+    // district === province，去掉重复的省级
+    if (district && province && district === province) {
+      displayProvince = '';
+    }
+
+    // city === province（直辖市且 district === city），去掉重复的省级
+    if (displayCity && province && displayCity === province) {
+      displayProvince = '';
+    }
+
+    const parts = [district, displayCity, displayProvince].filter(Boolean);
+    return parts.join('，');
   },
   // 事件处理函数
   onLoad() {

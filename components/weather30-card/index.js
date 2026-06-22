@@ -15,6 +15,14 @@ Component({
     tempUnit: {
       type: String,
       value: 'C'
+    },
+    maxTemp: {
+      type: Number,
+      value: null
+    },
+    minTemp: {
+      type: Number,
+      value: null
     }
   }
 })
