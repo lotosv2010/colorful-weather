@@ -16,7 +16,7 @@ const buildDateList = (days = 10) => {
     list.push({
       key: `${y}${m}${day}`,
       label: `${d.getMonth() + 1}/${d.getDate()}`,
-      weekday: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()],
+      weekday: i === 1 ? '昨天' : ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()],
     });
   }
   return list;

@@ -446,10 +446,14 @@ Page({
       [6, '周六'],
       [0, '周日'],
     ]);
+    const today = new Date();
     return data.map(d => {
       const res = {...d};
       const date = new Date(res.fxDate);
-      res.week = weekMap.get(date.getDay());
+      const isToday = date.getFullYear() === today.getFullYear() &&
+                      date.getMonth() === today.getMonth() &&
+                      date.getDate() === today.getDate();
+      res.week = isToday ? '今天' : weekMap.get(date.getDay());
       res.month = date.getMonth() + 1;
       res.day = `${date.getDate()}`.padStart(2, 0);
       return res;

@@ -184,10 +184,14 @@ Page({
       const dateStr = (item.forecastStartTime || '').substr(0, 10);
       const parts = dateStr.split('-');
       const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+      const today = new Date();
+      const isToday = dateObj.getFullYear() === today.getFullYear() &&
+                      dateObj.getMonth() === today.getMonth() &&
+                      dateObj.getDate() === today.getDate();
       const bgColor = idx.color ? toHex(idx.color) : '#9BB365';
       return {
         date: dateStr,
-        week: weekArr[dateObj.getDay()],
+        week: isToday ? '今天' : weekArr[dateObj.getDay()],
         dateLabel: `${parseInt(parts[1])}月${parseInt(parts[2])}日`,
         name: idx.name || 'AQI',
         aqi: idx.aqi,

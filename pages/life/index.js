@@ -31,8 +31,12 @@ const formatDateParts = (s) => {
   if (!s) return { week: '', dateLabel: '' };
   const [y, m, d] = s.split('-').map(Number);
   const date = new Date(y, m - 1, d);
+  const today = new Date();
+  const isToday = date.getFullYear() === today.getFullYear() &&
+                  date.getMonth() === today.getMonth() &&
+                  date.getDate() === today.getDate();
   return {
-    week: weekArr[date.getDay()],
+    week: isToday ? '今天' : weekArr[date.getDay()],
     dateLabel: `${m}月${d}日`
   };
 };
