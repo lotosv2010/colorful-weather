@@ -147,11 +147,20 @@ page {
   line-height: 1;
 }
 
-/* 地图定位按钮：右上角，尺寸与 top-bar 定位按钮保持一致 */
-.locate-btn {
+/* 地图右上角按钮组：竖排，sheet 展开时整体淡出 */
+.map-btn-group {
   position: fixed;
   top: 24rpx;
   right: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  z-index: 20;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.map-action-btn {
   width: 56rpx;
   height: 56rpx;
   border-radius: 50%;
@@ -160,16 +169,19 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 20;
   pointer-events: none;
-  transition: opacity 0.3s ease;
 }
 
-.locate-btn.locate-interactive {
+.map-action-btn.map-action-interactive {
   pointer-events: auto;
 }
 
-.locate-icon {
+.cities-btn-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.map-locate-icon {
   width: 32rpx;
   height: 32rpx;
 }

@@ -1,0 +1,53 @@
+<wxs src="/utils/tempUnit.wxs" module="tu" />
+<wxs src="/utils/iconColor.wxs" module="ic" />
+
+<view class="city-overview {{show ? 'show' : ''}}" catchtap="onClose" catchtouchmove="noop">
+  <view class="city-overview-panel" catchtap="noop">
+    <!-- 顶部栏 -->
+    <view class="co-header">
+      <text class="co-title">城市</text>
+      <view class="co-close" catchtap="onClose"><text class="co-close-x">✕</text></view>
+    </view>
+
+    <!-- 城市列表 -->
+    <scroll-view class="city-list" scroll-y enhanced show-scrollbar="{{false}}">
+      <view
+        wx:for="{{cityPages}}"
+        wx:key="id"
+        class="city-card {{index === currentPageIndex ? 'city-card-active' : ''}}"
+        data-index="{{index}}"
+        catchtap="onSelectCity"
+      >
+        <!-- 左：城市名 + 天气文字 + 详细地址 -->
+        <view class="city-card-left">
+          <view class="city-card-name-row">
+            <text wx:if="{{item.isLocated}}" class="city-located-dot">● </text>
+            <text class="city-card-name">{{item.name || item.adm2}}</text>
+          </view>
+          <text wx:if="{{weathers[index]}}" class="city-card-text">{{weathers[index].text}}</text>
+          <view wx:elif="{{weathers[index] === null}}" class="ck-bar ck-bar-text"></view>
+          <text class="city-card-region">
+            {{item.adm1}}{{item.adm2 && item.adm2 !== item.adm1 ? ' · ' + item.adm2 : ''}}
+          </text>
+        </view>
+        <!-- 右：天气图标 + 当前温度 + 最高/最低温 -->
+        <view class="city-card-right">
+          <block wx:if="{{weathers[index]}}">
+            <text class="city-card-icon qi-{{weathers[index].icon}}-fill ic-{{ic.category(weathers[index].icon)}}"></text>
+            <text class="city-card-temp">{{tu.fmt(weathers[index].temp, tempUnit)}}°</text>
+            <text wx:if="{{weathers[index].tempMax !== null}}" class="city-card-hilo">
+              {{tu.fmt(weathers[index].tempMax, tempUnit)}}° / {{tu.fmt(weathers[index].tempMin, tempUnit)}}°
+            </text>
+          </block>
+          <view wx:else class="city-card-skeleton">
+            <view class="ck-bar ck-bar-icon"></view>
+            <view class="ck-bar ck-bar-temp"></view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部安全距离 -->
+      <view style="height: env(safe-area-inset-bottom, 0);"></view>
+    </scroll-view>
+  </view>
+</view>

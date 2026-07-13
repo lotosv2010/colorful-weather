@@ -57,13 +57,20 @@
     <text class="offline-text">离线模式 · 展示缓存数据</text>
   </view>
 
-  <!-- 地图定位按钮：跟随地图显示/隐藏，sheet 展开时淡出 -->
-  <view
-    class="locate-btn {{sheetExpanded ? '' : 'locate-interactive'}}"
-    style="opacity: {{1 - sheetProgress}};"
-    catchtap="onLocateTap"
-  >
-    <weather-icon class="locate-icon" src="/static/icons/locate.svg" colors="{{['#333']}}" />
+  <!-- 地图右上角按钮组：城市列表 + 定位，sheet 展开时淡出 -->
+  <view class="map-btn-group" style="opacity: {{1 - sheetProgress}};">
+    <view
+      class="map-action-btn {{sheetExpanded ? '' : 'map-action-interactive'}}"
+      catchtap="onCitiesOverviewOpen"
+    >
+      <weather-icon class="cities-btn-icon" src="/static/icons/lb.svg" colors="{{['#333']}}" />
+    </view>
+    <view
+      class="map-action-btn {{sheetExpanded ? '' : 'map-action-interactive'}}"
+      catchtap="onLocateTap"
+    >
+      <weather-icon class="map-locate-icon" src="/static/icons/locate.svg" colors="{{['#333']}}" />
+    </view>
   </view>
 
   <!-- 顶部搜索栏：随 progress 渐入；容器不拦截手势，仅子元素响应点击 -->
@@ -258,4 +265,13 @@
   </bottom-sheet>
 
   <city-search show="{{selectorVisible}}" tempUnit="{{tempUnit}}" current="{{ {name: district, adm1: province, adm2: city, lat: latitude, lon: longitude} }}" bind:select="onSelectCity" bind:close="hideSelector" />
+
+  <city-overview
+    show="{{citiesOverviewVisible}}"
+    cityPages="{{cityPages}}"
+    currentPageIndex="{{currentPageIndex}}"
+    tempUnit="{{tempUnit}}"
+    bind:selectcity="onCitiesOverviewSelect"
+    bind:close="onCitiesOverviewClose"
+  />
 </view>

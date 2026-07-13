@@ -60,6 +60,7 @@ Page({
     mapTipsVisible: false,
     mapTipsData: {},
     mapMarkers: [],
+    citiesOverviewVisible: false,
   },
   onSheetChange(e) {
     const expanded = e.detail.expanded;
@@ -700,6 +701,18 @@ Page({
   onDotTap(e) {
     const index = e.currentTarget.dataset.index;
     this.switchToCity(Number(index));
+  },
+
+  // 城市概览面板
+  onCitiesOverviewOpen() {
+    this.setData({ citiesOverviewVisible: true });
+  },
+  onCitiesOverviewClose() {
+    this.setData({ citiesOverviewVisible: false });
+  },
+  onCitiesOverviewSelect(e) {
+    this.setData({ citiesOverviewVisible: false });
+    this.switchToCity(e.detail.index);
   },
 
   // 显示组件

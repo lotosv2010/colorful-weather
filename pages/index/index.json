@@ -15,6 +15,7 @@
     "error-state": "../../components/error-state/index",
     "compact-weather": "../../components/compact-weather/index",
     "weather-particles": "../../components/weather-particles/index",
-    "weather-decor": "../../components/weather-decor/index"
+    "weather-decor": "../../components/weather-decor/index",
+    "city-overview": "../../components/city-overview/index"
   }
 }
