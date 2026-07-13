@@ -1,0 +1,14 @@
+<!--components/hourly-humidity-chart/index.wxml-->
+<scroll-view scroll-x class="chart-scroll" enhanced show-scrollbar="{{false}}"
+  scroll-into-view="{{scrollIntoItem}}" scroll-left="{{currentScrollLeft}}"
+  scroll-with-animation bindscroll="onScroll">
+  <view class="chart-content" style="width: {{chartContentWidth}}px; height: {{canvasHeight}}px">
+    <canvas type="2d" id="humidityCanvas" class="chart-canvas"
+      style="width: {{chartContentWidth}}px; height: {{canvasHeight}}px"
+      bindtap="onTap">
+    </canvas>
+    <view wx:for="{{hourly}}" wx:key="fxTime" id="chart-item-{{index}}"
+      class="hit-area" style="left: {{36 + index * (chartContentWidth - 52) / (hourly.length - 1)}}px">
+    </view>
+  </view>
+</scroll-view>

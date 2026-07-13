@@ -45,6 +45,17 @@
         bind:select="onChartSelect" bind:scroll="onChartScroll" />
     </view>
 
+    <!-- 湿度图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">相对湿度</text>
+        <text class="chart-card-unit">%</text>
+      </view>
+      <hourly-humidity-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
+    </view>
+
     <!-- 详情卡片 -->
     <view class="detail-card" wx:if="{{detail}}">
       <!-- 天气图标 + 描述 + 时间 -->
