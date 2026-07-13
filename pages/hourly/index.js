@@ -36,12 +36,13 @@ Page({
     this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
-    const { location, province, city, district, hour } = options;
+    const { location, province, city, district, hour, date } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
       return;
     }
     this.location = location;
+    this._targetDate = date || null;
     this.setData({
       province: province ? decodeURIComponent(province) : '',
       city: city ? decodeURIComponent(city) : '',
@@ -60,7 +61,16 @@ Page({
   async fetchData() {
     this.setData({ loading: true, errorMsg: '' });
     try {
-      const res = await api.hourly({ location: this.location });
+      // 根据目标日期距今天数选合适的接口（24h / 72h / 168h）
+      let apiFn = api.hourly;
+      if (this._targetDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const diffDays = Math.round((new Date(this._targetDate) - today) / 86400000);
+        if (diffDays >= 4) apiFn = api.hourly168;
+        else if (diffDays >= 2) apiFn = api.hourly72;
+      }
+      const res = await apiFn({ location: this.location });
       if (res.code !== '200') {
         this.setData({ loading: false, errorMsg: `请求失败：${res.code}` });
         return;
@@ -76,7 +86,12 @@ Page({
         };
       });
 
-      const selectedIndex = Math.min(this.data.selectedIndex, hourly.length - 1);
+      let selectedIndex = Math.min(this.data.selectedIndex, hourly.length - 1);
+      // 若从 daily 点击指定日期跳入，定位到该日第一条数据
+      if (this._targetDate) {
+        const idx = hourly.findIndex(h => h.fxTime && h.fxTime.startsWith(this._targetDate));
+        if (idx >= 0) selectedIndex = idx;
+      }
       this.setData({
         hourly,
         loading: false,

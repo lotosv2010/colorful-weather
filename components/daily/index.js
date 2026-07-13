@@ -63,7 +63,7 @@ Component({
     onItemTap(e) {
       const { fxdate } = e.currentTarget.dataset;
       const { location, province, city, district } = this.data;
-      navigateTo('/pages/weather30/index', { location, province, city, district }, { date: fxdate });
+      navigateTo('/pages/hourly/index', { location, province, city, district }, { date: fxdate });
     }
   }
 })
