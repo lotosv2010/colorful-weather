@@ -42,6 +42,11 @@
   background-color: rgb(46, 48, 61);
   border-radius: 8px;
 }
+.moon-rise-set {
+  font-size: 0.75rem;
+  color: #6CB4EE;
+  margin-right: auto;
+}
 .moon-phase-icon {
   font-size: 1rem;
 }

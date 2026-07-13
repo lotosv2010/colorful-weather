@@ -5,9 +5,10 @@
 <wxs src="../../utils/tempUnit.wxs" module="tu" />
 
 <view class="detail-card {{active ? 'detail-card-active' : ''}}">
-  <!-- 第1行: 周 + 日期 -->
+  <!-- 第1行: 周 + 日期 + 农历 -->
   <view class="card-row row-date">
     <text class="date-text">{{item.week}} {{item.dateLabel}}</text>
+    <text class="lunar-label" wx:if="{{item.lunarLabel}}">{{item.lunarLabel}}</text>
     <view wx:if="{{item.tempMax == maxTemp}}" class="temp-tag tag-hot">最高</view>
     <view wx:if="{{item.tempMin == minTemp}}" class="temp-tag tag-cold">最低</view>
   </view>

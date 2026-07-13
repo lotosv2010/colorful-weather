@@ -1,5 +1,6 @@
 const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
+const { getLunarLabels } = require('../../utils/lunar');
 const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
 const { navigateTo } = require('../../utils/route');
@@ -487,7 +488,7 @@ Page({
       [0, '周日'],
     ]);
     const today = new Date();
-    return data.map(d => {
+    const mapped = data.map(d => {
       const res = {...d};
       const date = new Date(res.fxDate);
       const isToday = date.getFullYear() === today.getFullYear() &&
@@ -498,6 +499,9 @@ Page({
       res.day = `${date.getDate()}`.padStart(2, 0);
       return res;
     });
+    const lunarLabels = getLunarLabels(mapped.map(d => d.fxDate));
+    mapped.forEach(d => { d.lunarLabel = lunarLabels[d.fxDate] || ''; });
+    return mapped;
   },
   // 转换空气质量数据：indexes[0] + pollutants[] → 组件可用结构
   formatAir(res) {

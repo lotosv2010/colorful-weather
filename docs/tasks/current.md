@@ -160,12 +160,12 @@
 - [x] **#1** 点击 7 天预报跳当日逐小时：`daily` 组件 `onItemTap` 跳 `/pages/hourly/index`，传 `date=fxDate`；hourly 页按距今天数自动选 24h / 72h / 168h 接口，定位到该日第一条
 
 ### 数据维度补充（接口字段已有，直接展示）
-- [ ] **#2** 逐小时降水量 mm：hourly 接口 `precip` 字段，在详情面板 / tooltip 中展示
-- [ ] **#3** 月出 / 月落时间：astronomy 接口 `moonrise` / `moonset` 字段，补充在 astronomy 组件
-- [ ] **#6** 云量图表：hourly 接口 `cloud` 字段，hourly 页详情面板展示
+- [x] **#2** 逐小时降水量 mm：hourly 接口 `precip` 字段，在详情面板 / tooltip 中展示
+- [x] **#3** 月出 / 月落时间：astronomy 接口 `moonrise` / `moonset` 字段，补充在 astronomy 组件
+- [x] **#6** 云量图表：hourly 接口 `cloud` 字段，hourly 页详情面板展示
 
 ### 中国本地化
-- [ ] **#4** 农历 / 二十四节气：纯前端算法，在 daily（7天）/ weather30 列表日期列附显示
+- [x] **#4** 农历 / 二十四节气：纯前端算法，在 daily（7天）/ weather30 列表日期列附显示
 
 ### 文案与内容
 - [ ] **#5** AQI 健康建议文案：在空气质量页 AQI 环图下方增加行动建议，模板写入 `utils/airMeta.js`

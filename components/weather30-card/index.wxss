@@ -28,6 +28,13 @@
   color: #fff;
 }
 
+.lunar-label {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.5);
+  margin-right: auto;
+  margin-left: 12rpx;
+}
+
 /* 最高/最低温度 tag */
 .temp-tag {
   font-size: 20rpx;

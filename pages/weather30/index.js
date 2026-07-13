@@ -1,5 +1,6 @@
 const api = require('../../utils/api');
 const { formatDate, toHex, getTextColor } = require('../../utils/util');
+const { getLunarLabels } = require('../../utils/lunar');
 const prefs = require('../../utils/prefs');
 const { buildPath } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
@@ -105,6 +106,10 @@ Page({
           dateLabel: `${date.getMonth() + 1}月${date.getDate()}日`
         };
       });
+
+      // 补充农历标签
+      const lunarLabels = getLunarLabels(daily.map(d => d.fxDate));
+      daily.forEach(d => { d.lunarLabel = lunarLabels[d.fxDate] || ''; });
 
       // 合并空气质量
       this.mergeAir(daily, airRes);

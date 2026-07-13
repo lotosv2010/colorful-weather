@@ -63,7 +63,7 @@
         <i class="qi-{{detail.icon}}-fill icon-color-{{ic.category(detail.icon)}} detail-icon"></i>
         <view class="detail-header-info">
           <text class="detail-weather-text">{{detail.text}}</text>
-          <text class="detail-time">{{detail.dateLabel}}</text>
+          <text class="detail-time">{{detail.datePart}}<text wx:if="{{detail.lunarLabel}}" class="detail-lunar">（{{detail.lunarLabel}}）</text>{{detail.timePart}}</text>
         </view>
         <view class="detail-temp-badge">
           <text class="detail-temp-value">{{tu.fmt(detail.temp, tempUnit)}}</text>

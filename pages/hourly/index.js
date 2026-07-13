@@ -3,6 +3,7 @@ const api = require('../../utils/api');
 const prefs = require('../../utils/prefs');
 const { buildPath } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
+const { getLunarLabels } = require('../../utils/lunar');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
@@ -78,13 +79,22 @@ Page({
 
       const hourly = (res.hourly || []).map(item => {
         const date = new Date(item.fxTime);
+        const datePart = `${date.getMonth() + 1}月${date.getDate()}日`;
+        const timePart = item.fxTime.substr(11, 5);
         return {
           ...item,
           hour: item.fxTime.substr(11, 2),
           week: weekMap[date.getDay()],
-          dateLabel: `${date.getMonth() + 1}月${date.getDate()}日 ${item.fxTime.substr(11, 5)}`
+          datePart,
+          timePart,
+          dateLabel: `${datePart} ${timePart}`
         };
       });
+
+      // 批量计算农历标签
+      const uniqueDates = [...new Set(hourly.map(h => h.fxTime.substr(0, 10)))];
+      const lunarMap = getLunarLabels(uniqueDates);
+      hourly.forEach(h => { h.lunarLabel = lunarMap[h.fxTime.substr(0, 10)] || ''; });
 
       let selectedIndex = Math.min(this.data.selectedIndex, hourly.length - 1);
       // 若从 daily 点击指定日期跳入，定位到该日第一条数据

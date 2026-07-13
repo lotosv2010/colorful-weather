@@ -14,11 +14,12 @@
     <view class="astro-chart-section">
       <canvas type="2d" id="moonCanvas" class="astro-canvas"></canvas>
     </view>
-    <!-- 月相信息 -->
+    <!-- 月相信息 + 月出月落 -->
     <view class="astro-moon-phase" wx:if="{{moonPhaseIcon}}">
+      <text class="moon-rise-set" wx:if="{{moonrise !== '--:--'}}">{{moonrise}} 出 · {{moonset !== '--:--' ? moonset : '--:--'}} 落</text>
       <text class="moon-emoji">{{mp.emoji(moonPhaseIcon)}}</text>
       <text class="phase-name">{{moonPhaseName}}</text>
-      <text class="phase-illum">照明度 {{moonIllumination}}%</text>
+      <text class="phase-illum">照明 {{moonIllumination}}%</text>
     </view>
   </view>
 </view>
