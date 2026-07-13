@@ -5,6 +5,7 @@
     "hourly-wind-chart": "/components/hourly-wind-chart/index",
     "hourly-precip-chart": "/components/hourly-precip-chart/index",
     "hourly-humidity-chart": "/components/hourly-humidity-chart/index",
+    "hourly-cloud-chart": "/components/hourly-cloud-chart/index",
     "page-header": "/components/page-header/index",
     "error-state": "../../components/error-state/index"
   }

@@ -1,0 +1,21 @@
+/* components/hourly-cloud-chart/index.wxss */
+.chart-scroll {
+  width: 100%;
+}
+
+.chart-content {
+  position: relative;
+}
+
+.chart-canvas {
+  display: block;
+}
+
+.hit-area {
+  position: absolute;
+  top: 0;
+  width: 30px;
+  height: 100%;
+  transform: translateX(-15px);
+  pointer-events: none;
+}

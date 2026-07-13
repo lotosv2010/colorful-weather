@@ -41,12 +41,21 @@ page {
   color: #8C9AA5;
 }
 
+/* 固定头部容器 */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #000;
+  padding-bottom: 20rpx;
+}
+
 /* 详情卡片 */
 .detail-card {
   background: rgb(34, 37, 48);
   border-radius: 15px;
   padding: 30rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 0;
 }
 
 .detail-header {

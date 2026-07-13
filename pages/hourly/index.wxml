@@ -9,54 +9,11 @@
   <error-state wx:elif="{{errorMsg}}" errorMsg="{{errorMsg}}" bind:retry="onRetry" />
 
   <block wx:else>
-    <!-- 头部城市信息 -->
-    <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
+    <!-- 固定头部：城市信息 + 详情卡片 -->
+    <view class="sticky-header">
+      <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
 
-    <!-- 温度图表 -->
-    <view class="chart-card">
-      <view class="chart-card-title">
-        <text class="chart-card-title-text">温度变化</text>
-        <text class="chart-card-unit">°{{tempUnit}}</text>
-      </view>
-      <hourly-temp-chart hourly="{{hourly}}" tempUnit="{{tempUnit}}" selectedIndex="{{selectedIndex}}"
-        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
-        bind:select="onChartSelect" bind:scroll="onChartScroll" />
-    </view>
-
-    <!-- 风速图表 -->
-    <view class="chart-card">
-      <view class="chart-card-title">
-        <text class="chart-card-title-text">风速风向</text>
-        <text class="chart-card-unit">km/h</text>
-      </view>
-      <hourly-wind-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
-        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
-        bind:select="onChartSelect" bind:scroll="onChartScroll" />
-    </view>
-
-    <!-- 降水图表 -->
-    <view class="chart-card">
-      <view class="chart-card-title">
-        <text class="chart-card-title-text">降水量</text>
-        <text class="chart-card-unit">mm / %</text>
-      </view>
-      <hourly-precip-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
-        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
-        bind:select="onChartSelect" bind:scroll="onChartScroll" />
-    </view>
-
-    <!-- 湿度图表 -->
-    <view class="chart-card">
-      <view class="chart-card-title">
-        <text class="chart-card-title-text">相对湿度</text>
-        <text class="chart-card-unit">%</text>
-      </view>
-      <hourly-humidity-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
-        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
-        bind:select="onChartSelect" bind:scroll="onChartScroll" />
-    </view>
-
-    <!-- 详情卡片 -->
+      <!-- 详情卡片 -->
     <view class="detail-card" wx:if="{{detail}}">
       <!-- 天气图标 + 描述 + 时间 -->
       <view class="detail-header">
@@ -123,6 +80,62 @@
           <text class="cell-label">露点温度</text>
         </view>
       </view>
+    </view>
+    </view><!-- /sticky-header -->
+
+    <!-- 温度图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">温度变化</text>
+        <text class="chart-card-unit">°{{tempUnit}}</text>
+      </view>
+      <hourly-temp-chart hourly="{{hourly}}" tempUnit="{{tempUnit}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
+    </view>
+
+    <!-- 风速图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">风速风向</text>
+        <text class="chart-card-unit">km/h</text>
+      </view>
+      <hourly-wind-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
+    </view>
+
+    <!-- 降水图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">降水量</text>
+        <text class="chart-card-unit">mm / %</text>
+      </view>
+      <hourly-precip-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
+    </view>
+
+    <!-- 湿度图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">相对湿度</text>
+        <text class="chart-card-unit">%</text>
+      </view>
+      <hourly-humidity-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
+    </view>
+
+    <!-- 云量图表 -->
+    <view class="chart-card">
+      <view class="chart-card-title">
+        <text class="chart-card-title-text">云量</text>
+        <text class="chart-card-unit">%</text>
+      </view>
+      <hourly-cloud-chart hourly="{{hourly}}" selectedIndex="{{selectedIndex}}"
+        scrollToItem="{{scrollToItem}}" syncScrollLeft="{{syncScrollLeft}}"
+        bind:select="onChartSelect" bind:scroll="onChartScroll" />
     </view>
   </block>
 </view>
