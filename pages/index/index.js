@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
@@ -7,6 +7,7 @@ const { resolveTheme, resolveThemeBg } = require('../../utils/autoTheme');
 const { resolveWeatherEffect } = require('../../utils/weatherEffect');
 const monitor = require('../../utils/monitor');
 const { fmt: fmtTemp } = require('../../utils/temp');
+const { buildSummary } = require('../../utils/summary');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -430,7 +431,7 @@ Page({
         locationLabel: this._buildLocationLabel(district, city, province),
         cityId: '',  // 清除旧 cityId，表示当前是 GPS 城市
       });
-      this._resolveCityId(`${longitude},${latitude}`);
+      await this._resolveCityId(`${longitude},${latitude}`);
       await this.getWeather(opts);
     } catch (error) {
       console.error(error);
@@ -449,6 +450,23 @@ Page({
         this.setData({ cityId: id });
         this._buildCityPages();
       }
+    } catch (_) {}
+  },
+  async _updateDescWithHistory(cityId) {
+    try {
+      const yesterdayStr = this.formatDateStr(new Date(Date.now() - 86400000));
+      const histRes = await historicalWeather({ location: cityId, date: yesterdayStr }).catch(() => null);
+      if (!histRes || histRes.code !== '200' || !histRes.weatherDaily) return;
+      const yMax = Number(histRes.weatherDaily.tempMax);
+      if (isNaN(yMax)) return;
+      const { currentWeather, daily, air } = this.data;
+      const desc = buildSummary({
+        now: currentWeather,
+        today: daily[0],
+        air,
+        yesterdayTempMax: yMax,
+      });
+      if (desc) this.setData({ desc });
     } catch (_) {}
   },
   formatHourly(data=[]) {
@@ -523,7 +541,9 @@ Page({
       const tc = _pendingTasks; // 当前批次 taskCollector
       const { force = false } = opts;
       const reqOpts = force ? { force: true } : undefined;
-      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes] = await Promise.all([
+      const cityId = this.data.cityId;
+      const yesterdayStr = this.formatDateStr(new Date(Date.now() - 86400000));
+      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes, histRes] = await Promise.all([
         now({location}, tc, reqOpts),
         this.getIndices(location, tc, reqOpts),
         hourly({location}, tc, reqOpts),
@@ -532,11 +552,22 @@ Page({
         sun({location, date: today}, tc, reqOpts),
         moon({location, date: today}, tc, reqOpts),
         warning(location, tc, reqOpts).catch(() => null),
-        minutely({location}, tc, reqOpts).catch(() => null)
+        minutely({location}, tc, reqOpts).catch(() => null),
+        cityId ? historicalWeather({ location: cityId, date: yesterdayStr }).catch(() => null) : Promise.resolve(null),
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
       const airData = this.formatAir(airRes);
+
+      // 昨日最高温（用于"比昨天"温度对比）
+      const yMax = histRes && histRes.code === '200' && histRes.weatherDaily
+        ? Number(histRes.weatherDaily.tempMax) : null;
+      const desc = buildSummary({
+        now: weatherData?.now,
+        today: dailyData[0],
+        air: airData,
+        yesterdayTempMax: yMax != null && !isNaN(yMax) ? yMax : null,
+      });
 
       // 预警数据：metadata.zeroResult 为 true 时表示无预警
       const alerts = (warningRes && !warningRes.metadata?.zeroResult && warningRes.alerts) ? warningRes.alerts : [];
@@ -551,7 +582,7 @@ Page({
         dateNow: formatDate(new Date()).substr(11, 5),
         currentWeather: weatherData?.now,
         uv: daily.find(d => d.type === '5')?.category,
-        desc: daily.find(d => d.type === '8')?.text,
+        desc,
         hourly: this.formatHourly(hourlyData),
         daily: this.formatDaily(dailyData),
         air: airData,
