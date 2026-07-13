@@ -69,7 +69,7 @@ Page({
         if (!res || !res[0] || !res[0].node) return;
         const canvas = res[0].node;
         const ctx = canvas.getContext('2d');
-        const dpr = wx.getSystemInfoSync().pixelRatio || 2;
+        const dpr = (wx.getDeviceInfo ? wx.getDeviceInfo().devicePixelRatio : null) || 2;
         const info = wx.getWindowInfo();
         const cssW = info.windowWidth - 48;
         const cssH = 220;

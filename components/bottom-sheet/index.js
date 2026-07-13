@@ -16,8 +16,8 @@ Component({
   },
   lifetimes: {
     attached() {
-      const info = wx.getSystemInfoSync();
-      this.setData({ _maxDrag: Math.max(220, info.windowHeight * 0.5) });
+      const { windowHeight } = wx.getWindowInfo();
+      this.setData({ _maxDrag: Math.max(220, windowHeight * 0.5) });
       this._scrollTop = 0;
     },
   },
@@ -40,7 +40,9 @@ Component({
         this._isHorizontalSwipe = Math.abs(dx) > Math.abs(dy);
       }
       if (this._isHorizontalSwipe) return;
-      let p = this._startProgress - dy / this.data._maxDrag;
+      const startProgress = this._startProgress ?? this.data.progress;
+      const maxDrag = this.data._maxDrag || 400;
+      let p = startProgress - dy / maxDrag;
       if (p < 0) p = 0;
       if (p > 1) p = 1;
       this.setData({ progress: p });
@@ -90,7 +92,7 @@ Component({
         this._startProgress = this.data.progress;
         this.setData({ dragging: true });
       }
-      let p = this._startProgress - (e.touches[0].clientY - this._startY) / this.data._maxDrag;
+      let p = (this._startProgress ?? this.data.progress) - (e.touches[0].clientY - this._startY) / (this.data._maxDrag || 400);
       if (p < 0) p = 0;
       if (p > 1) p = 1;
       this.setData({ progress: p });

@@ -32,7 +32,7 @@
   pointer-events: none;
 }
 
-.compact-above > view {
+.compact-above-slot {
   pointer-events: auto;
 }
 

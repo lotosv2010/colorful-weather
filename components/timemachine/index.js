@@ -178,7 +178,7 @@ Component({
           if (!res || !res[0] || !res[0].node) { cb && cb(null); return; }
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
-          const dpr = wx.getSystemInfoSync().pixelRatio || 2;
+          const dpr = (wx.getDeviceInfo ? wx.getDeviceInfo().devicePixelRatio : null) || 2;
           const cssW = res[0].width;
           const cssH = res[0].height;
           canvas.width = cssW * dpr;

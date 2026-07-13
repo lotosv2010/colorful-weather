@@ -8,7 +8,7 @@
     bindtouchend="onTouchEnd"
     bindtouchcancel="onTouchEnd"
   >
-    <view class="compact-above"><slot name="compact-above"></slot></view>
+    <view class="compact-above"><view class="compact-above-slot"><slot name="compact-above"></slot></view></view>
     <view class="compact-handle">
       <view class="handle-bar"></view>
     </view>

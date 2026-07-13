@@ -76,7 +76,9 @@ Page({
     this.setData(updates);
   },
   onSheetProgress(e) {
-    this.setData({ sheetProgress: e.detail.progress });
+    const p = e.detail.progress;
+    if (typeof p !== 'number' || !isFinite(p)) return;
+    this.setData({ sheetProgress: p });
   },
   onSheetDragStart() {
     this.setData({ mapInteractive: false });

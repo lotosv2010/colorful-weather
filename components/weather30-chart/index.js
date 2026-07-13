@@ -60,7 +60,7 @@ Component({
   },
   methods: {
     initSize() {
-      const windowWidth = (wx.getWindowInfo && wx.getWindowInfo().windowWidth) || wx.getSystemInfoSync().windowWidth || 375;
+      const windowWidth = (wx.getWindowInfo ? wx.getWindowInfo().windowWidth : null) || 375;
       const rpx2px = windowWidth / 750;
       const itemWidth = Math.round(140 * rpx2px);
       const totalWidth = itemWidth * (this.data.daily.length || 30);
@@ -94,7 +94,7 @@ Component({
           }
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
-          const dpr = (wx.getDeviceInfo && wx.getDeviceInfo().devicePixelRatio) || wx.getSystemInfoSync().pixelRatio || 2;
+          const dpr = (wx.getDeviceInfo ? wx.getDeviceInfo().devicePixelRatio : null) || 2;
           canvas.width = res[0].width * dpr;
           canvas.height = res[0].height * dpr;
           ctx.scale(dpr, dpr);
