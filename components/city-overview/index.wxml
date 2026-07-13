@@ -2,11 +2,17 @@
 <wxs src="/utils/iconColor.wxs" module="ic" />
 
 <view class="city-overview {{show ? 'show' : ''}}" catchtap="onClose" catchtouchmove="noop">
-  <view class="city-overview-panel" catchtap="noop">
-    <!-- 顶部栏 -->
-    <view class="co-header">
-      <text class="co-title">城市</text>
-      <view class="co-close" catchtap="onClose"><text class="co-close-x">✕</text></view>
+  <view class="city-overview-panel" style="{{panelStyle}}" catchtap="noop">
+    <!-- 拖拽区域（把手 + 标题） -->
+    <view class="co-drag-area"
+      bindtouchstart="onDragStart"
+      bindtouchmove="onDragMove"
+      bindtouchend="onDragEnd"
+    >
+      <view class="co-handle-bar"></view>
+      <view class="co-header">
+        <text class="co-title">城市</text>
+      </view>
     </view>
 
     <!-- 城市列表 -->

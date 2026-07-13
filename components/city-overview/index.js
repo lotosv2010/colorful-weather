@@ -26,6 +26,7 @@ Component({
   data: {
     weathers: [],
     cardBgs: [],
+    panelStyle: '',
   },
 
   methods: {
@@ -80,6 +81,30 @@ Component({
     onSelectCity(e) {
       const index = e.currentTarget.dataset.index;
       this.triggerEvent('selectcity', { index });
+    },
+
+    onDragStart(e) {
+      this._startY = e.touches[0].clientY;
+      this.setData({ panelStyle: 'transition: none' });
+    },
+
+    onDragMove(e) {
+      const dy = e.touches[0].clientY - this._startY;
+      if (dy <= 0) return;
+      this.setData({ panelStyle: `transition: none; transform: translateY(${dy}px)` });
+    },
+
+    onDragEnd(e) {
+      const dy = e.changedTouches[0].clientY - this._startY;
+      if (dy > 80) {
+        this.setData({ panelStyle: 'transform: translateY(100%)' });
+        setTimeout(() => {
+          this.setData({ panelStyle: '' });
+          this.triggerEvent('close');
+        }, 350);
+      } else {
+        this.setData({ panelStyle: '' });
+      }
     },
 
     onClose() {
