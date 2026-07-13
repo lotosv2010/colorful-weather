@@ -134,6 +134,19 @@
   font-weight: 300;
   color: #A6A9AD;
 }
+.clothing-tip {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+.clothing-tip-text {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 3px 14px;
+  letter-spacing: 0.02em;
+}
 .weather-header-other {
   background-color: rgb(46, 48, 61);
   width: 100%;

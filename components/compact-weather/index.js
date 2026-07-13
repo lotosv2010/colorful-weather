@@ -8,6 +8,7 @@ Component({
     locationLabel: String,
     dateNow: String,
     desc: String,
+    clothingTip: Object,
     tempUnit: String,
     loading: Boolean,
     errorMsg: String,

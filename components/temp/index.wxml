@@ -18,6 +18,9 @@
       </view>
     </view>
     <view class="weather-header-desc">{{desc}}</view>
+    <view wx:if="{{clothingTip}}" class="clothing-tip">
+      <text class="clothing-tip-text">穿衣 · {{clothingTip.category}}</text>
+    </view>
     <view wx:if="{{alerts.length}}" class="weather-alert" style="{{weatherBgSub}}" bindtap="gotoWarning">
       <i class="weather-alert-icon qi-9999"></i>
       <text class="weather-alert-text">{{alerts.length > 1 ? '多种天气预警正在发生' : alerts[0].headline}}</text>

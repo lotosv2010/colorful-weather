@@ -47,6 +47,10 @@ Component({
       type: String,
       value: 'C'
     },
+    clothingTip: {
+      type: Object,
+      value: null
+    },
     weatherBg: {
       type: String,
       value: ''

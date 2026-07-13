@@ -8,7 +8,7 @@ const { resolveTheme, resolveThemeBg } = require('../../utils/autoTheme');
 const { resolveWeatherEffect } = require('../../utils/weatherEffect');
 const monitor = require('../../utils/monitor');
 const { fmt: fmtTemp } = require('../../utils/temp');
-const { buildSummary } = require('../../utils/summary');
+const { buildSummary, buildShortDesc } = require('../../utils/summary');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -476,6 +476,8 @@ Page({
         yesterdayTempMax: yMax,
       });
       if (desc) this.setData({ desc });
+      const shortDesc = buildShortDesc({ now: currentWeather, today: daily[0], air });
+      if (shortDesc) this.setData({ shortDesc });
     } catch (_) {}
   },
   formatHourly(data=[]) {
@@ -580,6 +582,7 @@ Page({
         air: airData,
         yesterdayTempMax: yMax != null && !isNaN(yMax) ? yMax : null,
       });
+      const shortDesc = buildShortDesc({ now: weatherData?.now, today: dailyData[0], air: airData });
 
       // 预警数据：metadata.zeroResult 为 true 时表示无预警
       const alerts = (warningRes && !warningRes.metadata?.zeroResult && warningRes.alerts) ? warningRes.alerts : [];
@@ -594,7 +597,9 @@ Page({
         dateNow: formatDate(new Date()).substr(11, 5),
         currentWeather: weatherData?.now,
         uv: daily.find(d => d.type === '5')?.category,
+        clothingTip: (() => { const c = daily.find(d => d.type === '3'); return c ? { category: c.category, text: c.text } : null; })(),
         desc,
+        shortDesc,
         hourly: this.formatHourly(hourlyData),
         daily: this.formatDaily(dailyData),
         air: airData,

@@ -28,6 +28,9 @@
         </view>
       </view>
       <view class="weather-header-desc">{{ desc || '' }}</view>
+      <view wx:if="{{clothingTip}}" class="clothing-tip">
+        <text class="clothing-tip-text">穿衣 · {{clothingTip.category}}</text>
+      </view>
     </view>
   </block>
   <block wx:elif="{{errorMsg}}">

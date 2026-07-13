@@ -60,4 +60,43 @@ const buildSummary = ({ now, today, air, yesterdayTempMax } = {}) => {
   return parts.length ? parts.join('，') + '。' : '';
 };
 
-module.exports = { buildSummary };
+// 极简 3-5 字天气结论（彩云风格，用于折叠卡片）
+const buildShortDesc = ({ now, today, air } = {}) => {
+  const textDay   = (today && today.textDay)   || '';
+  const textNight = (today && today.textNight) || '';
+  const temp      = Number(now && now.temp);
+  const ws        = Number(now && now.windScale) || 0;
+  const category  = air && air.category;
+
+  // 降水优先
+  if (textDay.includes('雷') || textNight.includes('雷'))  return '注意雷暴';
+  if (textDay.includes('雨') || textNight.includes('雨'))  return '出门带伞';
+  if (textDay.includes('雪') || textNight.includes('雪'))  return '路滑注意';
+
+  // 风力
+  if (ws >= 9)  return '狂风注意';
+  if (ws >= 7)  return '大风注意';
+  if (ws >= 5)  return '风力较大';
+
+  // 温度极端
+  if (!isNaN(temp)) {
+    if (temp >= 38) return '高温预警';
+    if (temp >= 35) return '注意防暑';
+    if (temp <= 0)  return '注意防冻';
+    if (temp <= 5)  return '注意保暖';
+  }
+
+  // 空气质量
+  if (category === '严重污染' || category === '重度污染') return '减少外出';
+  if (category === '中度污染') return '注意防护';
+  if (category === '轻度污染') return '空气欠佳';
+
+  // 晴好
+  if ((textDay.includes('晴') || textDay.includes('少云')) && !isNaN(temp) && temp >= 18 && temp <= 28) {
+    return '今日宜出行';
+  }
+
+  return '天气平稳';
+};
+
+module.exports = { buildSummary, buildShortDesc };
