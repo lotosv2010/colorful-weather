@@ -23,7 +23,7 @@ Component({
   },
   data: {
     canvasWidth: 0,
-    canvasHeight: 200,
+    canvasHeight: 140,
     chartContentWidth: 0,
     scrollIntoItem: '',
     currentScrollLeft: 0
