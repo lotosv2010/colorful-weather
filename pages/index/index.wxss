@@ -521,3 +521,26 @@ page {
   align-items: center;
 }
 
+/* 城市切换圆点指示器 */
+.city-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10rpx;
+  padding: 6rpx 0 2rpx;
+}
+
+.city-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transition: all 0.25s;
+}
+
+.city-dot-active {
+  width: 22rpx;
+  border-radius: 6rpx;
+  background: rgba(255, 255, 255, 0.9);
+}
+

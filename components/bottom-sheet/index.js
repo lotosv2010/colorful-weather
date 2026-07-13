@@ -24,22 +24,42 @@ Component({
   methods: {
     // —— 主拖拽：compact-layer / full-handle ——
     onTouchStart(e) {
+      this._startX = e.touches[0].clientX;
       this._startY = e.touches[0].clientY;
       this._startProgress = this.data.progress;
+      this._isHorizontalSwipe = false;
       this.setData({ dragging: true });
       this.triggerEvent('dragstart');
     },
     onTouchMove(e) {
       if (!this.data.dragging) return;
+      const dx = e.touches[0].clientX - this._startX;
       const dy = e.touches[0].clientY - this._startY;
+      // 方向锁定：移动超过 8px 后一次性确定水平或垂直
+      if (!this._isHorizontalSwipe && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        this._isHorizontalSwipe = Math.abs(dx) > Math.abs(dy);
+      }
+      if (this._isHorizontalSwipe) return;
       let p = this._startProgress - dy / this.data._maxDrag;
       if (p < 0) p = 0;
       if (p > 1) p = 1;
       this.setData({ progress: p });
       this.triggerEvent('progress', { progress: p });
     },
-    onTouchEnd() {
+    onTouchEnd(e) {
       if (!this.data.dragging) return;
+      if (this._isHorizontalSwipe) {
+        const endX = e && e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : this._startX;
+        const dx = endX - this._startX;
+        this._isHorizontalSwipe = false;
+        this._snap(this._startProgress >= 0.5 ? 1 : 0);
+        this.triggerEvent('dragend');
+        if (Math.abs(dx) > 50 && !this.data.expanded) {
+          this.triggerEvent('swipe', { direction: dx < 0 ? 'left' : 'right' });
+        }
+        return;
+      }
+      this._isHorizontalSwipe = false;
       const dragged = this.data.progress - this._startProgress;
       let target;
       if (Math.abs(dragged) < 0.05) {

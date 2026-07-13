@@ -77,7 +77,7 @@
     </view>
   </view>
 
-  <bottom-sheet id="sheet" weatherBg="{{weatherBg}}" bind:change="onSheetChange" bind:progress="onSheetProgress" bind:dragstart="onSheetDragStart" bind:dragend="onSheetDragEnd">
+  <bottom-sheet id="sheet" weatherBg="{{weatherBg}}" bind:change="onSheetChange" bind:progress="onSheetProgress" bind:dragstart="onSheetDragStart" bind:dragend="onSheetDragEnd" bind:swipe="onSheetSwipe">
     <!-- 紧凑卡片上方外侧胶囊 -->
     <view slot="compact-above" class="compact-above-row" style="opacity: {{1 - sheetProgress}};">
       <view wx:if="{{air.aqi}}" class="capsule aqi-capsule" catchtap="onAirTap">
@@ -105,6 +105,16 @@
 
     <!-- 紧凑卡片 -->
     <view slot="compact" style="opacity: {{1 - sheetProgress}};">
+      <!-- 城市切换圆点指示器（多城市时显示） -->
+      <view wx:if="{{cityPages.length > 1}}" class="city-dots">
+        <view
+          wx:for="{{cityPages}}"
+          wx:key="id"
+          class="city-dot {{index === currentPageIndex ? 'city-dot-active' : ''}}"
+          data-index="{{index}}"
+          catchtap="onDotTap"
+        />
+      </view>
       <view class="decor-wrapper">
         <weather-decor wx:if="{{weatherEffect.decor}}" weatherEffect="{{weatherEffect.decor}}" mode="compact" />
         <compact-weather

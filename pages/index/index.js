@@ -53,6 +53,8 @@ Page({
     weatherEffect: { particle: null, decor: null },
     offline: false,
     cityId: '',
+    cityPages: [],
+    currentPageIndex: 0,
     loading: true,
     errorMsg: '',
     mapTipsVisible: false,
@@ -282,11 +284,20 @@ Page({
     }
     const weatherEffect = resolveWeatherEffect(icon);
     if (p.tempUnit === this.data.tempUnit && themeColor === this.data.themeColor && weatherBg === this.data.weatherBg &&
-        weatherEffect.particle === this.data.weatherEffect.particle && weatherEffect.decor === this.data.weatherEffect.decor) return;
-    this.setData({ tempUnit: p.tempUnit, themeColor, weatherBg, weatherEffect });
+        weatherEffect.particle === this.data.weatherEffect.particle && weatherEffect.decor === this.data.weatherEffect.decor) {
+      // 即使视觉参数未变，仍检查收藏城市是否变化
+    } else {
+      this.setData({ tempUnit: p.tempUnit, themeColor, weatherBg, weatherEffect });
+    }
     // 同步自动主题色到 prefs，使设置页等其他页面也能获取到
     if (p.themeMode === 'auto' && themeColor !== p.themeColor) {
       prefs.setPrefs({ themeColor });
+    }
+    // 收藏城市变化时重建页面列表
+    const citiesJson = JSON.stringify(p.cities);
+    if (citiesJson !== this._lastCitiesJson) {
+      this._lastCitiesJson = citiesJson;
+      this._buildCityPages();
     }
   },
   _buildLocationLabel(district, city, province) {
@@ -319,6 +330,9 @@ Page({
   // 事件处理函数
   onLoad() {
     this._loadStart = Date.now();
+    this._lastCitiesJson = '';
+    this._locatedGPS = null;      // GPS 定位城市（有定位时才有值）
+    this._currentIsLocated = false; // 当前是否在查看定位城市
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     this.setData({ offline: !network.isOnline() });
@@ -405,11 +419,15 @@ Page({
     try {
       const {longitude, latitude} = this.data;
       const { city, province, district } = await this.getCity(`${latitude},${longitude}`);
+      // 记录 GPS 城市，并标记当前查看的是定位城市
+      this._locatedGPS = { lat: latitude, lon: longitude, city, province, district };
+      this._currentIsLocated = true;
       this.setData({
         city,
         province,
         district,
         locationLabel: this._buildLocationLabel(district, city, province),
+        cityId: '',  // 清除旧 cityId，表示当前是 GPS 城市
       });
       this._resolveCityId(`${longitude},${latitude}`);
       await this.getWeather(opts);
@@ -426,7 +444,10 @@ Page({
       const loc = `${Number(lon).toFixed(2)},${Number(lat).toFixed(2)}`;
       const res = await cityLookup({ location: loc });
       const id = res && res.code === '200' && res.location && res.location[0] ? res.location[0].id : '';
-      if (id) this.setData({ cityId: id });
+      if (id) {
+        this.setData({ cityId: id });
+        this._buildCityPages();
+      }
     } catch (_) {}
   },
   formatHourly(data=[]) {
@@ -560,6 +581,7 @@ Page({
       }
       if (Object.keys(updates).length) this.setData(updates);
       if (Object.keys(prefsPatch).length) prefs.setPrefs(prefsPatch);
+      this._buildCityPages();
     } catch (error) {
       console.error(error);
       monitor.recordError('page', error?.message || '天气数据加载失败', { page: '/pages/index/index', stack: error?.stack });
@@ -606,6 +628,80 @@ Page({
   getIndices(location, tc, opts) {
     return indices({ location, type: 0 }, tc, opts);
   },
+  // 构建可横划城市页列表：GPS 定位城市（有定位时）+ 收藏城市
+  _buildCityPages() {
+    const { cities } = prefs.getPrefs();
+    const { cityId } = this.data;
+    const savedIds = new Set(cities.map(c => c.id));
+    const pages = [];
+
+    // 有 GPS 定位城市时，始终作为第一页
+    if (this._locatedGPS) {
+      pages.push({
+        id: '__located__',
+        name: this._locatedGPS.district || this._locatedGPS.city || '',
+        adm1: this._locatedGPS.province || '',
+        adm2: this._locatedGPS.city || '',
+        lat: this._locatedGPS.lat,
+        lon: this._locatedGPS.lon,
+        isLocated: true,
+      });
+    }
+
+    cities.forEach(c => pages.push({ ...c, isLocated: false }));
+    if (pages.length === 0) return;
+
+    // 确定当前页：_currentIsLocated 优先；否则按 cityId 匹配收藏城市
+    let currentPageIndex;
+    if (this._currentIsLocated && pages.some(p => p.id === '__located__')) {
+      currentPageIndex = pages.findIndex(p => p.id === '__located__');
+    } else if (cityId && savedIds.has(cityId)) {
+      currentPageIndex = pages.findIndex(p => p.id === cityId);
+      if (currentPageIndex < 0) currentPageIndex = 0;
+    } else {
+      currentPageIndex = pages.findIndex(p => p.id === '__located__');
+      if (currentPageIndex < 0) currentPageIndex = 0;
+    }
+
+    this.setData({ cityPages: pages, currentPageIndex });
+  },
+
+  // 切换到指定页（更新城市数据并重新拉取天气）
+  switchToCity(index) {
+    const { cityPages } = this.data;
+    if (index < 0 || index >= cityPages.length) return;
+    const c = cityPages[index];
+    this._currentIsLocated = (c.id === '__located__');
+    this.setData({
+      currentPageIndex: index,
+      latitude: c.lat,
+      longitude: c.lon,
+      city: c.adm2 || '',
+      province: c.adm1 || '',
+      district: c.name || c.adm2 || '',
+      locationLabel: this._buildLocationLabel(c.name || c.adm2, c.adm2, c.adm1),
+      cityId: c.id !== '__located__' ? c.id : '',
+      mapTipsVisible: false,
+      mapTipsData: {},
+      mapMarkers: [],
+    });
+    this.getWeather().catch(console.error);
+  },
+
+  // bottom-sheet 水平滑动事件
+  onSheetSwipe(e) {
+    const { direction } = e.detail;
+    const { currentPageIndex } = this.data;
+    if (direction === 'left') this.switchToCity(currentPageIndex + 1);
+    else if (direction === 'right') this.switchToCity(currentPageIndex - 1);
+  },
+
+  // 点击圆点指示器
+  onDotTap(e) {
+    const index = e.currentTarget.dataset.index;
+    this.switchToCity(Number(index));
+  },
+
   // 显示组件
   showSelector() {
     this.setData({
@@ -641,6 +737,7 @@ Page({
       mapTipsData: {},
       mapMarkers: [],
     });
+    this._buildCityPages();
     this.getWeather().catch(console.error);
   },
   gotoWarning() {
