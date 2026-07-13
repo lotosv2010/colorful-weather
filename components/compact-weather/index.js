@@ -13,6 +13,14 @@ Component({
     errorMsg: String,
     weatherBg: String,
   },
+  data: {
+    weatherBgStyle: '',
+  },
+  observers: {
+    'weatherBg': function(bg) {
+      this.setData({ weatherBgStyle: bg ? `background:${bg}` : '' });
+    }
+  },
   methods: {
     onGetNow() {
       this.triggerEvent('getnow');

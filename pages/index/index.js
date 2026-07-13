@@ -48,6 +48,8 @@ Page({
     locationLabel: '',
     sheetExpanded: false,
     sheetProgress: 0,
+    sheetFadeOutStyle: 'opacity:1',
+    sheetFadeInStyle: 'opacity:0',
     mapInteractive: true,
     tempUnit: 'C',
     themeColor: '#1296db',
@@ -78,7 +80,11 @@ Page({
   onSheetProgress(e) {
     const p = e.detail.progress;
     if (typeof p !== 'number' || !isFinite(p)) return;
-    this.setData({ sheetProgress: p });
+    this.setData({
+      sheetProgress: p,
+      sheetFadeOutStyle: `opacity:${1 - p}`,
+      sheetFadeInStyle: `opacity:${p}`,
+    });
   },
   onSheetDragStart() {
     this.setData({ mapInteractive: false });

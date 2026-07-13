@@ -58,7 +58,7 @@
   </view>
 
   <!-- 地图右上角按钮组：城市列表 + 定位，sheet 展开时淡出 -->
-  <view class="map-btn-group" style="opacity: {{1 - sheetProgress}};">
+  <view class="map-btn-group" style="{{sheetFadeOutStyle}}">
     <view
       class="map-action-btn {{sheetExpanded ? '' : 'map-action-interactive'}}"
       catchtap="onCitiesOverviewOpen"
@@ -74,7 +74,7 @@
   </view>
 
   <!-- 顶部搜索栏：随 progress 渐入；容器不拦截手势，仅子元素响应点击 -->
-  <view class="top-bar" style="opacity: {{sheetProgress}};">
+  <view class="top-bar" style="{{sheetFadeInStyle}}">
     <view class="top-search {{sheetExpanded ? 'top-interactive' : ''}}" bindtap="showSelector">
       <icon class="top-search-icon" type="search" color="#fff" size="24"></icon>
       <view class="top-search-text">{{ locationLabel || '搜索城市' }}</view>
@@ -86,7 +86,7 @@
 
   <bottom-sheet id="sheet" weatherBg="{{weatherBg}}" bind:change="onSheetChange" bind:progress="onSheetProgress" bind:dragstart="onSheetDragStart" bind:dragend="onSheetDragEnd" bind:swipe="onSheetSwipe">
     <!-- 紧凑卡片上方外侧胶囊 -->
-    <view slot="compact-above" class="compact-above-row" style="opacity: {{1 - sheetProgress}};">
+    <view slot="compact-above" class="compact-above-row" style="{{sheetFadeOutStyle}}">
       <view wx:if="{{air.aqi}}" class="capsule aqi-capsule" catchtap="onAirTap">
         <view class="aqi-leaf">
           <weather-icon class="aqi-leaf-icon" src="/static/icons/leaf.svg" colors="{{['#fff']}}" />
@@ -111,7 +111,7 @@
     </view>
 
     <!-- 紧凑卡片 -->
-    <view slot="compact" style="opacity: {{1 - sheetProgress}};">
+    <view slot="compact" style="{{sheetFadeOutStyle}}">
       <!-- 城市切换圆点指示器（多城市时显示） -->
       <view wx:if="{{cityPages.length > 1}}" class="city-dots">
         <view

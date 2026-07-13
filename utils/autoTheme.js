@@ -29,12 +29,15 @@ const getWeatherCategory = (code) => {
   return 'default';
 };
 
-// ISO 8601 时间字符串 → 当天分钟数（如 "2024-01-15T07:25+08:00" → 445）
+// 时间字符串 → 当天分钟数
+// 支持 ISO 8601（"2024-01-15T07:25+08:00"）和纯 HH:mm（"07:25"，7 日预报接口格式）
 const isoToMinutes = (isoStr) => {
   if (!isoStr) return null;
-  const match = isoStr.match(/T(\d{2}):(\d{2})/);
-  if (!match) return null;
-  return parseInt(match[1], 10) * 60 + parseInt(match[2], 10);
+  const isoMatch = isoStr.match(/T(\d{2}):(\d{2})/);
+  if (isoMatch) return parseInt(isoMatch[1], 10) * 60 + parseInt(isoMatch[2], 10);
+  const hmMatch = isoStr.match(/^(\d{2}):(\d{2})$/);
+  if (hmMatch) return parseInt(hmMatch[1], 10) * 60 + parseInt(hmMatch[2], 10);
+  return null;
 };
 
 // 判断时段：day / dusk / night
@@ -86,7 +89,6 @@ const resolveTheme = (weatherIcon, sunriseISO, sunsetISO) => {
   const category = getWeatherCategory(weatherIcon);
   const period = getTimePeriod(sunriseISO, sunsetISO);
   const themeColor = COLOR_MAP[category]?.[period] || COLOR_MAP.default[period];
-  console.log(`Auto theme resolved: category=${category}, period=${period}, color=${themeColor}`);
   return themeColor;
 };
 
@@ -116,7 +118,6 @@ const resolveThemeBg = (weatherIcon, sunriseISO, sunsetISO) => {
   const category = getWeatherCategory(weatherIcon);
   const period = getTimePeriod(sunriseISO, sunsetISO);
   const bgColor = BG_MAP[category]?.[period] || BG_MAP.default[period];
-  console.log(`Auto theme background resolved: category=${category}, period=${period}, bg=${bgColor}`);
   return bgColor;
 };
 module.exports = {

@@ -1,4 +1,6 @@
 const { now, sevenDay } = require('../../utils/api');
+const { resolveThemeBg } = require('../../utils/autoTheme');
+const prefs = require('../../utils/prefs');
 
 Component({
   properties: {
@@ -23,6 +25,7 @@ Component({
 
   data: {
     weathers: [],
+    cardBgs: [],
   },
 
   methods: {
@@ -30,7 +33,7 @@ Component({
       if (show) {
         this.loadWeather();
       } else {
-        this.setData({ weathers: [] });
+        this.setData({ weathers: [], cardBgs: [] });
       }
     },
 
@@ -39,7 +42,10 @@ Component({
       if (!pages.length) return;
 
       // 先设空占位，让骨架屏立刻渲染
-      this.setData({ weathers: new Array(pages.length).fill(null) });
+      this.setData({
+        weathers: new Array(pages.length).fill(null),
+        cardBgs: new Array(pages.length).fill(''),
+      });
 
       const results = await Promise.all(
         pages.map(c => {
@@ -56,11 +62,19 @@ Component({
               text: nr.now.text,
               tempMax: today ? today.tempMax : null,
               tempMin: today ? today.tempMin : null,
+              sunrise: today ? today.sunrise : null,
+              sunset:  today ? today.sunset  : null,
             };
           });
         })
       );
-      this.setData({ weathers: results });
+      const autoBg = prefs.getPrefs().cardBgMode === 'auto';
+      this.setData({
+        weathers: results,
+        cardBgs: results.map(w =>
+          w && autoBg ? `background:${resolveThemeBg(w.icon, w.sunrise, w.sunset)}` : ''
+        ),
+      });
     },
 
     onSelectCity(e) {

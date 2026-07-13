@@ -15,6 +15,7 @@
         wx:for="{{cityPages}}"
         wx:key="id"
         class="city-card {{index === currentPageIndex ? 'city-card-active' : ''}}"
+        style="{{cardBgs[index]}}"
         data-index="{{index}}"
         catchtap="onSelectCity"
       >

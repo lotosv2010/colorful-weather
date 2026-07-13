@@ -76,7 +76,6 @@
   box-sizing: border-box;
 }
 .city-card-active {
-  background: rgba(255, 255, 255, 0.09);
   border-left-color: var(--theme, #1296db);
 }
 

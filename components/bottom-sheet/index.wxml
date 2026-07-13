@@ -2,7 +2,7 @@
   <!-- 紧凑层：始终位于底部，不再随展开 fade -->
   <view
     class="compact-layer"
-    style="{{weatherBg ? 'background:' + weatherBg : ''}}"
+    style="{{weatherBgStyle}}"
     bindtouchstart="onTouchStart"
     catchtouchmove="onTouchMove"
     bindtouchend="onTouchEnd"
@@ -18,7 +18,7 @@
   <!-- 全屏层：从下向上滑入，bg alpha 随 progress 渐深 -->
   <view
     class="full-layer {{dragging ? 'dragging' : ''}} {{expanded ? 'full-active' : ''}}"
-    style="transform: translateY({{(1 - progress) * 100}}%); background-color: rgba(20, 22, 30, {{progress * 0.98}});"
+    style="{{fullLayerStyle}}"
   >
     <view
       class="full-handle"

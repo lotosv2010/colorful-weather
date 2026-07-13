@@ -13,6 +13,13 @@ Component({
     expanded: false,
     dragging: false,
     _maxDrag: 400,
+    weatherBgStyle: '',
+    fullLayerStyle: 'transform:translateY(100%);background-color:rgba(20,22,30,0)',
+  },
+  observers: {
+    'weatherBg': function(bg) {
+      this.setData({ weatherBgStyle: bg ? `background:${bg}` : '' });
+    }
   },
   lifetimes: {
     attached() {
@@ -45,7 +52,7 @@ Component({
       let p = startProgress - dy / maxDrag;
       if (p < 0) p = 0;
       if (p > 1) p = 1;
-      this.setData({ progress: p });
+      this.setData({ progress: p, fullLayerStyle: this._fullLayerStyle(p) });
       this.triggerEvent('progress', { progress: p });
     },
     onTouchEnd(e) {
@@ -95,7 +102,7 @@ Component({
       let p = (this._startProgress ?? this.data.progress) - (e.touches[0].clientY - this._startY) / (this.data._maxDrag || 400);
       if (p < 0) p = 0;
       if (p > 1) p = 1;
-      this.setData({ progress: p });
+      this.setData({ progress: p, fullLayerStyle: this._fullLayerStyle(p) });
       this.triggerEvent('progress', { progress: p });
     },
     onScrollTouchEnd() {
@@ -104,13 +111,16 @@ Component({
       this._svReady = false;
     },
 
+    _fullLayerStyle(p) {
+      return `transform:translateY(${(1 - p) * 100}%);background-color:rgba(20,22,30,${p * 0.98})`;
+    },
     expand() { this._snap(1); },
     collapse() { this._snap(0); },
     _snap(target) {
       const expanded = target === 1;
       // 释放 dragging 一帧后再更新 progress，确保 CSS transition 生效
       this.setData({ dragging: false }, () => {
-        this.setData({ progress: target, expanded });
+        this.setData({ progress: target, expanded, fullLayerStyle: this._fullLayerStyle(target) });
         this.triggerEvent('progress', { progress: target });
         this.triggerEvent('change', { expanded });
       });
