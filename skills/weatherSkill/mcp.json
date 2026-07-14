@@ -2,13 +2,13 @@
   "apis": [
     {
       "name": "getCurrentWeather",
-      "description": "查询某个城市或当前位置的实时天气，包括温度、体感温度、天气状况、湿度、风向风力、能见度、气压、降水量",
+      "description": "查询某城市或当前位置的实时天气（温度、体感温度、天气状况、湿度、风向风力、能见度）。\n【触发场景】用户问「现在几度」「今天天气怎样」「外面热吗」等实时状态时调用。\n【禁止场景】用户问未来天气预报时，改用 getWeatherForecast；用户问「要不要带伞」时优先 getMinutelyRain；用户问「穿什么」时优先 getLifeAdvice。\n【location 约束】来自用户原话中的城市名；用户未指定城市时留空，自动取当前定位。禁止编造用户没说过的地名。",
       "inputSchema": {
         "type": "object",
         "properties": {
           "location": {
             "type": "string",
-            "description": "城市名称（如\"北京\"、\"成都\"）或经纬度字符串（格式 \"lon,lat\"，如 \"116.41,39.92\"）。不传则自动取当前定位"
+            "description": "（选填）城市名称（如\"北京\"）或经纬度字符串（格式 \"lon,lat\"）。取值来自用户原话；用户未指定时留空，自动取当前定位。【禁止编造】"
           }
         }
       },
@@ -16,7 +16,7 @@
     },
     {
       "name": "getWeatherForecast",
-      "description": "查询某个城市或当前位置未来几天的逐日天气预报，包括每日最高/最低温、白天和夜间天气状况、降水概率、紫外线指数、风向风力",
+      "description": "查询某城市或当前位置未来 1-7 天逐日天气预报（最高/最低温、白天/夜间天气、降水概率、风力）。\n【触发场景】用户问「明天天气」「这周天气」「周末会下雨吗」「后天几度」等未来天气时调用。\n【禁止场景】用户只问今天当前实时天气时，改用 getCurrentWeather；用户问「接下来1小时」时改用 getMinutelyRain；用户问「今天几点下雨」时改用 getHourlyForecast。\n【days 约束】来自用户原话（如「3天」→ 3，「这周」→ 7）；用户未指定时默认 5。范围 1-7。",
       "_meta": {
         "ui": {
           "componentPath": "components/weather-card/index",
@@ -28,11 +28,11 @@
         "properties": {
           "location": {
             "type": "string",
-            "description": "城市名称或经纬度字符串。不传则自动取当前定位"
+            "description": "（选填）城市名称或经纬度字符串。取值来自用户原话；未指定时留空自动定位。【禁止编造】"
           },
           "days": {
             "type": "number",
-            "description": "预报天数，范围 1-7，默认 5"
+            "description": "预报天数，范围 1-7，默认 5。来自用户原话。"
           }
         },
         "required": ["days"]
@@ -40,14 +40,46 @@
       "outputSchema": {}
     },
     {
-      "name": "getLifeAdvice",
-      "description": "查询某个城市或当前位置今日的生活指数，包括穿衣、运动、紫外线、洗车、旅游、感冒、晾晒、舒适度等多项指数的等级和建议",
+      "name": "getHourlyForecast",
+      "description": "查询某城市或当前位置未来逐小时天气（温度、天气状况、降水概率、风力），支持 24h / 72h / 168h。\n【触发场景】用户问「今天下午几点会下雨」「明天早上几度」「今晚会降温吗」「未来几个小时天气」等需要小时级精度时调用。\n【禁止场景】用户只问整体几天预报时改用 getWeatherForecast；用户问「接下来1小时」「出门要不要带伞」等极短周期时改用 getMinutelyRain。\n【hours 约束】来自用户原话（如「今天」→ 24，「明后天」→ 72，「一周内」→ 168）；未指定时默认 24。",
       "inputSchema": {
         "type": "object",
         "properties": {
           "location": {
             "type": "string",
-            "description": "城市名称或经纬度字符串。不传则自动取当前定位"
+            "description": "（选填）城市名称或经纬度字符串。未指定时留空自动定位。【禁止编造】"
+          },
+          "hours": {
+            "type": "number",
+            "description": "预报小时数，支持 24 / 72 / 168，默认 24。"
+          }
+        }
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "getMinutelyRain",
+      "description": "查询当前位置或某城市未来 2 小时内的分钟级降水情况（5 分钟间隔），包含降水摘要文字。\n【触发场景】用户问「现在下雨吗」「接下来还会下雨吗」「出门要带伞吗」「要下多久」「几点停雨」等近期降水意图时调用。\n【禁止场景】用户询问明天或更远的天气时改用 getWeatherForecast 或 getHourlyForecast。\n【特点】接口直接返回 summary 文字（如「未来2小时有阵雨，1小时后转小」），优先展示 summary 内容。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "（选填）城市名称或经纬度字符串。未指定时留空自动定位。【禁止编造】"
+          }
+        }
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "getLifeAdvice",
+      "description": "查询某城市或当前位置今日生活指数，包括穿衣、运动、紫外线、洗车、旅游、感冒、晾晒、舒适度等 16 种指数的等级和建议文字。\n【触发场景】用户问「今天穿什么」「适合运动吗」「要防晒吗」「能洗车吗」「今天适合出游吗」「感冒指数」等生活相关决策时调用。\n【禁止场景】用户只问天气数据（温度/降雨等）时改用 getCurrentWeather 或 getWeatherForecast；空气质量相关问题改用 getAirQuality。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "（选填）城市名称或经纬度字符串。未指定时留空自动定位。【禁止编造】"
           }
         }
       },
@@ -55,13 +87,13 @@
     },
     {
       "name": "getAirQuality",
-      "description": "查询某个城市或当前位置的实时空气质量，包括 AQI 数值和等级、PM2.5、PM10、臭氧、一氧化碳等污染物浓度",
+      "description": "查询某城市或当前位置当前空气质量，包括 AQI 数值和等级（优/良/轻度/中度/重度/严重）、PM2.5、PM10、臭氧、一氧化碳等污染物浓度。\n【触发场景】用户问「空气质量怎样」「PM2.5 多少」「今天适合开窗吗」「空气好不好」「雾霾严不严重」时调用。\n【禁止场景】用户问生活指数时改用 getLifeAdvice；用户问天气时改用 getCurrentWeather。",
       "inputSchema": {
         "type": "object",
         "properties": {
           "location": {
             "type": "string",
-            "description": "城市名称或经纬度字符串。不传则自动取当前定位"
+            "description": "（选填）城市名称或经纬度字符串。未指定时留空自动定位。【禁止编造】"
           }
         }
       },
@@ -69,13 +101,31 @@
     },
     {
       "name": "getWeatherWarnings",
-      "description": "查询某个城市或当前位置当前有效的天气预警信息，包括预警类型（暴雨、大风、高温等）、级别（蓝/黄/橙/红）、发布机构和详细预警内容",
+      "description": "查询某城市或当前位置当前有效的气象预警信息，包括预警类型（暴雨/大风/高温/台风等）、颜色级别（蓝/黄/橙/红）、发布机构和详细内容。\n【触发场景】用户问「有没有预警」「台风预警」「暴雨预警」「高温预警」「现在有什么气象灾害」时调用。\n【无预警时】接口返回空数组，直接告知用户「当前没有有效预警」，禁止重试。",
       "inputSchema": {
         "type": "object",
         "properties": {
           "location": {
             "type": "string",
-            "description": "城市名称或经纬度字符串。不传则自动取当前定位"
+            "description": "（选填）城市名称或经纬度字符串。未指定时留空自动定位。【禁止编造】"
+          }
+        }
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "getAstronomy",
+      "description": "查询某城市或当前位置指定日期的天文信息：日出日落时间、月出月落时间、月相名称。\n【触发场景】用户问「今天几点日出/日落」「今晚月相」「明天日落时间」「现在是什么月相」时调用。\n【date 约束】来自用户原话（如「明天」→ 明天日期，「今天」→ 今天日期）；未指定时默认今天。格式 YYYY-MM-DD。【禁止编造】禁止传入不合法日期。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "（选填）城市名称或经纬度字符串。未指定时留空自动定位。【禁止编造】"
+          },
+          "date": {
+            "type": "string",
+            "description": "（选填）查询日期，格式 YYYY-MM-DD，如 \"2026-07-15\"。未指定时默认今天。取值来自用户原话。"
           }
         }
       },
