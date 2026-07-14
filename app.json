@@ -1,4 +1,21 @@
 {
+  "subPackages": [
+    {
+      "root": "skills",
+      "independent": true,
+      "pages": []
+    }
+  ],
+  "agent": {
+    "instruction": "AGENTS.md",
+    "skills": [
+      {
+        "name": "weatherSkill",
+        "description": "查询天气、空气质量、生活指数和天气预警",
+        "path": "skills/weatherSkill"
+      }
+    ]
+  },
   "pages": [
     "pages/index/index",
     "pages/life/index",

@@ -18,6 +18,7 @@ project.private.config.json
 
 # 本地密钥
 utils/config.local.js
+skills/weatherSkill/config.local.js
 
 # CodeGraph 本地索引
 .codegraph/

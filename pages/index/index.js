@@ -379,6 +379,11 @@ Page({
     // 冷启动若标记了强刷，在 init 路径透传 force；onShow 看到 false 后不会重复触发
     const force = !!app.globalData.needForceRefresh;
     app.globalData.needForceRefresh = false;
+    // AI Handoff：如有接力城市存入 globalData，供 init() 优先加载
+    const handoff = app.takeAgentHandoff(this.getPageId());
+    if (handoff && handoff.payload && handoff.payload.city) {
+      app.globalData.agentHandoffCity = handoff.payload.city;
+    }
     this.init({ force });
   },
   onReady() {
@@ -404,6 +409,22 @@ Page({
       this.qqmapsdk = new QQMapWX({
         key: app.globalData.lbs.key
       });
+      // AI Handoff 接力城市优先于 defaultCity
+      const agentCity = app.globalData.agentHandoffCity;
+      if (agentCity) {
+        app.globalData.agentHandoffCity = null;
+        this.setData({
+          latitude: agentCity.lat,
+          longitude: agentCity.lon,
+          city: agentCity.adm2 || '',
+          province: '',
+          district: agentCity.name || '',
+          locationLabel: this._buildLocationLabel(agentCity.name, agentCity.adm2, ''),
+          cityId: agentCity.id || '',
+        });
+        await this.getWeather({ force: true });
+        return;
+      }
       const defaultCity = !forceLocate ? prefs.findCity(prefs.getPrefs().defaultCityId) : null;
       if (defaultCity) {
         this.setData({

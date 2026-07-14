@@ -1,0 +1,15 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <text class="tag">天气预报</text>
+  </view>
+  <view class="list">
+    <view class="row" wx:for="{{forecasts}}" wx:key="date">
+      <text class="date">{{item.date.slice(5)}}</text>
+      <view class="dot" style="background:{{item.condColor}}"></view>
+      <text class="cond">{{item.textDay}}</text>
+      <text class="temp">{{item.tempMin}}~{{item.tempMax}}℃</text>
+      <text class="prob" wx:if="{{item.precipProb != null}}">💧{{item.precipProb}}%</text>
+    </view>
+  </view>
+</view>

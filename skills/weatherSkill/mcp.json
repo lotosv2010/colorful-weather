@@ -1,0 +1,91 @@
+{
+  "apis": [
+    {
+      "name": "getCurrentWeather",
+      "description": "查询某个城市或当前位置的实时天气，包括温度、体感温度、天气状况、湿度、风向风力、能见度、气压、降水量",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "城市名称（如\"北京\"、\"成都\"）或经纬度字符串（格式 \"lon,lat\"，如 \"116.41,39.92\"）。不传则自动取当前定位"
+          }
+        }
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "getWeatherForecast",
+      "description": "查询某个城市或当前位置未来几天的逐日天气预报，包括每日最高/最低温、白天和夜间天气状况、降水概率、紫外线指数、风向风力",
+      "_meta": {
+        "ui": {
+          "componentPath": "components/weather-card/index",
+          "pagePath": "/pages/index/index"
+        }
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "城市名称或经纬度字符串。不传则自动取当前定位"
+          },
+          "days": {
+            "type": "number",
+            "description": "预报天数，范围 1-7，默认 5"
+          }
+        },
+        "required": ["days"]
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "getLifeAdvice",
+      "description": "查询某个城市或当前位置今日的生活指数，包括穿衣、运动、紫外线、洗车、旅游、感冒、晾晒、舒适度等多项指数的等级和建议",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "城市名称或经纬度字符串。不传则自动取当前定位"
+          }
+        }
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "getAirQuality",
+      "description": "查询某个城市或当前位置的实时空气质量，包括 AQI 数值和等级、PM2.5、PM10、臭氧、一氧化碳等污染物浓度",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "城市名称或经纬度字符串。不传则自动取当前定位"
+          }
+        }
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "getWeatherWarnings",
+      "description": "查询某个城市或当前位置当前有效的天气预警信息，包括预警类型（暴雨、大风、高温等）、级别（蓝/黄/橙/红）、发布机构和详细预警内容",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "城市名称或经纬度字符串。不传则自动取当前定位"
+          }
+        }
+      },
+      "outputSchema": {}
+    }
+  ],
+  "components": [
+    {
+      "path": "components/weather-card/index",
+      "relatedPage": "/pages/index/index"
+    }
+  ]
+}

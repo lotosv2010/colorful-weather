@@ -9,6 +9,7 @@ const FORCE_REFRESH_THRESHOLD = 15 * 60 * 1000; // 15 分钟
 App({
   onLaunch() {
     network.init();
+    this._registerAgentHandoff();
     wx.showShareMenu({
       withShareTicket: true,
       menus: ['shareAppMessage', 'shareTimeline']
@@ -28,9 +29,26 @@ App({
   onHide() {
     this.globalData.lastHideAt = Date.now();
   },
+  // 注册 AI Handoff 监听（须早于 handoff 触发的 onBeforeAppRoute）
+  _registerAgentHandoff() {
+    if (!wx.onAgentHandoff) return;
+    wx.onAgentHandoff(({ pageId, path, query, payload }) => {
+      this.globalData.agentHandoffs[pageId] = { path, query, payload };
+    });
+  },
+
+  // 接力页取走 handoff（取后删除，避免重复消费）
+  takeAgentHandoff(pageId) {
+    const map = this.globalData.agentHandoffs;
+    const handoff = map[pageId];
+    if (handoff) delete map[pageId];
+    return handoff || null;
+  },
+
   globalData: {
     lbs: config.tencentMap, // 腾讯地图（用于逆地理编码当前位置）
     lastHideAt: 0,
     needForceRefresh: false,
+    agentHandoffs: {},
   }
 })
