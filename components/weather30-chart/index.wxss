@@ -102,3 +102,30 @@
 .chart-detail {
   padding: 20rpx 0 0;
 }
+
+.precip-wrap {
+  width: 36rpx;
+  height: 44rpx;
+  background: rgba(255,255,255,0.07);
+  border-radius: 6rpx;
+  margin-top: 8rpx;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.precip-bar {
+  width: 100%;
+  background: rgba(91,163,217,0.75);
+  border-radius: 6rpx 6rpx 0 0;
+  min-height: 3rpx;
+}
+
+.precip-label {
+  font-size: 18rpx;
+  color: #5BA3D9;
+  margin-top: 4rpx;
+  margin-bottom: 12rpx;
+  line-height: 1;
+}
+

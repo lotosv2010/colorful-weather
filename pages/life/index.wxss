@@ -137,11 +137,28 @@ page {
 }
 .card-head {
   padding: 14rpx 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .head-cat {
   font-size: 28rpx;
   font-weight: 500;
   color: #fff;
+}
+.level-dots {
+  display: flex;
+  gap: 8rpx;
+  align-items: center;
+}
+.level-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.28);
+}
+.level-dot.filled {
+  background: rgba(255,255,255,0.92);
 }
 .card-body {
   padding: 20rpx 24rpx;

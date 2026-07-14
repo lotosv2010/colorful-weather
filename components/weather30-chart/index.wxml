@@ -21,6 +21,10 @@
         <i class="qi-{{fmt.safe(item.iconDay)}}-fill icon-color-{{ic.category(fmt.safe(item.iconDay))}} chart-icon"></i>
         <text class="chart-temp-max">{{tu.fmt(item.tempMax, tempUnit)}}°</text>
         <view class="chart-line-space" style="height: {{canvasHeight}}px"></view>
+        <view class="precip-wrap">
+          <view class="precip-bar" style="height: {{item.precipBarPct || 0}}%"></view>
+        </view>
+        <text class="precip-label">{{item.precip || 0}}mm</text>
         <text class="chart-temp-min">{{tu.fmt(item.tempMin, tempUnit)}}°</text>
         <i class="qi-{{fmt.safe(item.iconNight)}}-fill icon-color-{{ic.category(fmt.safe(item.iconNight))}} chart-icon"></i>
         <view class="chart-air-tag" wx:if="{{item.air}}"

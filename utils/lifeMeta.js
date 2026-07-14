@@ -85,8 +85,12 @@ const getColor = (type, level, category) => {
   return C.gray;
 };
 
+const getMaxLevel = (type) =>
+  Object.keys(levelColorByType[String(type)] || {}).length || 5;
+
 module.exports = {
   definitions,
   getDefinition,
-  getColor
+  getColor,
+  getMaxLevel
 };

@@ -47,6 +47,10 @@
       <view class="timeline-card">
         <view class="card-head" style="background:{{item.categoryColor}}">
           <text class="head-cat">{{item.category}}</text>
+          <view class="level-dots">
+            <view wx:for="{{item.levelDots}}" wx:key="index" wx:for-item="dot"
+                  class="level-dot {{dot ? 'filled' : ''}}"></view>
+          </view>
         </view>
         <view class="card-body">{{item.text}}</view>
       </view>

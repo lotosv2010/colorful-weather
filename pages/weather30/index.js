@@ -114,6 +114,12 @@ Page({
       // 合并空气质量
       this.mergeAir(daily, airRes);
 
+      // 计算降水量相对高度（0–100，供图表列小柱使用）
+      const maxPrecip = Math.max(...daily.map(d => parseFloat(d.precip) || 0), 0.1);
+      daily.forEach(d => {
+        d.precipBarPct = Math.round(((parseFloat(d.precip) || 0) / maxPrecip) * 100);
+      });
+
       // 计算升降温描述
       this.computeTempDesc(daily);
 

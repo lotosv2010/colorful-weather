@@ -1,6 +1,6 @@
 // pages/life/index.js
 const { indices3d, indices: indices1d } = require('../../utils/api');
-const { getDefinition, getColor } = require('../../utils/lifeMeta');
+const { getDefinition, getColor, getMaxLevel } = require('../../utils/lifeMeta');
 const prefs = require('../../utils/prefs');
 const { buildPath } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
@@ -126,7 +126,14 @@ Page({
   },
 
   refreshList() {
-    const list = (this.indicesMap[this.data.activeType] || []).slice(0, 4);
+    const list = (this.indicesMap[this.data.activeType] || []).slice(0, 4).map(item => {
+      const levelInt = parseInt(item.level) || 0;
+      const maxLevel = getMaxLevel(item.type);
+      return {
+        ...item,
+        levelDots: Array.from({ length: maxLevel }, (_, i) => i < levelInt)
+      };
+    });
     this.setData({ list });
   },
 
