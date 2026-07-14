@@ -1,5 +1,6 @@
 const { cityLookup, topCity, now } = require('../../utils/api');
 const prefs = require('../../utils/prefs');
+const { tzDiffText } = require('../../utils/util');
 
 // 本地存储 key
 const HISTORY_KEY = 'city_search_history';
@@ -92,7 +93,8 @@ Component({
         this.setData({ favoritesList: [] });
         return;
       }
-      this.setData({ favoritesList: cities });
+      const withTz = cities.map(c => ({ ...c, tzDiff: tzDiffText(c.utcOffset) }));
+      this.setData({ favoritesList: withTz });
       try {
         const weathers = await Promise.all(
           cities.map(item =>
@@ -102,7 +104,7 @@ Component({
           )
         );
         this.setData({
-          favoritesList: cities.map((item, i) => ({ ...item, weather: weathers[i] }))
+          favoritesList: withTz.map((item, i) => ({ ...item, weather: weathers[i] }))
         });
       } catch (e) {}
     },
@@ -125,6 +127,7 @@ Component({
           adm2: city.adm2,
           lat: city.lat,
           lon: city.lon,
+          utcOffset: city.utcOffset || '',
         });
         this._refreshFavoriteIds();
         // 新增场景：仅为该城市拉一次天气，追加到列表

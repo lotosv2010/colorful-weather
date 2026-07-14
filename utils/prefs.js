@@ -67,6 +67,7 @@ const _normalizeCity = (c) => ({
   adm2: c.adm2 || '',
   lat: c.lat,
   lon: c.lon,
+  utcOffset: c.utcOffset || '',
   pinned: !!c.pinned,
   addedAt: c.addedAt || Date.now(),
 });

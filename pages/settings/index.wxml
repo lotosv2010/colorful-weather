@@ -54,6 +54,7 @@
             <text>{{item.name}}</text>
             <text wx:if="{{item.pinned}}" class="badge-pin">置顶</text>
             <text wx:if="{{item.id === defaultCityId}}" class="badge-default">默认</text>
+            <text wx:if="{{item.tzDiff}}" class="badge-tz">{{item.tzDiff}}</text>
           </view>
           <view class="city-sub">{{item.adm1}}{{item.adm2 && item.adm2 !== item.adm1 ? ' · ' + item.adm2 : ''}}</view>
         </view>
@@ -72,6 +73,17 @@
       <view class="cache-info">
         <view class="cache-name">清除天气缓存</view>
         <view class="cache-sub">下次刷新会重新拉取所有数据</view>
+      </view>
+      <view class="cache-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">快速访问</view>
+    <view class="cache-row" bindtap="onAddShortcut">
+      <view class="cache-info">
+        <view class="cache-name">添加到桌面</view>
+        <view class="cache-sub">在桌面创建快速入口，随时查看天气</view>
       </view>
       <view class="cache-arrow">›</view>
     </view>

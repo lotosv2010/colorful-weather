@@ -1,6 +1,7 @@
 const prefs = require('../../utils/prefs');
 const monitor = require('../../utils/monitor');
 const cache = require('../../utils/cache');
+const { tzDiffText } = require('../../utils/util');
 
 Page({
   data: {
@@ -30,7 +31,7 @@ Page({
       themeMode: p.themeMode || 'manual',
       cardBgMode: p.cardBgMode || 'auto',
       defaultCityId: p.defaultCityId,
-      cities: p.cities,
+      cities: p.cities.map(c => ({ ...c, tzDiff: tzDiffText(c.utcOffset) })),
     });
   },
   onUnitTap(e) {
@@ -76,6 +77,25 @@ Page({
   onTogglePin(e) {
     const { id } = e.currentTarget.dataset;
     prefs.togglePin(id);
+  },
+  onAddShortcut() {
+    if (wx.canIUse('addShortcut')) {
+      wx.addShortcut({ fail: () => this._showShortcutGuide() });
+    } else {
+      this._showShortcutGuide();
+    }
+  },
+  _showShortcutGuide() {
+    const info = wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync();
+    const isAndroid = (info.platform || '').toLowerCase() === 'android';
+    wx.showModal({
+      title: '添加到桌面',
+      content: isAndroid
+        ? '点击右上角「···」→「发送到桌面」，即可在手机桌面快速打开霁色天气'
+        : '点击右上角「···」，选择「添加到我的小程序」或「关于」页面中的添加选项',
+      showCancel: false,
+      confirmText: '知道了',
+    });
   },
   onClearCache() {
     wx.showModal({

@@ -176,6 +176,11 @@
 .star-on {
   color: #fbbf24;
 }
+.tz-tag {
+  font-size: 20rpx;
+  color: rgba(255, 200, 90, 0.8);
+  margin-left: 8rpx;
+}
 .pin-tag {
   font-size: 20rpx;
   background: #fff3e0;

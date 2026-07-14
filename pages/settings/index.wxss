@@ -116,7 +116,8 @@ page {
   margin-top: 6rpx;
 }
 .badge-pin,
-.badge-default {
+.badge-default,
+.badge-tz {
   font-size: 20rpx;
   font-weight: 500;
   padding: 2rpx 12rpx;
@@ -129,6 +130,10 @@ page {
 .badge-default {
   background: var(--theme);
   color: #fff;
+}
+.badge-tz {
+  background: rgba(255, 200, 90, 0.15);
+  color: rgba(255, 200, 90, 0.9);
 }
 
 .city-actions {

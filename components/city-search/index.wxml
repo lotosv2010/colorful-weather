@@ -83,6 +83,7 @@
               <view class="row sub">
                 <text class="weather-temp">{{tu.fmt(item.weather.temp, tempUnit)}}°</text>
                 <text class="city-path">{{item.adm1}}{{item.adm2 && item.adm2 !== item.adm1 ? ' · ' + item.adm2 : ''}}</text>
+                <text wx:if="{{item.tzDiff}}" class="tz-tag">{{item.tzDiff}}</text>
               </view>
             </view>
             <view
