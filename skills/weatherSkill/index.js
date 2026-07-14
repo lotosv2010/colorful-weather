@@ -6,6 +6,7 @@ const getLifeAdvice = require('./apis/getLifeAdvice');
 const getAirQuality = require('./apis/getAirQuality');
 const getWeatherWarnings = require('./apis/getWeatherWarnings');
 const getAstronomy = require('./apis/getAstronomy');
+const get30DayForecast = require('./apis/get30DayForecast');
 const getHistoricalWeather = require('./apis/getHistoricalWeather');
 
 const skill = wx.modelContext.createSkill('skills/weatherSkill');
@@ -18,4 +19,5 @@ skill.registerAPI('getLifeAdvice', getLifeAdvice);
 skill.registerAPI('getAirQuality', getAirQuality);
 skill.registerAPI('getWeatherWarnings', getWeatherWarnings);
 skill.registerAPI('getAstronomy', getAstronomy);
+skill.registerAPI('get30DayForecast', get30DayForecast);
 skill.registerAPI('getHistoricalWeather', getHistoricalWeather);

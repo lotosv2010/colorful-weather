@@ -16,7 +16,7 @@
     },
     {
       "name": "getWeatherForecast",
-      "description": "查询某城市或当前位置未来 1-7 天逐日天气预报（最高/最低温、白天/夜间天气、降水概率、风力）。\n【触发场景】用户问「明天天气」「这周天气」「周末会下雨吗」「后天几度」等未来天气时调用。\n【禁止场景】用户只问今天当前实时天气时，改用 getCurrentWeather；用户问「接下来1小时」时改用 getMinutelyRain；用户问「今天几点下雨」时改用 getHourlyForecast。\n【days 约束】来自用户原话（如「3天」→ 3，「这周」→ 7）；用户未指定时默认 5。范围 1-7。",
+      "description": "查询某城市或当前位置未来 1-7 天逐日天气预报（最高/最低温、白天/夜间天气、降水概率、风力）。\n【触发场景】用户问「明天天气」「这周天气」「周末会下雨吗」「后天几度」等未来天气时调用。\n【禁止场景】用户只问今天当前实时天气时，改用 getCurrentWeather；用户问「接下来1小时」时改用 getMinutelyRain；用户问「今天几点下雨」时改用 getHourlyForecast；用户问「这个月」「月底」等超 7 天范围时改用 get30DayForecast。\n【days 约束】来自用户原话（如「3天」→ 3，「这周」→ 7）；用户未指定时默认 5。范围 1-7。",
       "_meta": {
         "ui": {
           "componentPath": "components/weather-card/index",
@@ -36,6 +36,20 @@
           }
         },
         "required": ["days"]
+      },
+      "outputSchema": {}
+    },
+    {
+      "name": "get30DayForecast",
+      "description": "查询某城市或当前位置未来 30 天逐日天气预报（最高/最低温、天气状况、降水、风力）。\n【触发场景】用户问「这个月天气怎样」「月底会冷吗」「未来一个月有几天下雨」「下个月初适合旅游吗」等超 7 天范围的预报时调用。\n【禁止场景】用户只需要近 7 天预报时改用 getWeatherForecast（精度更高）。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "（选填）城市名称或经纬度字符串。未指定时留空自动定位。【禁止编造】"
+          }
+        }
       },
       "outputSchema": {}
     },
@@ -87,13 +101,18 @@
     },
     {
       "name": "getAirQuality",
-      "description": "查询某城市或当前位置当前空气质量，包括 AQI 数值和等级（优/良/轻度/中度/重度/严重）、PM2.5、PM10、臭氧、一氧化碳等污染物浓度。\n【触发场景】用户问「空气质量怎样」「PM2.5 多少」「今天适合开窗吗」「空气好不好」「雾霾严不严重」时调用。\n【禁止场景】用户问生活指数时改用 getLifeAdvice；用户问天气时改用 getCurrentWeather。",
+      "description": "查询某城市或当前位置的空气质量，支持当前实况、逐小时预报、逐日预报三种模式。\n【触发场景】用户问「空气质量怎样」「PM2.5 多少」「今天适合开窗吗」「明天空气好吗」「未来几天污染情况」时调用。\n【range 选择】range='current'（默认）查当前实况；range='hourly' 查今天逐小时；range='daily' 查未来几天逐日。\n【禁止场景】用户问生活指数时改用 getLifeAdvice；用户问天气时改用 getCurrentWeather。",
       "inputSchema": {
         "type": "object",
         "properties": {
           "location": {
             "type": "string",
             "description": "（选填）城市名称或经纬度字符串。未指定时留空自动定位。【禁止编造】"
+          },
+          "range": {
+            "type": "string",
+            "description": "查询模式：'current'（当前实况，默认）/ 'hourly'（今天逐小时）/ 'daily'（未来几天逐日）。根据用户问题选择。",
+            "enum": ["current", "hourly", "daily"]
           }
         }
       },
@@ -115,7 +134,7 @@
     },
     {
       "name": "getAstronomy",
-      "description": "查询某城市或当前位置指定日期的天文信息：日出日落时间、月出月落时间、月相名称。\n【触发场景】用户问「今天几点日出/日落」「今晚月相」「明天日落时间」「现在是什么月相」时调用。\n【date 约束】来自用户原话（如「明天」→ 明天日期，「今天」→ 今天日期）；未指定时默认今天。格式 YYYY-MM-DD。【禁止编造】禁止传入不合法日期。",
+      "description": "查询某城市或当前位置指定日期的天文信息：日出日落时间、月出月落时间、月相名称。\n【触发场景】用户问「今天几点日出/日落」「今晚月相」「明天日落时间」「现在是什么月相」时调用。\n【date 约束】来自用户原话（如「明天」→ 明天日期，「今天」→ 今天日期）；未指定时默认今天。格式 YYYY-MM-DD 或 YYYYMMDD 均可。【禁止编造】禁止传入不合法日期。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -125,7 +144,7 @@
           },
           "date": {
             "type": "string",
-            "description": "（选填）查询日期，格式 YYYY-MM-DD，如 \"2026-07-15\"。未指定时默认今天。取值来自用户原话。"
+            "description": "（选填）查询日期，格式 YYYY-MM-DD 或 YYYYMMDD，如 \"2026-07-15\"。未指定时默认今天。取值来自用户原话。"
           }
         }
       },
@@ -133,7 +152,7 @@
     },
     {
       "name": "getHistoricalWeather",
-      "description": "查询某城市最近 10 天内某一天的历史天气或历史空气质量（逐小时数据）。对应小程序「时光机」功能。\n【触发场景】用户问「昨天天气怎样」「上周五多少度」「三天前空气质量」「7月10日下雨了吗」等历史天气/空气质量时调用。\n【禁止场景】用户问今天或未来天气时改用 getCurrentWeather / getWeatherForecast；超过最近10天的历史数据不支持，直接告知用户。\n【date 约束】必须转换为 YYYYMMDD 格式（如昨天→前一天的8位日期），仅支持最近 10 天，不可传今天之后的日期。来自用户原话，禁止编造。\n【type 约束】'weather'（默认）查天气，'air' 查空气质量。根据用户问题选择。\n【LocationID 限制】历史接口必须用城市名定位，GPS 坐标不支持。用户未指定城市时，用当前定位城市的名称解析 LocationID。",
+      "description": "查询某城市最近 10 天内某一天的历史天气或历史空气质量（逐小时数据）。对应小程序「时光机」功能。\n【触发场景】用户问「昨天天气怎样」「上周五多少度」「三天前空气质量」「7月10日下雨了吗」等历史天气/空气质量时调用。\n【禁止场景】用户问今天或未来天气时改用 getCurrentWeather / getWeatherForecast；超过最近10天的历史数据不支持，直接告知用户。\n【date 约束】必须转换为 YYYYMMDD 格式，仅支持最近 10 天，不可传今天之后的日期。来自用户原话，禁止编造。\n【type 约束】'weather'（默认）查天气，'air' 查空气质量。根据用户问题选择。\n【LocationID 限制】历史接口必须用城市名定位，GPS 坐标不支持。用户未指定城市时，用当前定位城市的名称解析 LocationID。",
       "inputSchema": {
         "type": "object",
         "properties": {
