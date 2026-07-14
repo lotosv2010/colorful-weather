@@ -2,6 +2,7 @@
   "apis": [
     {
       "name": "getCurrentWeather",
+      "_meta": { "ui": { "componentPath": "components/current-weather-card/index", "pagePath": "/pages/index/index" } },
       "description": "查询某城市或当前位置的实时天气（温度、体感温度、天气状况、湿度、风向风力、能见度）。\n【触发场景】用户问「现在几度」「今天天气怎样」「外面热吗」等实时状态时调用。\n【禁止场景】用户问未来天气预报时，改用 getWeatherForecast；用户问「要不要带伞」时优先 getMinutelyRain；用户问「穿什么」时优先 getLifeAdvice。\n【location 约束】来自用户原话中的城市名；用户未指定城市时留空，自动取当前定位。禁止编造用户没说过的地名。",
       "inputSchema": {
         "type": "object",
@@ -87,6 +88,7 @@
     },
     {
       "name": "getLifeAdvice",
+      "_meta": { "ui": { "componentPath": "components/life-advice-card/index", "pagePath": "/pages/life/index" } },
       "description": "查询某城市或当前位置今日生活指数，包括穿衣、运动、紫外线、洗车、旅游、感冒、晾晒、舒适度等 16 种指数的等级和建议文字。\n【触发场景】用户问「今天穿什么」「适合运动吗」「要防晒吗」「能洗车吗」「今天适合出游吗」「感冒指数」等生活相关决策时调用。\n【禁止场景】用户只问天气数据（温度/降雨等）时改用 getCurrentWeather 或 getWeatherForecast；空气质量相关问题改用 getAirQuality。",
       "inputSchema": {
         "type": "object",
@@ -101,6 +103,7 @@
     },
     {
       "name": "getAirQuality",
+      "_meta": { "ui": { "componentPath": "components/air-quality-card/index", "pagePath": "/pages/air/index" } },
       "description": "查询某城市或当前位置的空气质量，支持当前实况、逐小时预报、逐日预报三种模式。\n【触发场景】用户问「空气质量怎样」「PM2.5 多少」「今天适合开窗吗」「明天空气好吗」「未来几天污染情况」时调用。\n【range 选择】range='current'（默认）查当前实况；range='hourly' 查今天逐小时；range='daily' 查未来几天逐日。\n【禁止场景】用户问生活指数时改用 getLifeAdvice；用户问天气时改用 getCurrentWeather。",
       "inputSchema": {
         "type": "object",
@@ -120,6 +123,7 @@
     },
     {
       "name": "getWeatherWarnings",
+      "_meta": { "ui": { "componentPath": "components/warning-card/index", "pagePath": "/pages/warning/index" } },
       "description": "查询某城市或当前位置当前有效的气象预警信息，包括预警类型（暴雨/大风/高温/台风等）、颜色级别（蓝/黄/橙/红）、发布机构和详细内容。\n【触发场景】用户问「有没有预警」「台风预警」「暴雨预警」「高温预警」「现在有什么气象灾害」时调用。\n【无预警时】接口返回空数组，直接告知用户「当前没有有效预警」，禁止重试。",
       "inputSchema": {
         "type": "object",
@@ -176,9 +180,10 @@
     }
   ],
   "components": [
-    {
-      "path": "components/weather-card/index",
-      "relatedPage": "/pages/index/index"
-    }
+    { "path": "components/weather-card/index",         "relatedPage": "/pages/index/index" },
+    { "path": "components/current-weather-card/index", "relatedPage": "/pages/index/index" },
+    { "path": "components/air-quality-card/index",     "relatedPage": "/pages/air/index" },
+    { "path": "components/life-advice-card/index",     "relatedPage": "/pages/life/index" },
+    { "path": "components/warning-card/index",         "relatedPage": "/pages/warning/index" }
   ]
 }

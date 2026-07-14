@@ -1,0 +1,13 @@
+.card { padding: 14px 16px 12px; background: linear-gradient(135deg, #1a2440, #253a60); border-radius: 12px; color: #fff; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.city { font-size: 15px; font-weight: 600; }
+.tag { font-size: 11px; color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.2); border-radius: 4px; padding: 1px 6px; }
+.empty { padding: 16px 0; text-align: center; font-size: 13px; color: rgba(255,255,255,.5); }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.item { display: flex; gap: 10px; align-items: stretch; }
+.level-bar { width: 3px; border-radius: 2px; flex-shrink: 0; }
+.content { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.item-header { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.type-badge { font-size: 11px; border: 1px solid; border-radius: 3px; padding: 0 5px; flex-shrink: 0; }
+.title { font-size: 13px; font-weight: 500; flex: 1; }
+.brief { font-size: 11px; color: rgba(255,255,255,.55); line-height: 1.5; }

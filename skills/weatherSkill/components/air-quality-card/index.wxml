@@ -1,0 +1,38 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <text class="tag">空气质量</text>
+  </view>
+
+  <!-- 当前实况 -->
+  <block wx:if="{{range === 'current'}}">
+    <view class="main">
+      <view class="aqi-badge" style="border-color:{{aqiColor}};color:{{aqiColor}}">
+        <text class="aqi-num">{{aqi}}</text>
+        <text class="aqi-label">AQI</text>
+      </view>
+      <view class="aqi-info">
+        <text class="category" style="color:{{aqiColor}}">{{category}}</text>
+        <text class="primary" wx:if="{{primary}}">首要：{{primary}}</text>
+      </view>
+    </view>
+    <view class="poll-row" wx:if="{{pollutants.length}}">
+      <view class="poll-item" wx:for="{{pollutants}}" wx:key="name">
+        <text class="poll-name">{{item.name}}</text>
+        <text class="poll-val">{{item.value}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 逐小时 / 逐日 -->
+  <block wx:else>
+    <view class="row-list">
+      <view class="row-item" wx:for="{{rows}}" wx:key="time">
+        <text class="row-time">{{item.time}}</text>
+        <view class="row-dot" style="background:{{item.color}}"></view>
+        <text class="row-cat">{{item.cat}}</text>
+        <text class="row-aqi">{{item.aqi}}</text>
+      </view>
+    </view>
+  </block>
+</view>

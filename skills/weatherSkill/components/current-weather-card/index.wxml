@@ -1,0 +1,29 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <text class="tag">实时天气</text>
+  </view>
+  <view class="main">
+    <view class="temp-block">
+      <text class="temp">{{temp}}°</text>
+      <text class="text">{{text}}</text>
+    </view>
+    <text class="feels">体感 {{feelsLike}}°</text>
+  </view>
+  <view class="detail">
+    <view class="item">
+      <text class="label">湿度</text>
+      <text class="val">{{humidity}}%</text>
+    </view>
+    <view class="sep"></view>
+    <view class="item">
+      <text class="label">{{windDir}}</text>
+      <text class="val">{{windScale}}级</text>
+    </view>
+    <view class="sep"></view>
+    <view class="item">
+      <text class="label">能见度</text>
+      <text class="val">{{vis}}km</text>
+    </view>
+  </view>
+</view>

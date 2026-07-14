@@ -1,0 +1,21 @@
+.card { padding: 14px 16px 12px; background: linear-gradient(135deg, #1a2440, #253a60); border-radius: 12px; color: #fff; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.city { font-size: 15px; font-weight: 600; }
+.tag { font-size: 11px; color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.2); border-radius: 4px; padding: 1px 6px; }
+.main { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+.aqi-badge { width: 60px; height: 60px; border-radius: 50%; border: 3px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+.aqi-num { font-size: 20px; font-weight: 700; line-height: 1.2; }
+.aqi-label { font-size: 10px; opacity: .7; }
+.aqi-info { display: flex; flex-direction: column; gap: 4px; }
+.category { font-size: 20px; font-weight: 600; }
+.primary { font-size: 12px; color: rgba(255,255,255,.55); }
+.poll-row { display: flex; gap: 0; background: rgba(255,255,255,.08); border-radius: 8px; padding: 8px 4px; }
+.poll-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.poll-name { font-size: 10px; color: rgba(255,255,255,.5); }
+.poll-val { font-size: 13px; font-weight: 500; }
+.row-list { display: flex; flex-direction: column; gap: 6px; }
+.row-item { display: flex; align-items: center; gap: 8px; }
+.row-time { width: 38px; font-size: 12px; color: rgba(255,255,255,.6); flex-shrink: 0; }
+.row-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.row-cat { flex: 1; font-size: 13px; }
+.row-aqi { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.7); }

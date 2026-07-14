@@ -1,0 +1,13 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <text class="tag">今日生活指数</text>
+  </view>
+  <view class="grid">
+    <view class="cell" wx:for="{{grid}}" wx:key="label">
+      <view class="dot" style="background:{{item.color}}"></view>
+      <text class="label">{{item.label}}</text>
+      <text class="cat">{{item.category}}</text>
+    </view>
+  </view>
+</view>

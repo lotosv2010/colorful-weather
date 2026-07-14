@@ -1,0 +1,21 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <text class="tag">天气预警</text>
+  </view>
+  <view class="empty" wx:if="{{empty}}">
+    <text>暂无有效天气预警</text>
+  </view>
+  <view class="list" wx:else>
+    <view class="item" wx:for="{{warnings}}" wx:key="title">
+      <view class="level-bar" style="background:{{item.color}}"></view>
+      <view class="content">
+        <view class="item-header">
+          <text class="type-badge" style="color:{{item.color}};border-color:{{item.color}}">{{item.typeName}}</text>
+          <text class="title">{{item.title}}</text>
+        </view>
+        <text class="brief" wx:if="{{item.brief}}">{{item.brief}}</text>
+      </view>
+    </view>
+  </view>
+</view>
