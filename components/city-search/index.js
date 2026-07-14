@@ -45,6 +45,15 @@ Component({
     loading: false,
     errorMsg: ''
   },
+  lifetimes: {
+    created() {
+      this._searchSeq = 0;
+    },
+    detached() {
+      if (this._debounceTimer) clearTimeout(this._debounceTimer);
+      this._searchSeq++;  // 使所有飞行中的搜索请求失效
+    },
+  },
   methods: {
     // 加载当前定位天气
     async loadCurrent() {
@@ -103,9 +112,13 @@ Component({
               .catch(() => null)
           )
         );
-        this.setData({
-          favoritesList: withTz.map((item, i) => ({ ...item, weather: weathers[i] }))
+        // 基于当前列表合并天气，避免并发时覆盖用户操作
+        const currentList = this.data.favoritesList;
+        const updated = currentList.map(item => {
+          const idx = withTz.findIndex(c => String(c.id) === String(item.id));
+          return idx >= 0 ? { ...item, weather: weathers[idx] } : item;
         });
+        this.setData({ favoritesList: updated });
       } catch (e) {}
     },
 
@@ -135,7 +148,12 @@ Component({
         now({ location: `${newItem.lon},${newItem.lat}` })
           .then(r => { if (r.code === '200') newItem.weather = r.now; })
           .catch(() => {})
-          .then(() => this.setData({ favoritesList: [...this.data.favoritesList, newItem] }));
+          .then(() => {
+            // 避免飞行期间重复点击导致重复追加
+            if (!this.data.favoritesList.find(c => String(c.id) === String(newItem.id))) {
+              this.setData({ favoritesList: [...this.data.favoritesList, newItem] });
+            }
+          });
       }
     },
 
@@ -210,21 +228,23 @@ Component({
 
     // 调用 cityLookup
     async search(keyword) {
+      const seq = ++this._searchSeq;
       this.setData({ loading: true, errorMsg: '' });
       try {
         const res = await cityLookup({ location: keyword, number: 20 });
+        if (seq !== this._searchSeq) return;
         if (res.code === '200') {
           this.setData({ results: res.location || [] });
         } else if (res.code === '404' || res.code === '400') {
-          // 404: 未找到匹配城市；400: 无此地址（No Such Location）
           this.setData({ results: [], errorMsg: '未找到该地址' });
         } else {
           this.setData({ results: [], errorMsg: '搜索失败，请稍后重试' });
         }
       } catch (e) {
+        if (seq !== this._searchSeq) return;
         this.setData({ results: [], errorMsg: '网络异常' });
       } finally {
-        this.setData({ loading: false });
+        if (seq === this._searchSeq) this.setData({ loading: false });
       }
     },
 

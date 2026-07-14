@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "30天预报",
+  "enablePullDownRefresh": true,
   "usingComponents": {
     "weather30-card": "../../components/weather30-card/index",
     "weather30-chart": "../../components/weather30-chart/index",

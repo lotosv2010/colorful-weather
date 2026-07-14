@@ -63,7 +63,13 @@ Component({
     onItemTap(e) {
       const { fxdate } = e.currentTarget.dataset;
       const { location, province, city, district } = this.data;
+      if (!location) return;
       navigateTo('/pages/hourly/index', { location, province, city, district }, { date: fxdate });
+    },
+    onMore30Day() {
+      const { location, province, city, district } = this.data;
+      if (!location) return;
+      navigateTo('/pages/weather30/index', { location, province, city, district });
     }
   }
 })

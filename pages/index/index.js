@@ -392,7 +392,8 @@ Page({
     if (this._themeTimer) clearInterval(this._themeTimer);
   },
   async init(opts = {}) {
-    if (this._fetching) return;
+    if (this._fetching || this._initing) return;
+    this._initing = true;
     const { forceLocate = false, force = false } = opts;
     try {
       this.qqmapsdk = new QQMapWX({
@@ -424,6 +425,8 @@ Page({
         errorMsg: isLocateFail ? '定位失败，请手动选择城市' : '数据加载失败，请稍后再试',
         ...(isLocateFail ? { selectorVisible: true } : {}),
       });
+    } finally {
+      this._initing = false;
     }
   },
   async getNow(opts = {}) {
@@ -462,25 +465,6 @@ Page({
       }
     } catch (_) {}
   },
-  async _updateDescWithHistory(cityId) {
-    try {
-      const yesterdayStr = this.formatDateStr(new Date(Date.now() - 86400000));
-      const histRes = await historicalWeather({ location: cityId, date: yesterdayStr }).catch(() => null);
-      if (!histRes || histRes.code !== '200' || !histRes.weatherDaily) return;
-      const yMax = Number(histRes.weatherDaily.tempMax);
-      if (isNaN(yMax)) return;
-      const { currentWeather, daily, air } = this.data;
-      const desc = buildSummary({
-        now: currentWeather,
-        today: daily[0],
-        air,
-        yesterdayTempMax: yMax,
-      });
-      if (desc) this.setData({ desc });
-      const shortDesc = buildShortDesc({ now: currentWeather, today: daily[0], air });
-      if (shortDesc) this.setData({ shortDesc });
-    } catch (_) {}
-  },
   formatHourly(data=[]) {
     return data?.map(h => {
       const res = {...h};
@@ -507,7 +491,7 @@ Page({
                       date.getDate() === today.getDate();
       res.week = isToday ? '今天' : weekMap.get(date.getDay());
       res.month = date.getMonth() + 1;
-      res.day = `${date.getDate()}`.padStart(2, 0);
+      res.day = `${date.getDate()}`.padStart(2, '0');
       return res;
     });
     const lunarLabels = getLunarLabels(mapped.map(d => d.fxDate));
@@ -519,7 +503,7 @@ Page({
     if (!res || !res.indexes || !res.indexes.length) return {};
     const idx = res.indexes[0];
     const c = idx.color || {};
-    const colorHex = `#${c.red.toString(16).padStart(2, '0')}${c.green.toString(16).padStart(2, '0')}${c.blue.toString(16).padStart(2, '0')}`;
+    const colorHex = `#${(c.red ?? 0).toString(16).padStart(2, '0')}${(c.green ?? 0).toString(16).padStart(2, '0')}${(c.blue ?? 0).toString(16).padStart(2, '0')}`;
     const pollutants = (res.pollutants || []).map(p => ({
       name: p.name,
       value: p.concentration ? p.concentration.value : '-',
@@ -547,10 +531,15 @@ Page({
       // 取消上一批未完成的请求，避免城市切换时旧数据覆盖新结果
       abortPending();
       this.setData({ loading: true });
-      let location = '101010100';
       const {longitude, latitude} = this.data;
+      let location;
       if (longitude && latitude) {
         location = `${Number(longitude).toFixed(2)},${Number(latitude).toFixed(2)}`;
+      } else if (this.data.cityId) {
+        location = this.data.cityId;
+      } else {
+        this.setData({ loading: false, errorMsg: '请先选择城市', selectorVisible: true });
+        return;
       }
       const today = this.formatDateStr(new Date());
       const tc = _pendingTasks; // 当前批次 taskCollector

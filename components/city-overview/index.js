@@ -12,6 +12,7 @@ Component({
     cityPages: {
       type: Array,
       value: [],
+      observer: '_onCityPagesChange',
     },
     currentPageIndex: {
       type: Number,
@@ -30,17 +31,27 @@ Component({
   },
 
   methods: {
-    _onShowChange(show) {
-      if (show) {
-        this.loadWeather();
-      } else {
-        this.setData({ weathers: [], cardBgs: [] });
+    _onCityPagesChange(pages) {
+      const key = (pages || []).map(c => c.id || `${c.lat},${c.lon}`).join(',');
+      if (key !== this._cityPagesKey) {
+        this._cityPagesKey = key;
+        this._loadSeq = (this._loadSeq || 0) + 1;
+        if (this.data.show) this.loadWeather();
       }
+    },
+
+    _onShowChange(show) {
+      if (show) this.loadWeather();
+      // 关闭时保留数据，避免再次打开时重新全量请求
     },
 
     async loadWeather() {
       const pages = this.data.cityPages;
       if (!pages.length) return;
+      const pageKey = pages.map(c => c.id || `${c.lat},${c.lon}`).join(',');
+      // 数据已是最新城市列表且已加载，跳过重复请求
+      if (pageKey === this._loadedKey) return;
+      const seq = ++this._loadSeq;
 
       // 先设空占位，让骨架屏立刻渲染
       this.setData({
@@ -69,6 +80,8 @@ Component({
           });
         })
       );
+      if (seq !== this._loadSeq) return;
+      this._loadedKey = pageKey;
       const autoBg = prefs.getPrefs().cardBgMode === 'auto';
       this.setData({
         weathers: results,

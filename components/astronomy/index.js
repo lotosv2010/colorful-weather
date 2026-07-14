@@ -56,11 +56,14 @@ Component({
     ready() {
       this._sunReady = false;
       this._moonReady = false;
-      // wx.nextTick 确保原生 canvas 节点在下一帧已挂载再查询
+      this._destroyed = false;
       wx.nextTick(() => {
         this.initSunCanvas();
         this.initMoonCanvas();
       });
+    },
+    detached() {
+      this._destroyed = true;
     }
   },
   methods: {
@@ -94,7 +97,9 @@ Component({
         .fields({ node: true, size: true })
         .exec((res) => {
           if (!res || !res[0] || !res[0].node) {
-            if (retry < 3) setTimeout(() => this.initSunCanvas(retry + 1), 100);
+            if (retry < 3) setTimeout(() => {
+              if (!this._destroyed) this.initSunCanvas(retry + 1);
+            }, 100);
             return;
           }
           const canvas = res[0].node;
@@ -116,7 +121,9 @@ Component({
         .fields({ node: true, size: true })
         .exec((res) => {
           if (!res || !res[0] || !res[0].node) {
-            if (retry < 3) setTimeout(() => this.initMoonCanvas(retry + 1), 100);
+            if (retry < 3) setTimeout(() => {
+              if (!this._destroyed) this.initMoonCanvas(retry + 1);
+            }, 100);
             return;
           }
           const canvas = res[0].node;

@@ -4,6 +4,10 @@ const { toHex, getTextColor } = require('../../utils/util');
 const { getAirLevel } = require('../../utils/airMeta');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
+const prefs = require('../../utils/prefs');
+
+// 各污染物浓度参考上限（用于进度条归一化）
+const POLLUTANT_MAX = { pm2p5: 250, pm10: 600, no2: 200, so2: 150, co: 35, o3: 200 };
 
 Page({
   data: {
@@ -23,7 +27,8 @@ Page({
     hourly: [],
     daily: [],
     loading: false,
-    errorMsg: ''
+    errorMsg: '',
+    themeColor: ''
   },
 
   onLoad(options = {}) {
@@ -32,13 +37,21 @@ Page({
     const province = options.province ? decodeURIComponent(options.province) : '';
     const city = options.city ? decodeURIComponent(options.city) : '';
     const district = options.district ? decodeURIComponent(options.district) : '';
-    console.log('onLoad', location);
     this.setData({ location, province, city, district });
+    const p = prefs.getPrefs();
+    this.setData({ themeColor: p.themeColor || '' });
+    this._unsubPrefs = prefs.subscribe(up => {
+      this.setData({ themeColor: up.themeColor || '' });
+    });
     if (location) {
       this.loadData();
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
     }
+  },
+
+  onUnload() {
+    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   onReady() {
@@ -131,15 +144,20 @@ Page({
   processAirNow(res) {
     if (!res || !res.indexes || !res.indexes.length) return;
     const idx = res.indexes[0];
-    const colorHex = toHex(idx.color);
+    const colorHex = idx.color ? toHex(idx.color) : '#9BB365';
 
     // 直接从 API 响应解析污染物数据
-    const pollutants = (res.pollutants || []).map(p => ({
-      name: p.name,
-      key: p.code,
-      value: p.concentration ? p.concentration.value : '-',
-      unit: p.concentration ? p.concentration.unit : ''
-    }));
+    const pollutants = (res.pollutants || []).map(p => {
+      const val = p.concentration ? Number(p.concentration.value) : 0;
+      const maxVal = POLLUTANT_MAX[p.code] || 200;
+      return {
+        name: p.name,
+        key: p.code,
+        value: p.concentration ? p.concentration.value : '-',
+        unit: p.concentration ? p.concentration.unit : '',
+        pct: isNaN(val) ? 0 : +Math.min(val / maxVal * 100, 100).toFixed(1),
+      };
+    });
 
     const health = idx.health || {};
     const advice = health.advice || {};

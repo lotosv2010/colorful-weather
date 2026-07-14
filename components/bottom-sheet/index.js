@@ -61,10 +61,15 @@ Component({
         const endX = e && e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : this._startX;
         const dx = endX - this._startX;
         this._isHorizontalSwipe = false;
-        this._snap(this._startProgress >= 0.5 ? 1 : 0);
-        this.triggerEvent('dragend');
         if (Math.abs(dx) > 50 && !this.data.expanded) {
+          // 有效水平翻页：直接释放 dragging，不改变抽屉展开状态
+          this.setData({ dragging: false });
+          this.triggerEvent('dragend');
           this.triggerEvent('swipe', { direction: dx < 0 ? 'left' : 'right' });
+        } else {
+          // 无效水平滑动：恢复抽屉原位
+          this._snap(this._startProgress >= 0.5 ? 1 : 0);
+          this.triggerEvent('dragend');
         }
         return;
       }

@@ -248,8 +248,8 @@ Page({
     // 图表组件内部已处理选中状态
   },
 
-  onPullDownRefresh() {
-    this.fetchData();
+  async onPullDownRefresh() {
+    await this.fetchData().catch(() => {});
     wx.stopPullDownRefresh();
   },
 

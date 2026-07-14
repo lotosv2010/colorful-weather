@@ -246,10 +246,13 @@ Component({
         }
       });
 
-      const points = list.map((d, i) => ({
-        x: padL + i * stepX,
-        y: tToY(convert(d.temp, unit) || 0),
-      }));
+      // 过滤无效温度点，避免 convert() 返回 null 时折线图出现异常零点峰值
+      const points = list.reduce((acc, d, i) => {
+        const t = convert(d.temp, unit);
+        if (t != null) acc.push({ x: padL + i * stepX, y: tToY(t), temp: d.temp });
+        return acc;
+      }, []);
+      if (!points.length) return;
 
       const grad = ctx.createLinearGradient(0, padT, 0, padT + chartH);
       grad.addColorStop(0, 'rgba(255, 140, 0, 0.32)');
@@ -273,9 +276,9 @@ Component({
       ctx.stroke();
 
       let hi = 0, lo = 0;
-      list.forEach((_, i) => {
-        if (points[i].y < points[hi].y) hi = i;
-        if (points[i].y > points[lo].y) lo = i;
+      points.forEach((p, i) => {
+        if (p.y < points[hi].y) hi = i;
+        if (p.y > points[lo].y) lo = i;
       });
       [hi, lo].forEach((idx, k) => {
         const p = points[idx];
@@ -288,7 +291,7 @@ Component({
         ctx.stroke();
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
-        const label = fmtTemp(list[idx].temp, unit) + '°';
+        const label = fmtTemp(p.temp, unit) + '°';
         const ty = p.y - 10;
         // 绘制标签背景
         const metrics = ctx.measureText(label);

@@ -70,14 +70,22 @@ const recordPageLoad = (pagePath, startMs) => {
   _save('perf', perf);
 };
 
-// ── API 调用指标 ──
+// ── API 调用指标（写入节流：同一批次请求合并为一次 storage 写入）──
+
+let _apiCache = null;
+let _apiFlushTimer = null;
+
+const _flushApi = () => {
+  if (_apiCache) _save('api', _apiCache);
+  _apiFlushTimer = null;
+};
 
 const recordApi = (apiPath, duration, success, errMsg) => {
-  const metrics = _load('api') || { updatedAt: 0 };
-  if (!metrics[apiPath]) {
-    metrics[apiPath] = { total: 0, success: 0, fail: 0, durations: [], avgDuration: 0, lastFail: null };
+  if (!_apiCache) _apiCache = _load('api') || { updatedAt: 0 };
+  if (!_apiCache[apiPath]) {
+    _apiCache[apiPath] = { total: 0, success: 0, fail: 0, durations: [], avgDuration: 0, lastFail: null };
   }
-  const entry = metrics[apiPath];
+  const entry = _apiCache[apiPath];
   entry.total += 1;
   if (success) {
     entry.success += 1;
@@ -87,8 +95,9 @@ const recordApi = (apiPath, duration, success, errMsg) => {
   }
   _pushLimited(entry.durations, duration, MAX_API_DURATIONS);
   entry.avgDuration = _avg(entry.durations);
-  metrics.updatedAt = Date.now();
-  _save('api', metrics);
+  _apiCache.updatedAt = Date.now();
+  if (_apiFlushTimer) clearTimeout(_apiFlushTimer);
+  _apiFlushTimer = setTimeout(_flushApi, 2000);
 };
 
 // ── 错误记录 ──
@@ -99,11 +108,15 @@ const recordError = (type, message, extra = {}) => {
   if (existing) {
     existing.count += 1;
     existing.time = Date.now();
+    if (extra.page && !(existing.pages || []).includes(extra.page)) {
+      existing.pages = [...(existing.pages || [extra.page ? existing.page : '']).filter(Boolean), extra.page];
+    }
   } else {
     _pushLimited(data.errors, {
       time: Date.now(),
       type,
       page: extra.page || '',
+      pages: extra.page ? [extra.page] : [],
       message,
       stack: extra.stack || '',
       count: 1

@@ -1,5 +1,5 @@
 <!--pages/air/index.wxml-->
-<view class="air-page">
+<view class="air-page" style="--theme:{{themeColor}}">
 
   <!-- 头部城市信息 -->
   <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
@@ -25,7 +25,7 @@
       <view class="overview-grid">
         <view class="overview-col" wx:for="{{pollutants}}" wx:key="key">
           <view class="overview-val">{{item.value}}</view>
-          <progress class="overview-progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="{{levelColor}}" percent="{{item.value}}" active stroke-width="3" />
+          <progress class="overview-progress" border-radius="5" backgroundColor="#3D3F4A" activeColor="{{levelColor}}" percent="{{item.pct}}" active stroke-width="3" />
           <view class="overview-label">{{item.name}}</view>
         </view>
       </view>
