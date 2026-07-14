@@ -5,7 +5,7 @@
   z-index: 999;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s, visibility 0.3s;
 }
 .city-search.show {
   visibility: visible;
@@ -14,22 +14,41 @@
 
 .panel {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset: 50rpx 0 0;
+  border-radius: 24rpx;
   background: #1a1a1a;
   color: #fff;
-  padding: 88rpx 24rpx 24rpx;
-  max-height: 90vh;
+  padding: 0 24rpx 24rpx;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   display: flex;
   flex-direction: column;
-  border-radius: 0 0 16rpx 16rpx;
+  overflow: hidden;
+}
+.city-search.show .panel {
+  transform: translateY(0);
+}
+
+/* 拖拽把手 */
+.cs-drag-area {
+  flex-shrink: 0;
+  margin: 0 -24rpx;
+  padding: 0 24rpx;
+}
+.cs-handle-bar {
+  width: 88rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: rgba(255, 255, 255, 0.25);
+  margin: 16rpx auto 0;
 }
 
 .search-bar {
   display: flex;
   align-items: center;
   gap: 16rpx;
+  padding: 20rpx 0 0;
+  flex-shrink: 0;
 }
 .input-wrap {
   flex: 1;
@@ -56,20 +75,10 @@
   color: #fff;
   font-size: 28rpx;
 }
-.cancel {
-  font-size: 28rpx;
-  color: #fff;
-  padding: 0 8rpx;
-}
-.icon-btn {
-  width: 45rpx;
-  height: 45rpx;
-  flex-shrink: 0;
-}
-
 .body {
+  flex: 1;
   margin-top: 24rpx;
-  max-height: 70vh;
+  overflow: hidden;
 }
 
 .tip {

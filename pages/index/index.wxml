@@ -71,6 +71,12 @@
     >
       <weather-icon class="map-locate-icon" src="/static/icons/locate.svg" colors="{{['#333']}}" />
     </view>
+    <view
+      class="map-action-btn {{sheetExpanded ? '' : 'map-action-interactive'}}"
+      catchtap="onSettingsTap"
+    >
+      <weather-icon class="map-settings-icon" src="/static/icons/settings.svg" colors="{{['#333']}}" />
+    </view>
   </view>
 
   <!-- 顶部搜索栏：随 progress 渐入；容器不拦截手势，仅子元素响应点击 -->

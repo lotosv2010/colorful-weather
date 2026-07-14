@@ -15,7 +15,7 @@
 /* 面板：从底部上滑 */
 .city-overview-panel {
   position: absolute;
-  inset: 120rpx 0 0;
+  inset: 50rpx 0 0;
   border-radius: 24rpx 24rpx 0 0;
   background: rgba(15, 16, 20, 0.97);
   transform: translateY(100%);

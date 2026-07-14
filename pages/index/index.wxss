@@ -186,6 +186,11 @@ page {
   height: 32rpx;
 }
 
+.map-settings-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+
 /* 顶部搜索栏：容器永远不拦截手势，避免遮挡 sheet 下拉手柄；子元素按需开启交互 */
 .top-bar {
   position: fixed;

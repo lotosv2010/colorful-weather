@@ -1,7 +1,16 @@
 <wxs src="../../utils/iconColor.wxs" module="ic" />
 <wxs src="../../utils/tempUnit.wxs" module="tu" />
-<view class="city-search {{show ? 'show' : ''}}" catchtap="onClose">
-  <view class="panel" catchtap="noop">
+<view class="city-search {{show ? 'show' : ''}}" catchtap="onClose" catchtouchmove="noop">
+  <view class="panel" style="{{panelStyle}}" catchtap="noop">
+    <!-- 拖拽把手 -->
+    <view class="cs-drag-area"
+      bindtouchstart="onDragStart"
+      bindtouchmove="onDragMove"
+      bindtouchend="onDragEnd"
+    >
+      <view class="cs-handle-bar"></view>
+    </view>
+
     <view wx:if="{{show}}" class="search-bar">
       <view class="input-wrap">
         <icon type="search" size="16" color="#999" />
@@ -13,14 +22,13 @@
           bindinput="onInput"
           confirm-type="search"
           focus="{{show}}"
+          adjust-position="{{false}}"
         />
         <view wx:if="{{keyword}}" class="clear" catchtap="onClear">×</view>
       </view>
-      <image class="icon-btn" src="/static/icons/settings.svg" mode="aspectFit" catchtap="onOpenSettings" />
-      <view class="cancel" catchtap="onClose">取消</view>
     </view>
 
-    <scroll-view class="body" scroll-y>
+    <scroll-view class="body" scroll-y enhanced show-scrollbar="{{false}}">
       <!-- 搜索状态 -->
       <view wx:if="{{loading}}" class="tip">搜索中…</view>
       <view wx:elif="{{errorMsg}}" class="tip">{{errorMsg}}</view>
@@ -139,6 +147,9 @@
           </view>
         </view>
       </block>
+
+      <!-- 底部安全距离 -->
+      <view style="height: env(safe-area-inset-bottom, 0);"></view>
     </scroll-view>
   </view>
 </view>

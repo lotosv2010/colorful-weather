@@ -103,6 +103,9 @@ Page({
     this.setData({ mapTipsVisible: false, mapTipsData: {}, mapMarkers: [] });
     this.init({ forceLocate: true, force: true });
   },
+  onSettingsTap() {
+    wx.navigateTo({ url: '/pages/settings/index' });
+  },
   onRefresh() {
     this.getWeather({ force: true });
   },
