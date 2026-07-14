@@ -31,6 +31,8 @@ Page({
     city: '',
     dateNow: '',
     desc: '',
+    shortDesc: '',
+    clothingTip: null,
     uv: '',
     hourly: [],
     daily: [],

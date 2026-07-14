@@ -48,7 +48,7 @@ Component({
       value: 'C'
     },
     clothingTip: {
-      type: Object,
+      type: null,
       value: null
     },
     weatherBg: {

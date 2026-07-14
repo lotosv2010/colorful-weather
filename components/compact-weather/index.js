@@ -8,7 +8,7 @@ Component({
     locationLabel: String,
     dateNow: String,
     desc: String,
-    clothingTip: Object,
+    clothingTip: { type: null, value: null },
     tempUnit: String,
     loading: Boolean,
     errorMsg: String,
