@@ -1,0 +1,45 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <text class="date-badge">{{date}}</text>
+    <text class="tag">时光机</text>
+  </view>
+
+  <!-- 天气模式 -->
+  <block wx:if="{{type === 'weather'}}">
+    <view class="temp-summary">
+      <text class="temp-min">{{minTemp}}°</text>
+      <view class="temp-divider"></view>
+      <text class="temp-max">{{maxTemp}}°</text>
+      <text class="temp-label">最低 / 最高气温</text>
+    </view>
+    <view class="bars">
+      <view class="bar-col" wx:for="{{bars}}" wx:key="index">
+        <view class="bar-bg">
+          <view class="bar" style="height:{{item.h}}px;background:{{item.color}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="time-axis">
+      <text wx:for="{{timeLabels}}" wx:key="index" class="tl">{{item}}时</text>
+    </view>
+  </block>
+
+  <!-- 空气模式 -->
+  <block wx:else>
+    <view class="aqi-summary">
+      <text class="aqi-num">{{avgAqi}}</text>
+      <text class="aqi-cat">全天均值 · {{aqiCat}}</text>
+    </view>
+    <view class="bars">
+      <view class="bar-col" wx:for="{{bars}}" wx:key="index">
+        <view class="bar-bg">
+          <view class="bar" style="height:{{item.h}}px;background:{{item.color}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="time-axis">
+      <text wx:for="{{timeLabels}}" wx:key="index" class="tl">{{item}}时</text>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,25 @@
+.card { padding: 14px 16px 12px; background: linear-gradient(160deg, #0a0e27, #1a237e 60%, #283593); border-radius: 12px; color: #fff; }
+.header { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+.city { font-size: 14px; font-weight: 600; flex: 1; }
+.date { font-size: 11px; color: rgba(255,255,255,.5); }
+.tag { font-size: 11px; color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 1px 6px; }
+
+.sun-section { margin-bottom: 14px; }
+.sun-times { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.sun-rise, .sun-set { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+.sun-icon { font-size: 16px; }
+.sun-time { font-size: 12px; color: #ffd54f; font-weight: 500; }
+.arc-track { flex: 1; height: 6px; background: rgba(255,255,255,.12); border-radius: 3px; position: relative; }
+.arc-fill { height: 100%; background: linear-gradient(90deg, #ffa000, #ffd740); border-radius: 3px; }
+.sun-dot { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+.sun-dot-icon { font-size: 14px; line-height: 1; }
+.day-label { font-size: 11px; color: rgba(255,255,255,.4); padding-left: 2px; }
+.day-label.night { color: #b0bec5; }
+
+.moon-section { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,.07); border-radius: 8px; padding: 10px 12px; }
+.moon-phase { display: flex; align-items: center; gap: 8px; }
+.moon-emoji { font-size: 24px; line-height: 1; }
+.moon-name { font-size: 14px; font-weight: 500; color: #e3f2fd; }
+.moon-times { display: flex; align-items: center; gap: 4px; }
+.moon-time-item { font-size: 11px; color: rgba(255,255,255,.55); }
+.moon-time-sep { color: rgba(255,255,255,.25); }

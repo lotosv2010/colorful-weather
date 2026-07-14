@@ -1,0 +1,42 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <text class="date">{{date}}</text>
+    <text class="tag">天文</text>
+  </view>
+
+  <!-- 太阳弧线区 -->
+  <view class="sun-section">
+    <view class="sun-times">
+      <view class="sun-rise">
+        <text class="sun-icon">🌅</text>
+        <text class="sun-time">{{sunrise}}</text>
+      </view>
+      <view class="arc-track">
+        <view class="arc-fill" style="width:{{sunProgress}}%"></view>
+        <view class="sun-dot" style="left:{{sunProgress}}%">
+          <text class="sun-dot-icon">☀</text>
+        </view>
+      </view>
+      <view class="sun-set">
+        <text class="sun-time">{{sunset}}</text>
+        <text class="sun-icon">🌇</text>
+      </view>
+    </view>
+    <text class="day-label" wx:if="{{isDaytime}}">白天中</text>
+    <text class="day-label night" wx:else>夜间</text>
+  </view>
+
+  <!-- 月相区 -->
+  <view class="moon-section">
+    <view class="moon-phase">
+      <text class="moon-emoji">{{moonEmoji}}</text>
+      <text class="moon-name">{{moonName}}</text>
+    </view>
+    <view class="moon-times" wx:if="{{moonrise}}">
+      <text class="moon-time-item">月出 {{moonrise}}</text>
+      <text class="moon-time-sep">·</text>
+      <text class="moon-time-item">月落 {{moonset}}</text>
+    </view>
+  </view>
+</view>

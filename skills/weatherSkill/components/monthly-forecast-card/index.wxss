@@ -1,0 +1,15 @@
+.card { padding: 14px 16px 12px; background: linear-gradient(160deg, #1b2838, #263547); border-radius: 12px; color: #fff; }
+.header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.city { font-size: 14px; font-weight: 600; flex: 1; }
+.overall { display: flex; align-items: baseline; gap: 2px; }
+.overall-min { font-size: 12px; color: #90caf9; }
+.overall-sep { font-size: 10px; color: rgba(255,255,255,.3); }
+.overall-max { font-size: 12px; color: #ef9a9a; }
+.tag { font-size: 11px; color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 1px 6px; }
+.grid { display: flex; flex-direction: column; gap: 6px; }
+.week-row { display: flex; gap: 4px; }
+.day-cell { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; background: rgba(255,255,255,.05); border-radius: 6px; padding: 5px 2px; }
+.day-num { font-size: 11px; color: rgba(255,255,255,.8); font-weight: 500; }
+.day-icon { font-size: 12px; line-height: 1.2; }
+.temp-dot { width: 6px; height: 6px; border-radius: 50%; }
+.day-temp { font-size: 9px; color: rgba(255,255,255,.4); }

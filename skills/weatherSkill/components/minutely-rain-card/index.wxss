@@ -1,0 +1,12 @@
+.card { padding: 14px 16px 10px; background: linear-gradient(160deg, #0a1929, #0d3b6e); border-radius: 12px; color: #fff; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.city { font-size: 14px; font-weight: 600; }
+.tag { font-size: 11px; color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 1px 6px; }
+.summary { font-size: 13px; color: #90caf9; margin-bottom: 10px; display: block; }
+.chart-wrap { display: flex; flex-direction: column; gap: 4px; }
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 56px; }
+.bar-col { flex: 1; display: flex; align-items: flex-end; position: relative; height: 56px; }
+.bar { width: 100%; border-radius: 2px 2px 0 0; min-height: 4px; }
+.now-line { position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: rgba(255,255,255,0.5); border-radius: 1px; }
+.time-axis { display: flex; justify-content: space-between; }
+.tl { font-size: 9px; color: rgba(255,255,255,.35); }

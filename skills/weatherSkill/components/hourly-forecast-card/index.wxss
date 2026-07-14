@@ -1,0 +1,17 @@
+.card { padding: 14px 16px 10px; background: linear-gradient(160deg, #0d1b2a, #1b3a5c); border-radius: 12px; color: #fff; }
+.header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.city { font-size: 14px; font-weight: 600; flex: 1; }
+.range-tag { display: flex; align-items: baseline; font-size: 12px; }
+.range-min { color: #7986cb; }
+.range-sep { color: rgba(255,255,255,.3); margin: 0 2px; }
+.range-max { color: #ef9a9a; }
+.tag { font-size: 11px; color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 1px 6px; }
+.chart { display: flex; align-items: flex-end; gap: 4px; }
+.slot { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; }
+.temp-label { font-size: 10px; color: rgba(255,255,255,.7); }
+.bar-bg { width: 100%; display: flex; justify-content: center; align-items: flex-end; height: 60px; }
+.bar { width: 8px; border-radius: 4px 4px 0 0; min-height: 4px; }
+.pop-dot { }
+.pop-text { font-size: 9px; color: #90caf9; }
+.time { font-size: 10px; color: rgba(255,255,255,.45); }

@@ -42,6 +42,7 @@
     },
     {
       "name": "get30DayForecast",
+      "_meta": { "ui": { "componentPath": "components/monthly-forecast-card/index", "pagePath": "/pages/weather30/index" } },
       "description": "查询某城市或当前位置未来 30 天逐日天气预报（最高/最低温、天气状况、降水、风力）。\n【触发场景】用户问「这个月天气怎样」「月底会冷吗」「未来一个月有几天下雨」「下个月初适合旅游吗」等超 7 天范围的预报时调用。\n【禁止场景】用户只需要近 7 天预报时改用 getWeatherForecast（精度更高）。",
       "inputSchema": {
         "type": "object",
@@ -56,6 +57,7 @@
     },
     {
       "name": "getHourlyForecast",
+      "_meta": { "ui": { "componentPath": "components/hourly-forecast-card/index", "pagePath": "/pages/hourly/index" } },
       "description": "查询某城市或当前位置未来逐小时天气（温度、天气状况、降水概率、风力），支持 24h / 72h / 168h。\n【触发场景】用户问「今天下午几点会下雨」「明天早上几度」「今晚会降温吗」「未来几个小时天气」等需要小时级精度时调用。\n【禁止场景】用户只问整体几天预报时改用 getWeatherForecast；用户问「接下来1小时」「出门要不要带伞」等极短周期时改用 getMinutelyRain。\n【hours 约束】来自用户原话（如「今天」→ 24，「明后天」→ 72，「一周内」→ 168）；未指定时默认 24。",
       "inputSchema": {
         "type": "object",
@@ -74,6 +76,7 @@
     },
     {
       "name": "getMinutelyRain",
+      "_meta": { "ui": { "componentPath": "components/minutely-rain-card/index", "pagePath": "/pages/minutely/index" } },
       "description": "查询当前位置或某城市未来 2 小时内的分钟级降水情况（5 分钟间隔），包含降水摘要文字。\n【触发场景】用户问「现在下雨吗」「接下来还会下雨吗」「出门要带伞吗」「要下多久」「几点停雨」等近期降水意图时调用。\n【禁止场景】用户询问明天或更远的天气时改用 getWeatherForecast 或 getHourlyForecast。\n【特点】接口直接返回 summary 文字（如「未来2小时有阵雨，1小时后转小」），优先展示 summary 内容。",
       "inputSchema": {
         "type": "object",
@@ -138,6 +141,7 @@
     },
     {
       "name": "getAstronomy",
+      "_meta": { "ui": { "componentPath": "components/astronomy-card/index", "pagePath": "/pages/index/index" } },
       "description": "查询某城市或当前位置指定日期的天文信息：日出日落时间、月出月落时间、月相名称。\n【触发场景】用户问「今天几点日出/日落」「今晚月相」「明天日落时间」「现在是什么月相」时调用。\n【date 约束】来自用户原话（如「明天」→ 明天日期，「今天」→ 今天日期）；未指定时默认今天。格式 YYYY-MM-DD 或 YYYYMMDD 均可。【禁止编造】禁止传入不合法日期。",
       "inputSchema": {
         "type": "object",
@@ -156,6 +160,7 @@
     },
     {
       "name": "getHistoricalWeather",
+      "_meta": { "ui": { "componentPath": "components/historical-weather-card/index", "pagePath": "/pages/index/index" } },
       "description": "查询某城市最近 10 天内某一天的历史天气或历史空气质量（逐小时数据）。对应小程序「时光机」功能。\n【触发场景】用户问「昨天天气怎样」「上周五多少度」「三天前空气质量」「7月10日下雨了吗」等历史天气/空气质量时调用。\n【禁止场景】用户问今天或未来天气时改用 getCurrentWeather / getWeatherForecast；超过最近10天的历史数据不支持，直接告知用户。\n【date 约束】必须转换为 YYYYMMDD 格式，仅支持最近 10 天，不可传今天之后的日期。来自用户原话，禁止编造。\n【type 约束】'weather'（默认）查天气，'air' 查空气质量。根据用户问题选择。\n【LocationID 限制】历史接口必须用城市名定位，GPS 坐标不支持。用户未指定城市时，用当前定位城市的名称解析 LocationID。",
       "inputSchema": {
         "type": "object",
@@ -184,6 +189,11 @@
     { "path": "components/current-weather-card/index", "relatedPage": "/pages/index/index" },
     { "path": "components/air-quality-card/index",     "relatedPage": "/pages/air/index" },
     { "path": "components/life-advice-card/index",     "relatedPage": "/pages/life/index" },
-    { "path": "components/warning-card/index",         "relatedPage": "/pages/warning/index" }
+    { "path": "components/warning-card/index",         "relatedPage": "/pages/warning/index" },
+    { "path": "components/hourly-forecast-card/index", "relatedPage": "/pages/hourly/index" },
+    { "path": "components/minutely-rain-card/index",   "relatedPage": "/pages/minutely/index" },
+    { "path": "components/astronomy-card/index",       "relatedPage": "/pages/index/index" },
+    { "path": "components/historical-weather-card/index", "relatedPage": "/pages/index/index" },
+    { "path": "components/monthly-forecast-card/index","relatedPage": "/pages/weather30/index" }
   ]
 }

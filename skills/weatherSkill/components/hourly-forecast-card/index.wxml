@@ -1,0 +1,25 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <view class="range-tag">
+      <text class="range-min">{{minTemp}}°</text>
+      <text class="range-sep"> — </text>
+      <text class="range-max">{{maxTemp}}°</text>
+    </view>
+    <text class="tag">逐小时</text>
+  </view>
+  <view class="chart">
+    <view class="slot" wx:for="{{slots}}" wx:key="time">
+      <view class="bar-wrap">
+        <text class="temp-label">{{item.temp}}°</text>
+        <view class="bar-bg">
+          <view class="bar" style="height:{{item.barH}}px;background:{{item.color}}"></view>
+        </view>
+        <view class="pop-dot" wx:if="{{item.showPop}}">
+          <text class="pop-text">{{item.pop}}%</text>
+        </view>
+      </view>
+      <text class="time">{{item.time}}</text>
+    </view>
+  </view>
+</view>

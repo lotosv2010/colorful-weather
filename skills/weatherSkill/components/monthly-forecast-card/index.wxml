@@ -1,0 +1,21 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <view class="overall">
+      <text class="overall-min">{{overallMin}}°</text>
+      <text class="overall-sep">~</text>
+      <text class="overall-max">{{overallMax}}°</text>
+    </view>
+    <text class="tag">30天</text>
+  </view>
+  <view class="grid">
+    <view class="week-row" wx:for="{{weeks}}" wx:key="index" wx:for-item="week">
+      <view class="day-cell" wx:for="{{week}}" wx:key="day" wx:for-item="d">
+        <text class="day-num">{{d.day}}</text>
+        <text class="day-icon">{{d.icon}}</text>
+        <view class="temp-dot" style="background:{{d.color}}"></view>
+        <text class="day-temp">{{d.tempMin}}/{{d.tempMax}}</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,18 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <text class="tag">分钟级降水</text>
+  </view>
+  <text class="summary">{{summary}}</text>
+  <view class="chart-wrap">
+    <view class="bars">
+      <view class="bar-col" wx:for="{{bars}}" wx:key="index">
+        <view class="bar" style="height:{{item.h}}px;background:{{item.color}}"></view>
+        <view class="now-line" wx:if="{{item.isNow}}"></view>
+      </view>
+    </view>
+    <view class="time-axis">
+      <text wx:for="{{timeLabels}}" wx:key="index" class="tl">{{item}}</text>
+    </view>
+  </view>
+</view>
