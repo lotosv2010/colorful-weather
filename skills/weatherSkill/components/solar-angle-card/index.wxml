@@ -1,0 +1,46 @@
+<view class="card">
+  <view class="header">
+    <text class="city">{{city}}</text>
+    <view class="header-right">
+      <text class="time-label">{{date}} {{time}}</text>
+      <text class="tag">太阳位置</text>
+    </view>
+  </view>
+
+  <!-- 高度角弧线 -->
+  <view class="arc-section">
+    <view class="arc-track">
+      <view class="arc-fill" style="width:{{elevProgress}}%"></view>
+      <view class="sun-dot" style="left:{{elevProgress}}%">
+        <text class="sun-icon">{{aboveHorizon ? '☀' : '🌑'}}</text>
+      </view>
+    </view>
+    <view class="horizon-line">
+      <text class="horizon-text">地平线</text>
+    </view>
+  </view>
+
+  <!-- 数值网格 -->
+  <view class="data-grid">
+    <view class="data-item">
+      <text class="data-label">高度角</text>
+      <text class="data-val">{{elevation}}°</text>
+    </view>
+    <view class="data-item">
+      <text class="data-label">方位角</text>
+      <text class="data-val">{{azimuth}}°</text>
+    </view>
+    <view class="data-item">
+      <text class="data-label">方向</text>
+      <text class="data-val">{{azimuthDir}}</text>
+    </view>
+    <view class="data-item">
+      <text class="data-label">太阳时</text>
+      <text class="data-val">{{solarHour || '--'}}</text>
+    </view>
+  </view>
+
+  <view class="above-tip" wx:if="{{!aboveHorizon}}">
+    <text>当前太阳在地平线以下</text>
+  </view>
+</view>

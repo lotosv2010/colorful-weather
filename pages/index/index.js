@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather } = require('../../utils/api');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather, solarElevationAngle } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const { getLunarLabels } = require('../../utils/lunar');
 const prefs = require('../../utils/prefs');
@@ -40,6 +40,7 @@ Page({
     indices: [],
     astronomySun: {},
     astronomyMoon: {},
+    astronomySolarAngle: null,
     alerts: [],
     showMinutelyEntry: false,
     minutelySummary: '',
@@ -573,7 +574,12 @@ Page({
       const reqOpts = force ? { force: true } : undefined;
       const cityId = this.data.cityId;
       const yesterdayStr = this.formatDateStr(new Date(Date.now() - 86400000));
-      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes, histRes] = await Promise.all([
+      // 太阳高度角所需的当前时间 / 时区参数
+      const _now = new Date();
+      const _tzOff = -_now.getTimezoneOffset();
+      const _tzStr = `${_tzOff < 0 ? '-' : ''}${String(Math.floor(Math.abs(_tzOff) / 60)).padStart(2, '0')}${String(Math.abs(_tzOff) % 60).padStart(2, '0')}`;
+      const _timeHHmm = `${String(_now.getHours()).padStart(2, '0')}${String(_now.getMinutes()).padStart(2, '0')}`;
+      const [weatherData, {daily}, {hourly: hourlyData}, {daily: dailyData}, airRes, sunData, moonData, warningRes, minutelyRes, histRes, solarAngleData] = await Promise.all([
         now({location}, tc, reqOpts),
         this.getIndices(location, tc, reqOpts),
         hourly({location}, tc, reqOpts),
@@ -584,6 +590,7 @@ Page({
         warning(location, tc, reqOpts).catch(() => null),
         minutely({location}, tc, reqOpts).catch(() => null),
         cityId ? historicalWeather({ location: cityId, date: yesterdayStr }).catch(() => null) : Promise.resolve(null),
+        solarElevationAngle({ location, date: today, time: _timeHHmm, tz: _tzStr, alt: 0 }, tc, reqOpts).catch(() => null),
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
@@ -622,6 +629,7 @@ Page({
         indices: daily,
         astronomySun: sunData,
         astronomyMoon: moonData,
+        astronomySolarAngle: solarAngleData,
         alerts,
         showMinutelyEntry,
         minutelySummary: minutelyRes?.summary || '',

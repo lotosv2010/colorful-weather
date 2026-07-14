@@ -1,0 +1,11 @@
+.card { padding: 14px 16px 10px; background: linear-gradient(135deg, #1a2440, #253a60); border-radius: 12px; color: #fff; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.station-id { font-size: 15px; font-weight: 600; font-family: monospace; letter-spacing: 1px; }
+.tag { font-size: 11px; color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.2); border-radius: 4px; padding: 1px 6px; }
+.poll-grid { display: flex; flex-wrap: wrap; gap: 8px; background: rgba(255,255,255,.08); border-radius: 8px; padding: 10px 8px; }
+.poll-item { flex: 1 0 28%; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.poll-name { font-size: 11px; color: rgba(255,255,255,.55); }
+.poll-val { font-size: 16px; font-weight: 600; }
+.poll-unit { font-size: 9px; color: rgba(255,255,255,.4); }
+.empty { text-align: center; font-size: 13px; color: rgba(255,255,255,.4); padding: 12px 0; }
+.footer-tip { margin-top: 8px; font-size: 10px; color: rgba(255,255,255,.3); text-align: right; }

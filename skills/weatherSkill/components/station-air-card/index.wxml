@@ -1,0 +1,22 @@
+<view class="card">
+  <view class="header">
+    <text class="station-id">{{stationId}}</text>
+    <text class="tag">监测站</text>
+  </view>
+
+  <view class="poll-grid" wx:if="{{pollutants.length}}">
+    <view class="poll-item" wx:for="{{pollutants}}" wx:key="name">
+      <text class="poll-name">{{item.name}}</text>
+      <text class="poll-val">{{item.value}}</text>
+      <text class="poll-unit">{{item.unit}}</text>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>
+    <text>暂无监测数据</text>
+  </view>
+
+  <view class="footer-tip">
+    <text>监测站数据仅供参考，可能存在延迟</text>
+  </view>
+</view>

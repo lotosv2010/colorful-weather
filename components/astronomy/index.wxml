@@ -10,6 +10,21 @@
     <view class="astro-chart-section">
       <canvas type="2d" id="sunCanvas" class="astro-canvas"></canvas>
     </view>
+    <!-- 当前太阳高度角 -->
+    <view class="solar-angle-row" wx:if="{{solarElevation !== null}}">
+      <view class="solar-angle-item">
+        <text class="solar-angle-label">高度角</text>
+        <text class="solar-angle-val">{{solarElevation}}°</text>
+      </view>
+      <view class="solar-angle-item">
+        <text class="solar-angle-label">方位</text>
+        <text class="solar-angle-val">{{solarAzimuthDir}}（{{solarAzimuth}}°）</text>
+      </view>
+      <view class="solar-angle-item">
+        <text class="solar-angle-label">太阳时</text>
+        <text class="solar-angle-val">{{solarHour || '--'}}</text>
+      </view>
+    </view>
     <!-- 月亮折线图 -->
     <view class="astro-chart-section">
       <canvas type="2d" id="moonCanvas" class="astro-canvas"></canvas>

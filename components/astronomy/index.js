@@ -11,6 +11,10 @@ Component({
     moon: {
       type: Object,
       value: {}
+    },
+    solarAngle: {
+      type: Object,
+      value: null
     }
   },
   data: {
@@ -20,9 +24,30 @@ Component({
     moonset: '--:--',
     moonPhaseName: '',
     moonIllumination: 0,
-    moonPhaseIcon: ''
+    moonPhaseIcon: '',
+    solarElevation: null,
+    solarAzimuth: null,
+    solarAzimuthDir: '',
+    solarHour: '',
+    solarAboveHorizon: false,
   },
   observers: {
+    'solarAngle': function(data) {
+      if (!data || data.code !== '200') return;
+      const elev = parseFloat(data.solarElevationAngle);
+      const azim = parseFloat(data.solarAzimuthAngle);
+      const dirs = ['北', '东北', '东', '东南', '南', '西南', '西', '西北'];
+      const dir = dirs[Math.round(((azim % 360) + 360) % 360 / 45) % 8];
+      const sh = data.solarHour || '';
+      const solarHourFmt = sh.length === 4 ? `${sh.slice(0, 2)}:${sh.slice(2)}` : sh;
+      this.setData({
+        solarElevation: isNaN(elev) ? null : elev,
+        solarAzimuth: isNaN(azim) ? null : azim,
+        solarAzimuthDir: dir,
+        solarHour: solarHourFmt,
+        solarAboveHorizon: !isNaN(elev) && elev > 0,
+      });
+    },
     'sun': function(sun) {
       if (!sun || !sun.sunrise) return;
       this.setData({

@@ -32,6 +32,29 @@
   height: 118px;
   display: block;
 }
+/* 太阳高度角信息行 */
+.solar-angle-row {
+  display: flex;
+  background-color: rgb(46, 48, 61);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.solar-angle-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.solar-angle-label {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,.45);
+}
+.solar-angle-val {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #FF8C00;
+}
 /* 月相信息栏 */
 .astro-moon-phase {
   display: flex;

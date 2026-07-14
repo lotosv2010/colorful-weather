@@ -1,0 +1,22 @@
+.card { padding: 14px 16px 12px; background: linear-gradient(135deg, #1c2a50, #2e4070); border-radius: 12px; color: #fff; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.city { font-size: 15px; font-weight: 600; }
+.header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.time-label { font-size: 11px; color: rgba(255,255,255,.55); }
+.tag { font-size: 11px; color: rgba(255,255,255,.5); border: 1px solid rgba(255,255,255,.2); border-radius: 4px; padding: 1px 6px; }
+
+/* 高度角弧线 */
+.arc-section { margin-bottom: 14px; }
+.arc-track { position: relative; height: 8px; background: rgba(255,255,255,.15); border-radius: 4px; overflow: visible; margin-bottom: 4px; }
+.arc-fill { height: 100%; background: linear-gradient(90deg, #1e3a6e, #f5a623); border-radius: 4px; transition: width .3s; }
+.sun-dot { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+.sun-icon { font-size: 16px; line-height: 1; }
+.horizon-line { display: flex; justify-content: center; }
+.horizon-text { font-size: 10px; color: rgba(255,255,255,.3); }
+
+/* 数值网格 */
+.data-grid { display: flex; background: rgba(255,255,255,.08); border-radius: 8px; padding: 10px 4px; }
+.data-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.data-label { font-size: 10px; color: rgba(255,255,255,.5); }
+.data-val { font-size: 14px; font-weight: 600; }
+.above-tip { margin-top: 8px; font-size: 11px; color: rgba(255,255,255,.45); text-align: center; }

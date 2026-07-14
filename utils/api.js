@@ -36,8 +36,10 @@ const TTL = {
   ASTRONOMY:   2 * HOUR,  // 日出日落 / 月相：2 小时
   SOLAR:       6 * HOUR,  // 太阳辐射：6 小时
   TIDE:        8 * HOUR,  // 潮汐：8 小时
-  STORM:      20 * MIN,   // 台风：20 分钟
-  HISTORICAL:  7 * DAY,   // 历史数据：7 天（同一日期的过去数据不会变化）
+  STORM:       20 * MIN,  // 台风：20 分钟
+  HISTORICAL:   7 * DAY,  // 历史数据：7 天（同一日期的过去数据不会变化）
+  AIR_STATION: 30 * MIN,  // 监测站数据：30 分钟（数据可能延迟，不宜过短）
+  SOLAR_ANGLE:  2 * HOUR, // 太阳高度角：同 date+time 结果不变，2 小时够用
 };
 
 /**
@@ -170,16 +172,18 @@ module.exports = {
   indices3d:     (data, tc, opts) => cachedRequest(`${BASE_URL}/indices/3d`,       'GET', data, tc, TTL.INDICES,  opts), // 天气指数（3天）
 
   // ── 空气质量 ─────────────────────────────────────────────────────────────
-  air:           (location, tc, opts) => cachedRequest(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {},                  tc, TTL.AIR,       opts), // 实时空气质量
-  airHourly:     (location, tc, opts) => cachedRequest(`${AIR_URL}/hourly/${toAirPath(location)}`,  'GET', { localTime: true }, tc, TTL.AIR_HOURLY, opts), // 空气质量小时预报
-  airDaily:      (location, tc, opts) => cachedRequest(`${AIR_URL}/daily/${toAirPath(location)}`,   'GET', { localTime: true }, tc, TTL.AIR_DAILY,  opts), // 空气质量每日预报
+  air:           (location, tc, opts) => cachedRequest(`${AIR_URL}/current/${toAirPath(location)}`,  'GET', {},                  tc, TTL.AIR,         opts), // 实时空气质量
+  airHourly:     (location, tc, opts) => cachedRequest(`${AIR_URL}/hourly/${toAirPath(location)}`,   'GET', { localTime: true }, tc, TTL.AIR_HOURLY,   opts), // 空气质量小时预报
+  airDaily:      (location, tc, opts) => cachedRequest(`${AIR_URL}/daily/${toAirPath(location)}`,    'GET', { localTime: true }, tc, TTL.AIR_DAILY,    opts), // 空气质量每日预报
+  airStation:    (locationId, tc, opts) => cachedRequest(`${AIR_URL}/stations/${locationId}`, 'GET', {}, tc, TTL.AIR_STATION, opts), // 监测站污染物浓度
 
   // ── 天气预警 ─────────────────────────────────────────────────────────────
   warning:       (location, tc, opts) => cachedRequest(`${ALERT_URL}/current/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.WARNING, opts), // 实时天气预警
 
-  // ── 天文（日出日落 / 月相）────────────────────────────────────────────────
-  sun:           (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/sun`,    'GET', data, tc, TTL.ASTRONOMY, opts), // 日出日落
-  moon:          (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/moon`,   'GET', data, tc, TTL.ASTRONOMY, opts), // 月升月落和月相
+  // ── 天文（日出日落 / 月相 / 太阳高度角）──────────────────────────────────
+  sun:                 (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/sun`,                    'GET', data, tc, TTL.ASTRONOMY,   opts), // 日出日落
+  moon:                (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/moon`,                   'GET', data, tc, TTL.ASTRONOMY,   opts), // 月升月落和月相
+  solarElevationAngle: (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/solar-elevation-angle`, 'GET', data, tc, TTL.SOLAR_ANGLE, opts), // 任意时刻太阳高度角与方位角
 
   // ── 时光机（历史天气 / 历史空气，最近 10 天，需 LocationID）─────────────────
   historicalWeather: (data, tc, opts) => cachedRequest(`${BASE_URL}/historical/weather`, 'GET', data, tc, TTL.HISTORICAL, opts), // 历史天气再分析
