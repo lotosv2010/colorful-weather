@@ -151,32 +151,49 @@ const toAirPath = (lonLat) => {
 };
 
 module.exports = {
-  now:        (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/now`, 'GET', data, tc, TTL.NOW, opts),
-  sevenDay:   (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/7d`, 'GET', data, tc, TTL.DAILY, opts),
-  indices:    (data, tc, opts) => cachedRequest(`${BASE_URL}/indices/1d`, 'GET', data, tc, TTL.INDICES, opts),
-  indices3d:  (data, tc, opts) => cachedRequest(`${BASE_URL}/indices/3d`, 'GET', data, tc, TTL.INDICES, opts),
-  hourly:     (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/24h`,  'GET', data, tc, TTL.HOURLY, opts),
-  hourly72:   (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/72h`,  'GET', data, tc, TTL.HOURLY, opts),
-  hourly168:  (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/168h`, 'GET', data, tc, 2 * HOUR,   opts),
-  minutely:   (data, tc, opts) => cachedRequest(`${BASE_URL}/minutely/5m`, 'GET', data, tc, TTL.MINUTELY, opts),
-  stormList:  (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-list`, 'GET', data, tc, TTL.STORM, opts),
-  stormForecast: (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-forecast`, 'GET', data, tc, TTL.STORM, opts),
-  stormTrack: (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-track`, 'GET', data, tc, TTL.STORM, opts),
-  weather30d: (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/30d`, 'GET', data, tc, TTL.DAILY_30, opts),
-  air:        (location, tc, opts) => cachedRequest(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {}, tc, TTL.AIR, opts),
-  airHourly:  (location, tc, opts) => cachedRequest(`${AIR_URL}/hourly/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_HOURLY, opts),
-  airDaily:   (location, tc, opts) => cachedRequest(`${AIR_URL}/daily/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.AIR_DAILY, opts),
-  warning:    (location, tc, opts) => cachedRequest(`${ALERT_URL}/current/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.WARNING, opts),
-  sun:        (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/sun`, 'GET', data, tc, TTL.ASTRONOMY, opts),
-  moon:       (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/moon`, 'GET', data, tc, TTL.ASTRONOMY, opts),
-  tide:       (data, tc, opts) => cachedRequest(`${BASE_URL}/ocean/tide`, 'GET', data, tc, TTL.TIDE, opts),
-  solarRadiation: (lat, lon, data = {}, tc, opts) => cachedRequest(`${SOLAR_URL}/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc, TTL.SOLAR, opts),
-  // 历史天气再分析（最近 10 天，需 LocationID）
+
+  // ── 实时天气 ─────────────────────────────────────────────────────────────
+  now:           (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/now`,      'GET', data, tc, TTL.NOW,      opts),
+
+  // ── 天气预报 ─────────────────────────────────────────────────────────────
+  sevenDay:      (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/7d`,       'GET', data, tc, TTL.DAILY,    opts),
+  weather30d:    (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/30d`,      'GET', data, tc, TTL.DAILY_30, opts),
+  hourly:        (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/24h`,      'GET', data, tc, TTL.HOURLY,   opts),
+  hourly72:      (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/72h`,      'GET', data, tc, TTL.HOURLY,   opts),
+  hourly168:     (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/168h`,     'GET', data, tc, 2 * HOUR,     opts),
+
+  // ── 分钟级降水 ───────────────────────────────────────────────────────────
+  minutely:      (data, tc, opts) => cachedRequest(`${BASE_URL}/minutely/5m`,      'GET', data, tc, TTL.MINUTELY, opts),
+
+  // ── 生活指数 ─────────────────────────────────────────────────────────────
+  indices:       (data, tc, opts) => cachedRequest(`${BASE_URL}/indices/1d`,       'GET', data, tc, TTL.INDICES,  opts),
+  indices3d:     (data, tc, opts) => cachedRequest(`${BASE_URL}/indices/3d`,       'GET', data, tc, TTL.INDICES,  opts),
+
+  // ── 空气质量 ─────────────────────────────────────────────────────────────
+  air:           (location, tc, opts) => cachedRequest(`${AIR_URL}/current/${toAirPath(location)}`, 'GET', {},                    tc, TTL.AIR,       opts),
+  airHourly:     (location, tc, opts) => cachedRequest(`${AIR_URL}/hourly/${toAirPath(location)}`,  'GET', { localTime: true },   tc, TTL.AIR_HOURLY, opts),
+  airDaily:      (location, tc, opts) => cachedRequest(`${AIR_URL}/daily/${toAirPath(location)}`,   'GET', { localTime: true },   tc, TTL.AIR_DAILY,  opts),
+
+  // ── 天气预警 ─────────────────────────────────────────────────────────────
+  warning:       (location, tc, opts) => cachedRequest(`${ALERT_URL}/current/${toAirPath(location)}`, 'GET', { localTime: true }, tc, TTL.WARNING,    opts),
+
+  // ── 天文（日出日落 / 月相）────────────────────────────────────────────────
+  sun:           (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/sun`,    'GET', data, tc, TTL.ASTRONOMY, opts),
+  moon:          (data, tc, opts) => cachedRequest(`${BASE_URL}/astronomy/moon`,   'GET', data, tc, TTL.ASTRONOMY, opts),
+
+  // ── 时光机（历史天气 / 历史空气，最近 10 天，需 LocationID）─────────────────
   historicalWeather: (data, tc, opts) => cachedRequest(`${BASE_URL}/historical/weather`, 'GET', data, tc, TTL.HISTORICAL, opts),
-  // 历史空气质量（最近 10 天，需 LocationID）
-  historicalAir:     (data, tc, opts) => cachedRequest(`${BASE_URL}/historical/air`, 'GET', data, tc, TTL.HISTORICAL, opts),
-  // GeoAPI 数据版权禁止缓存，始终实时请求
-  cityLookup: (data, tc) => request(`${GEO_URL}/city/lookup`, 'GET', data, tc),
-  topCity:    (data = {}, tc) => request(`${GEO_URL}/city/top`, 'GET', data, tc),
-  poiLookup:  (data, tc) => request(`${GEO_URL}/poi/lookup`, 'GET', data, tc),
+  historicalAir:     (data, tc, opts) => cachedRequest(`${BASE_URL}/historical/air`,     'GET', data, tc, TTL.HISTORICAL, opts),
+
+  // ── GeoAPI（版权限制，禁止缓存，始终实时请求）──────────────────────────────
+  cityLookup:    (data, tc) => request(`${GEO_URL}/city/lookup`, 'GET', data, tc),
+  topCity:       (data = {}, tc) => request(`${GEO_URL}/city/top`,     'GET', data, tc),
+  poiLookup:     (data, tc) => request(`${GEO_URL}/poi/lookup`,   'GET', data, tc),
+
+  // ── 收费接口（未开通，保留声明供后续扩展）────────────────────────────────
+  // tide:          (data, tc, opts) => cachedRequest(`${BASE_URL}/ocean/tide`,               'GET', data,                  tc, TTL.TIDE,  opts),
+  // solarRadiation:(lat, lon, data = {}, tc, opts) => cachedRequest(`${SOLAR_URL}/forecast/${lat}/${lon}`, 'GET', { ...data, localTime: true }, tc, TTL.SOLAR, opts),
+  // stormList:     (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-list`,      'GET', data,                  tc, TTL.STORM, opts),
+  // stormForecast: (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-forecast`,  'GET', data,                  tc, TTL.STORM, opts),
+  // stormTrack:    (data, tc, opts) => cachedRequest(`${BASE_URL}/tropical/storm-track`,     'GET', data,                  tc, TTL.STORM, opts),
 };
