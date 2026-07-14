@@ -20,6 +20,7 @@
 | `getAirQuality` | 「空气质量怎样」「PM2.5 多少」「有雾霾吗」 |
 | `getWeatherWarnings` | 「有暴雨预警吗」「台风预警」「现在有什么气象灾害」 |
 | `getAstronomy` | 「今天几点日落」「今晚月相」「明天日出时间」 |
+| `getHistoricalWeather` | 「昨天天气怎样」「上周五下雨了吗」「三天前空气质量」 |
 
 ## 接口选择约束
 

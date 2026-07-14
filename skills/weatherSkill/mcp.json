@@ -130,6 +130,30 @@
         }
       },
       "outputSchema": {}
+    },
+    {
+      "name": "getHistoricalWeather",
+      "description": "查询某城市最近 10 天内某一天的历史天气或历史空气质量（逐小时数据）。对应小程序「时光机」功能。\n【触发场景】用户问「昨天天气怎样」「上周五多少度」「三天前空气质量」「7月10日下雨了吗」等历史天气/空气质量时调用。\n【禁止场景】用户问今天或未来天气时改用 getCurrentWeather / getWeatherForecast；超过最近10天的历史数据不支持，直接告知用户。\n【date 约束】必须转换为 YYYYMMDD 格式（如昨天→前一天的8位日期），仅支持最近 10 天，不可传今天之后的日期。来自用户原话，禁止编造。\n【type 约束】'weather'（默认）查天气，'air' 查空气质量。根据用户问题选择。\n【LocationID 限制】历史接口必须用城市名定位，GPS 坐标不支持。用户未指定城市时，用当前定位城市的名称解析 LocationID。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "城市名称（如\"北京\"）。不传时自动取当前定位城市。【禁止传经纬度，历史接口不支持】【禁止编造】"
+          },
+          "date": {
+            "type": "string",
+            "description": "查询日期，格式 YYYYMMDD（如 \"20260713\"）。来自用户原话换算，仅支持最近 10 天。【禁止编造】"
+          },
+          "type": {
+            "type": "string",
+            "description": "查询类型：'weather'（历史天气，默认）或 'air'（历史空气质量）。根据用户问题选择。",
+            "enum": ["weather", "air"]
+          }
+        },
+        "required": ["date"]
+      },
+      "outputSchema": {}
     }
   ],
   "components": [
