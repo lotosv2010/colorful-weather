@@ -456,6 +456,7 @@ Page({
       const res = await cityLookup({ location: loc });
       const id = res && res.code === '200' && res.location && res.location[0] ? res.location[0].id : '';
       if (id) {
+        this._locatedCityId = id;
         this.setData({ cityId: id });
         this._buildCityPages();
       }
@@ -729,7 +730,7 @@ Page({
       province: c.adm1 || '',
       district: c.name || c.adm2 || '',
       locationLabel: this._buildLocationLabel(c.name || c.adm2, c.adm2, c.adm1),
-      cityId: c.id !== '__located__' ? c.id : '',
+      cityId: c.id !== '__located__' ? c.id : (this._locatedCityId || ''),
       mapTipsVisible: false,
       mapTipsData: {},
       mapMarkers: [],
