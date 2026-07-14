@@ -1,7 +1,7 @@
 // components/timemachine/index.js
 const { historicalWeather, historicalAir } = require('../../utils/api');
 const { convert, fmt: fmtTemp } = require('../../utils/temp');
-const { getAirLevel } = require('../../utils/airMeta');
+const { AQI_LEVEL_COLORS } = require('../../utils/airMeta');
 
 // 生成最近 N 天日期列表（不含今天，最近的在前）
 const buildDateList = (days = 10) => {
@@ -147,7 +147,8 @@ Component({
         if (p) primaryCount[p] = (primaryCount[p] || 0) + 1;
       });
       const avg = Math.round(sum / list.length);
-      const lvl = getAirLevel(avg) || {};
+      const closest = list.reduce((best, d) =>
+        Math.abs(Number(d.aqi) - avg) < Math.abs(Number(best.aqi) - avg) ? d : best, list[0]);
       let primary = 'NA';
       let max = 0;
       Object.keys(primaryCount).forEach(k => {
@@ -160,8 +161,8 @@ Component({
           avg,
           peak,
           peakTime: peakItem.pubTime,
-          category: lvl.category || '',
-          color: lvl.color || '#9BB365',
+          category: closest.category || '',
+          color: AQI_LEVEL_COLORS[closest.level] || '#9BB365',
           primary,
         },
       };
@@ -362,8 +363,7 @@ Component({
 
       list.forEach((d, i) => {
         const a = Number(d.aqi) || 0;
-        const lvl = getAirLevel(a);
-        const color = (lvl && lvl.color) || '#9BB365';
+        const color = AQI_LEVEL_COLORS[d.level] || '#9BB365';
         const x = padL + i * stepX;
         const y = aToY(a);
         const barH = (a / maxA) * chartH;

@@ -1,4 +1,5 @@
 <!--components/air/index.wxml-->
+<wxs src="../../utils/fmt.wxs" module="fmt" />
 <view class="weather-air">
   <view class="weather-air-header">
     <text class="right">空气质量</text>
@@ -10,7 +11,7 @@
         <canvas type="2d" id="aqiCanvas" class="aqi-canvas"></canvas>
         <text class="chart-text">{{air.aqiDisplay || air.aqi}}</text>
       </view>
-      <view class="title">{{air.category}}</view>
+      <view class="title">{{fmt.airCat(air.category)}}</view>
       <view class="subtitle" wx:if="{{air.primary}}">{{air.primary}}</view>
     </view>
     <view class="weather-air-grid">

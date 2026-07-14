@@ -81,6 +81,6 @@
     <view class="air-tag" style="background: {{item.air.color}}">
       <text class="air-aqi" style="color: {{item.air.textColor}}">{{item.air.aqiDisplay || item.air.aqi}}</text>
     </view>
-    <text class="air-category">{{item.air.category}}</text>
+    <text class="air-category">{{fmt.airCat(item.air.category)}}</text>
   </view>
 </view>

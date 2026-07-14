@@ -29,7 +29,7 @@
         <i class="qi-{{fmt.safe(item.iconNight)}}-fill icon-color-{{ic.category(fmt.safe(item.iconNight))}} chart-icon"></i>
         <view class="chart-air-tag" wx:if="{{item.air}}"
           style="background: {{item.air.color}}">
-          <text class="air-tag-text" style="color: {{item.air.textColor}}">{{item.air.category}}</text>
+          <text class="air-tag-text" style="color: {{item.air.textColor}}">{{fmt.airCat(item.air.category)}}</text>
         </view>
       </view>
     </view>

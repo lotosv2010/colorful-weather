@@ -25,7 +25,12 @@ var uvText = function (val) {
   return '很强';
 };
 
+var airCat = function (cat) {
+  return cat ? cat.slice(0, 2) : '';
+};
+
 module.exports = {
   safe: safe,
-  uvText: uvText
+  uvText: uvText,
+  airCat: airCat
 };

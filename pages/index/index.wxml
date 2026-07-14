@@ -1,6 +1,7 @@
 <!--index.wxml-->
 <wxs src="/utils/iconColor.wxs" module="ic" />
 <wxs src="/utils/tempUnit.wxs" module="tu" />
+<wxs src="/utils/fmt.wxs" module="fmt" />
 <view class="page" style="--theme:{{themeColor}}">
   <map
     id="bgMap"
@@ -99,7 +100,7 @@
         </view>
         <text class="capsule-label">AQI</text>
         <text class="capsule-value">{{air.aqi}}</text>
-        <text class="capsule-desc">{{air.category}}</text>
+        <text class="capsule-desc">{{fmt.airCat(air.category)}}</text>
       </view>
       <view wx:else></view>
       <view class="capsule-right">

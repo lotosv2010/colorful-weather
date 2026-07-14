@@ -1,7 +1,6 @@
 // pages/air/index.js
 const { air, airHourly, airDaily } = require('../../utils/api');
 const { toHex, getTextColor } = require('../../utils/util');
-const { getAirLevel } = require('../../utils/airMeta');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
 const prefs = require('../../utils/prefs');
@@ -161,9 +160,6 @@ Page({
 
     const health = idx.health || {};
     const advice = health.advice || {};
-    const fallbackAdvice = (!advice.generalPopulation && !advice.sensitivePopulation)
-      ? (getAirLevel(idx.aqi) || {}).healthAdvice || ''
-      : '';
 
     this.setData({
       aqi: idx.aqi,
@@ -171,7 +167,7 @@ Page({
       category: idx.category,
       categoryDesc: health.effect || '',
       healthEffect: health.effect || '',
-      generalAdvice: advice.generalPopulation || fallbackAdvice,
+      generalAdvice: advice.generalPopulation || '',
       sensitiveAdvice: advice.sensitivePopulation || '',
       levelColor: colorHex,
       primary: idx.primaryPollutant ? idx.primaryPollutant.name : '',

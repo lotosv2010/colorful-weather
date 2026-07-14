@@ -1,5 +1,6 @@
 <!--components/timemachine/index.wxml-->
 <wxs src="../../utils/tempUnit.wxs" module="tu" />
+<wxs src="../../utils/fmt.wxs" module="fmt" />
 
 <view class="weather-tm" style="--theme:{{themeColor}}">
   <view class="weather-tm-header">
@@ -119,7 +120,7 @@
           <view class="tm-air-summary">
             <view class="aqi-circle" style="background: {{air.summary.color}}33; color: {{air.summary.color}}; border-color: {{air.summary.color}};">
               <text class="aqi-num">{{air.summary.aqi}}</text>
-              <text class="aqi-cat">{{air.summary.category}}</text>
+              <text class="aqi-cat">{{fmt.airCat(air.summary.category)}}</text>
             </view>
             <view class="tm-air-meta">
               <view class="row">

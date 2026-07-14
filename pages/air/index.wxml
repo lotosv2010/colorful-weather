@@ -1,4 +1,5 @@
 <!--pages/air/index.wxml-->
+<wxs src="/utils/fmt.wxs" module="fmt" />
 <view class="air-page" style="--theme:{{themeColor}}">
 
   <!-- 头部城市信息 -->
@@ -15,7 +16,7 @@
         <canvas type="2d" id="aqiCanvas" class="aqi-canvas"></canvas>
         <text class="aqi-value">{{aqiDisplay || aqi}}</text>
       </view>
-      <text class="aqi-category" style="color: {{levelColor}}">{{category}}</text>
+      <text class="aqi-category" style="color: {{levelColor}}">{{fmt.airCat(category)}}</text>
       <text class="aqi-desc" wx:if="{{healthEffect}}">{{healthEffect}}</text>
       <view class="aqi-primary" wx:if="{{primary}}">
         <text class="primary-label">首要污染物：</text>
@@ -55,7 +56,7 @@
               <text class="hourly-aqi">{{item.aqiDisplay || item.aqi}}</text>
             </view>
           </view>
-          <text class="hourly-cat">{{item.category}}</text>
+          <text class="hourly-cat">{{fmt.airCat(item.category)}}</text>
         </view>
       </scroll-view>
     </view>
@@ -73,7 +74,7 @@
           <text class="daily-aqi-value">{{item.aqiDisplay || item.aqi}}</text>
         </view>
         <view class="daily-tag" style="background: {{item.color}}">
-          <text class="daily-tag-text" style="color: {{item.textColor}}">{{item.category}}</text>
+          <text class="daily-tag-text" style="color: {{item.textColor}}">{{fmt.airCat(item.category)}}</text>
         </view>
       </view>
     </view>
