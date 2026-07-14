@@ -1,12 +1,18 @@
 const { HOST, get, resolveLocation } = require('./_request');
 
+// API 要求 YYYYMMDD 格式（无横线）
 function _today() {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// 兼容 YYYY-MM-DD 和 YYYYMMDD 两种输入
+function _normalizeDate(s) {
+  return s ? s.replace(/-/g, '') : null;
 }
 
 async function getAstronomy({ location, date } = {}) {
-  const targetDate = date || _today();
+  const targetDate = _normalizeDate(date) || _today();
 
   let loc;
   try {
@@ -31,13 +37,14 @@ async function getAstronomy({ location, date } = {}) {
   }
 
   const cityLabel = loc.adm2 && loc.adm2 !== loc.name ? `${loc.adm2} ${loc.name}` : loc.name;
+  const dateLabel = `${targetDate.slice(0, 4)}-${targetDate.slice(4, 6)}-${targetDate.slice(6, 8)}`;
   const sun = sunData.sunrise ? `日出 ${sunData.sunrise}，日落 ${sunData.sunset}` : '';
   const moon = moonData.moonPhase && moonData.moonPhase.length > 0
     ? `月相：${moonData.moonPhase[0].name}`
     : '';
 
   const parts = [sun, moon].filter(Boolean);
-  const summary = `${cityLabel} ${targetDate} 天文信息：${parts.join('；')}`;
+  const summary = `${cityLabel} ${dateLabel} 天文信息：${parts.join('；')}`;
 
   return {
     isError: false,
@@ -45,7 +52,7 @@ async function getAstronomy({ location, date } = {}) {
     structuredContent: {
       city: loc.name,
       adm2: loc.adm2,
-      date: targetDate,
+      date: dateLabel,
       sunrise: sunData.sunrise || '',
       sunset: sunData.sunset || '',
       moonrise: moonData.moonrise || '',
