@@ -33,7 +33,7 @@
   flex-shrink: 0;
 }
 .co-handle-bar {
-  width: 64rpx;
+  width: 88rpx;
   height: 8rpx;
   border-radius: 4rpx;
   background: rgba(255, 255, 255, 0.25);

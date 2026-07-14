@@ -41,8 +41,12 @@ Component({
     },
 
     _onShowChange(show) {
-      if (show) this.loadWeather();
-      // 关闭时保留数据，避免再次打开时重新全量请求
+      if (show) {
+        this.loadWeather();
+      } else {
+        // show=false 后再重置内联样式，避免滑动关闭时面板闪回
+        this.setData({ panelStyle: '' });
+      }
     },
 
     async loadWeather() {
@@ -112,7 +116,6 @@ Component({
       if (dy > 80) {
         this.setData({ panelStyle: 'transform: translateY(100%)' });
         setTimeout(() => {
-          this.setData({ panelStyle: '' });
           this.triggerEvent('close');
         }, 350);
       } else {
