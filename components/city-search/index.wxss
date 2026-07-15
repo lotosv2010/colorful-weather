@@ -33,7 +33,7 @@
 .cs-drag-area {
   flex-shrink: 0;
   margin: 0 -24rpx;
-  padding: 0 24rpx;
+  padding: 0 24rpx 20rpx; /* 增加底部 padding，扩大触摸热区 */
 }
 .cs-handle-bar {
   width: 88rpx;

@@ -91,20 +91,35 @@ Component({
     },
     onScrollTouchStart(e) {
       this._svStartY = e.touches[0].clientY;
-      this._svReady = (this._scrollTop || 0) <= 0;
       this._svDragging = false;
+      // 异步同步真实 scrollTop：防止页面切换后 scroll-view 被系统重置但 _scrollTop 仍为旧值
+      this.createSelectorQuery().select('.full-scroll').scrollOffset(res => {
+        if (res && !this._svDragging) {
+          this._scrollTop = res.scrollTop || 0;
+        }
+      }).exec();
     },
     onScrollTouchMove(e) {
-      if (!this._svReady) return;
+      if (this._svDragging) {
+        // 已激活拖拽：持续跟踪
+        let p = (this._startProgress ?? this.data.progress) - (e.touches[0].clientY - this._startY) / (this.data._maxDrag || 400);
+        if (p < 0) p = 0;
+        if (p > 1) p = 1;
+        this.setData({ progress: p, fullLayerStyle: this._fullLayerStyle(p) });
+        this.triggerEvent('progress', { progress: p });
+        return;
+      }
+      // 未激活：实时检查 scrollTop，scrollTop=0 且向下拖才激活
+      // 不依赖 touchStart 时的快照，这样页面切换导致的 scrollTop 不同步也能正确处理
+      if ((this._scrollTop || 0) > 0) return;
       const dy = e.touches[0].clientY - this._svStartY;
       if (dy <= 0) return;
-      if (!this._svDragging) {
-        this._svDragging = true;
-        this._startY = this._svStartY;
-        this._startProgress = this.data.progress;
-        this.setData({ dragging: true });
-      }
-      let p = (this._startProgress ?? this.data.progress) - (e.touches[0].clientY - this._startY) / (this.data._maxDrag || 400);
+      this._svDragging = true;
+      this._startY = this._svStartY;
+      this._startProgress = this.data.progress;
+      this.setData({ dragging: true });
+      // 处理激活当帧的位移
+      let p = this._startProgress - dy / (this.data._maxDrag || 400);
       if (p < 0) p = 0;
       if (p > 1) p = 1;
       this.setData({ progress: p, fullLayerStyle: this._fullLayerStyle(p) });
@@ -113,7 +128,6 @@ Component({
     onScrollTouchEnd() {
       if (this._svDragging) this.onTouchEnd();
       this._svDragging = false;
-      this._svReady = false;
     },
 
     _fullLayerStyle(p) {
@@ -123,6 +137,9 @@ Component({
     collapse() { this._snap(0); },
     _snap(target) {
       const expanded = target === 1;
+      // 收起时 scroll-y 变为 false，scroll-view 内部会重置到 scrollTop=0
+      // 同步更新 _scrollTop，避免下次展开时判断失误
+      if (!expanded) this._scrollTop = 0;
       // 释放 dragging 一帧后再更新 progress，确保 CSS transition 生效
       this.setData({ dragging: false }, () => {
         this.setData({ progress: target, expanded, fullLayerStyle: this._fullLayerStyle(target) });

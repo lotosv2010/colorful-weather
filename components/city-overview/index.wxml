@@ -16,7 +16,13 @@
     </view>
 
     <!-- 城市列表 -->
-    <scroll-view class="city-list" scroll-y enhanced show-scrollbar="{{false}}">
+    <scroll-view class="city-list" scroll-y enhanced show-scrollbar="{{false}}"
+      bindscroll="onBodyScroll"
+      bindtouchstart="onBodyDragStart"
+      bindtouchmove="onBodyDragMove"
+      bindtouchend="onBodyDragEnd"
+      bindtouchcancel="onBodyDragCancel"
+    >
       <view
         wx:for="{{cityPages}}"
         wx:key="id"
