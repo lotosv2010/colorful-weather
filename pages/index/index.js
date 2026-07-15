@@ -326,6 +326,11 @@ Page({
       displayProvince = '';
     }
 
+    // 直辖市 GeoAPI 场景：adm2="重庆" adm1="重庆市"，city + '市' === province，去掉冗余的 city 层
+    if (city && province && city + '市' === province) {
+      displayCity = '';
+    }
+
     // district === city，去掉重复的市级
     if (district && city && district === city) {
       displayCity = '';
