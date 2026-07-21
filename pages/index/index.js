@@ -850,6 +850,10 @@ Page({
     const { longitude, latitude, city, province, district } = this.data;
     navigateTo('/pages/air/index', { location: `${longitude},${latitude}`, province, city, district });
   },
+  onAstronomyTap() {
+    const { longitude, latitude, city, province, district } = this.data;
+    navigateTo('/pages/astronomy/index', { location: `${longitude},${latitude}`, province, city, district });
+  },
   onShareAppMessage() {
     const { locationLabel, currentWeather, tempUnit } = this.data;
     const tempStr = currentWeather && currentWeather.temp != null ? `${fmtTemp(currentWeather.temp, tempUnit)}°` : '';

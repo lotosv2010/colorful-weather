@@ -198,7 +198,7 @@ Component({
 
       ctx.clearRect(0, 0, w, h);
 
-      const padL = 10, padR = 10, padT = 20, padB = 40;
+      const padL = 10, padR = 10, padT = 10, padB = 40;
       const chartW = w - padL - padR;
       const chartH = h - padT - padB;
 
@@ -207,7 +207,7 @@ Component({
 
       // 数据无效时画一条虚线
       if (riseMin == null || setMin == null || setMin <= riseMin) {
-        const midY = padT + chartH * 0.82;
+        const midY = padT + chartH * 0.78;
         ctx.strokeStyle = color;
         ctx.lineWidth = 1.5;
         ctx.globalAlpha = 0.3;
@@ -222,7 +222,7 @@ Component({
       }
 
       // 基线 y 坐标
-      const baseY = padT + chartH * 0.82;
+      const baseY = padT + chartH * 0.78;
 
       // 曲线：白天在基线上方（sin 弧），夜间在基线下方（sin 弧，幅度小）
       const nightSpan = 1440 - (setMin - riseMin); // 夜间总分钟数
@@ -230,12 +230,12 @@ Component({
         if (min >= riseMin && min <= setMin) {
           // 白天：基线上方
           const t = (min - riseMin) / (setMin - riseMin);
-          return baseY - chartH * 0.68 * Math.sin(Math.PI * t);
+          return baseY - chartH * 0.86 * Math.sin(Math.PI * t);
         } else {
           // 夜间：基线下方，以日落→午夜→日出为一段弧
           const offset = min >= setMin ? min - setMin : (1440 - setMin) + min;
           const t = offset / nightSpan;
-          return baseY + chartH * 0.18 * Math.sin(Math.PI * t);
+          return baseY + chartH * 0.20 * Math.sin(Math.PI * t);
         }
       };
 
@@ -349,7 +349,7 @@ Component({
 
       ctx.clearRect(0, 0, w, h);
 
-      const padL = 10, padR = 10, padT = 20, padB = 40;
+      const padL = 10, padR = 10, padT = 10, padB = 40;
       const chartW = w - padL - padR;
       const chartH = h - padT - padB;
 
@@ -357,7 +357,7 @@ Component({
 
       // 数据无效时画一条虚线
       if (riseMin == null || setMin == null) {
-        const midY = padT + chartH * 0.82;
+        const midY = padT + chartH * 0.78;
         ctx.strokeStyle = color;
         ctx.lineWidth = 1.5;
         ctx.globalAlpha = 0.3;
@@ -372,7 +372,7 @@ Component({
       }
 
       // 基线 y 坐标
-      const baseY = padT + chartH * 0.82;
+      const baseY = padT + chartH * 0.78;
 
       // 曲线：在空（月升→月落）时基线上方实线，其余基线下方虚线
       const crossMidnight = setMin <= riseMin;
@@ -388,14 +388,14 @@ Component({
             ? (min >= riseMin ? min - riseMin : (1440 - riseMin) + min)
             : min - riseMin;
           const t = offset / upSpan;
-          return baseY - chartH * 0.68 * Math.sin(Math.PI * t);
+          return baseY - chartH * 0.86 * Math.sin(Math.PI * t);
         } else {
           // 基线下方
           const offset = crossMidnight
             ? min - setMin
             : (min >= setMin ? min - setMin : (1440 - setMin) + min);
           const t = offset / downSpan;
-          return baseY + chartH * 0.18 * Math.sin(Math.PI * t);
+          return baseY + chartH * 0.20 * Math.sin(Math.PI * t);
         }
       };
 

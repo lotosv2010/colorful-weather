@@ -16,6 +16,20 @@
 .weather-astronomy-header .title {
   color: rgb(181, 187, 204);
 }
+.astro-nav-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.astro-nav-hint-text {
+  font-size: 0.72rem;
+  color: rgba(181, 187, 204, 0.5);
+}
+.astro-nav-arrow {
+  color: rgba(181, 187, 204, 0.5);
+  font-size: 1.1rem;
+  line-height: 1;
+}
 .weather-astronomy-main {
   display: flex;
   flex-direction: column;

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "天文信息",
+  "usingComponents": {
+    "page-header": "/components/page-header/index",
+    "error-state": "/components/error-state/index"
+  }
+}

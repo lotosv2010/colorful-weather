@@ -1,0 +1,232 @@
+/* pages/astronomy/index.wxss */
+page {
+  background: #000;
+  color: #fff;
+}
+
+.astro-page {
+  padding: 20rpx 24rpx 60rpx;
+}
+
+/* 加载提示 */
+.tip {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 80rpx 0;
+}
+
+/* ─── 日期导航 ──────────────────────────────────── */
+.date-scroll {
+  white-space: nowrap;
+  margin: 16rpx 0 20rpx;
+}
+.date-list {
+  display: flex;
+  gap: 12rpx;
+  padding: 4rpx 0;
+}
+.date-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14rpx 22rpx;
+  border-radius: 18rpx;
+  background: rgb(34, 37, 48);
+  min-width: 80rpx;
+  gap: 4rpx;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.date-chip--active {
+  background: var(--theme, #3478f6);
+}
+.date-chip-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.55);
+}
+.date-chip--active .date-chip-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+.date-chip-day {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ─── 卡片通用 ──────────────────────────────────── */
+.astro-card {
+  background: rgb(34, 37, 48);
+  border-radius: 20rpx;
+  padding: 32rpx 28rpx 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.card-title {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 500;
+  margin-bottom: 20rpx;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.moon-badge {
+  font-size: 26rpx;
+  color: #6CB4EE;
+}
+
+/* ─── Canvas 区域 ───────────────────────────────── */
+.canvas-wrap {
+  background: rgb(46, 48, 61);
+  border-radius: 14rpx;
+  padding: 14rpx 16rpx;
+  margin-bottom: 22rpx;
+  overflow: hidden;
+}
+
+.astro-canvas {
+  width: 100%;
+  height: 240rpx;
+  display: block;
+}
+
+/* ─── 三项信息行 ─────────────────────────────────── */
+.info-row {
+  display: flex;
+  margin-bottom: 18rpx;
+}
+
+.info-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.info-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.info-val {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+.sun-val {
+  color: #FF8C00;
+}
+
+.moon-val {
+  color: #6CB4EE;
+}
+
+/* ─── 太阳高度角行 ───────────────────────────────── */
+.angle-row {
+  display: flex;
+  background: rgb(46, 48, 61);
+  border-radius: 14rpx;
+  padding: 20rpx 16rpx;
+}
+
+.angle-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.angle-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.angle-val {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #FF8C00;
+}
+
+/* ─── 月相详情 ──────────────────────────────────── */
+.phase-detail {
+  display: flex;
+  align-items: center;
+  background: rgb(46, 48, 61);
+  border-radius: 14rpx;
+  padding: 22rpx 24rpx;
+  gap: 22rpx;
+  margin-top: 4rpx;
+}
+
+.phase-emoji {
+  font-size: 60rpx;
+  width: 76rpx;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.phase-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.phase-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #fff;
+}
+
+.phase-bar-track {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 6rpx;
+  height: 8rpx;
+  overflow: hidden;
+}
+
+.phase-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, rgba(108, 180, 238, 0.5), #6CB4EE);
+  border-radius: 6rpx;
+}
+
+/* 月相名称行：左相名 + 右当前值 */
+.phase-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.phase-illum-cur {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #6CB4EE;
+}
+
+/* 照明度标签行：左标签 + 右范围值 */
+.phase-illum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.phase-illum-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.phase-illum-range {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #6CB4EE;
+}

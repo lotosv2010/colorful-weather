@@ -1,0 +1,122 @@
+<!--pages/astronomy/index.wxml-->
+<wxs src="/utils/moonPhase.wxs" module="mp" />
+<view class="astro-page" style="--theme:{{themeColor}}">
+
+  <!-- 头部城市信息 -->
+  <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
+
+  <!-- 日期导航 -->
+  <scroll-view class="date-scroll" scroll-x scroll-with-animation>
+    <view class="date-list">
+      <view
+        wx:for="{{dates}}"
+        wx:key="dateStr"
+        class="date-chip {{item.isSelected ? 'date-chip--active' : ''}}"
+        data-date="{{item.dateStr}}"
+        bindtap="onDateSelect"
+      >
+        <text class="date-chip-label">{{item.label}}</text>
+        <text class="date-chip-day">{{item.dayNum}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 加载 / 错误 -->
+  <view wx:if="{{loading}}" class="tip">加载中...</view>
+  <error-state wx:elif="{{errorMsg}}" errorMsg="{{errorMsg}}" bind:retry="onRetry" />
+
+  <block wx:else>
+
+    <!-- ─── 太阳卡片 ─────────────────────────────── -->
+    <view class="astro-card">
+      <view class="card-title">☀️ 太阳</view>
+
+      <!-- 日出日落曲线 -->
+      <view class="canvas-wrap">
+        <canvas type="2d" id="sunCanvas" class="astro-canvas"></canvas>
+      </view>
+
+      <!-- 三项信息：日出 / 白昼 / 日落 -->
+      <view class="info-row">
+        <view class="info-item">
+          <text class="info-label">日出</text>
+          <text class="info-val sun-val">{{sunrise}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">白昼</text>
+          <text class="info-val">{{daylightStr || '--'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">日落</text>
+          <text class="info-val sun-val">{{sunset}}</text>
+        </view>
+      </view>
+
+      <!-- 太阳高度角（仅今天显示） -->
+      <view class="angle-row" wx:if="{{showSolarAngle}}">
+        <view class="angle-item">
+          <text class="angle-label">高度角</text>
+          <text class="angle-val">{{solarElevation}}°</text>
+        </view>
+        <view class="angle-item">
+          <text class="angle-label">方位角</text>
+          <text class="angle-val">{{solarAzimuthDir}} {{solarAzimuth}}°</text>
+        </view>
+        <view class="angle-item">
+          <text class="angle-label">太阳时</text>
+          <text class="angle-val">{{solarHour || '--'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ─── 月亮卡片 ─────────────────────────────── -->
+    <view class="astro-card">
+      <view class="card-title-row">
+        <text class="card-title">🌙 月亮</text>
+        <text class="moon-badge" wx:if="{{moonPhaseIcon}}">
+          {{mp.emoji(moonPhaseIcon)}} {{moonPhaseName}}
+        </text>
+      </view>
+
+      <!-- 月升月落曲线 -->
+      <view class="canvas-wrap">
+        <canvas type="2d" id="moonCanvas" class="astro-canvas"></canvas>
+      </view>
+
+      <!-- 三项信息：月出 / 在天 / 月落 -->
+      <view class="info-row">
+        <view class="info-item">
+          <text class="info-label">月出</text>
+          <text class="info-val moon-val">{{moonrise}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">在天</text>
+          <text class="info-val">{{lunarTimeStr || '--'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">月落</text>
+          <text class="info-val moon-val">{{hasMoonset ? moonset : '次日'}}</text>
+        </view>
+      </view>
+
+      <!-- 月相详情（含照明度范围） -->
+      <view class="phase-detail" wx:if="{{moonPhaseIcon}}">
+        <text class="phase-emoji">{{mp.emoji(moonPhaseIcon)}}</text>
+        <view class="phase-info">
+          <view class="phase-name-row">
+            <text class="phase-name">{{moonPhaseName}}</text>
+            <text class="phase-illum-cur" wx:if="{{moonIllumination > 0}}">当前 {{moonIllumination}}%</text>
+          </view>
+          <view class="phase-illum-row" wx:if="{{illuminationMax > 0}}">
+            <text class="phase-illum-label">今日照明度</text>
+            <text class="phase-illum-range">{{illuminationMin}}% – {{illuminationMax}}%</text>
+          </view>
+          <view class="phase-bar-track">
+            <view class="phase-bar-fill" style="width: {{illuminationMax}}%"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </block>
+</view>

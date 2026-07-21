@@ -190,7 +190,7 @@
         city="{{city}}"
         district="{{district}}"
       />
-      <weather-astronomy sun="{{astronomySun}}" moon="{{astronomyMoon}}" solar-angle="{{astronomySolarAngle}}" />
+      <weather-astronomy sun="{{astronomySun}}" moon="{{astronomyMoon}}" solar-angle="{{astronomySolarAngle}}" bindtap="onAstronomyTap" />
       <weather-life
         indices="{{indices}}"
         location="{{longitude}},{{latitude}}"

@@ -26,7 +26,8 @@
     "pages/minutely/index",
     "pages/typhoon/index",
     "pages/settings/index",
-    "pages/compare/index"
+    "pages/compare/index",
+    "pages/astronomy/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
