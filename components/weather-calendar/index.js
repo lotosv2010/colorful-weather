@@ -4,6 +4,19 @@ const { getLunarLabels } = require('../../utils/lunar');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
+// 月相名称 → 图标码（对齐 moonPhase.wxs 的 800~807 体系）
+// 接口有时返回"峨眉月"，有时返回"蛾眉月"（同音异字），均兼容
+const MOON_PHASE_ICON = {
+  '新月': '800',
+  '蛾眉月': '801', '峨眉月': '801',
+  '上弦月': '802',
+  '盈凸月': '803',
+  '满月':   '804',
+  '亏凸月': '805',
+  '下弦月': '806',
+  '残月':   '807',
+};
+
 // ── 辅助函数 ──────────────────────────────────────────────────────────────
 // 某月天数
 const daysInMonth  = (y, m) => new Date(y, m, 0).getDate();
@@ -175,15 +188,17 @@ Component({
           if (!res || res.code !== '200' || !res.weatherDaily) return;
           const dw = res.weatherDaily;
 
-          // 从正午小时记录派生白天图标
+          // 从小时数据中分别取最近正午（白天）和最近 21 时（夜间）的记录
           const hourly = res.weatherHourly || [];
-          let noon = null;
+          let noon = null, night = null;
           if (hourly.length) {
-            let minDiff = Infinity;
+            let minNoon = Infinity, minNight = Infinity;
             hourly.forEach(h => {
-              const hh   = Number((h.time || '').substr(11, 2));
-              const diff = Math.abs(hh - 12);
-              if (diff < minDiff) { minDiff = diff; noon = h; }
+              const hh = Number((h.time || '').substr(11, 2));
+              const dNoon  = Math.abs(hh - 12);
+              const dNight = Math.abs(hh - 21);
+              if (dNoon  < minNoon)  { minNoon  = dNoon;  noon  = h; }
+              if (dNight < minNight) { minNight = dNight; night = h; }
             });
           }
 
@@ -195,24 +210,26 @@ Component({
             week:          weekMap[new Date(y, mo - 1, day).getDay()],
             dateLabel:     `${mo}月${day}日`,
             lunarLabel:    lunarMap[ds] || '',
-            iconDay:       noon ? noon.icon : '100',
-            iconNight:     '150',
-            textDay:       noon ? noon.text : '',
-            textNight:     '',
+            iconDay:       noon  ? noon.icon  : '100',
+            iconNight:     night ? night.icon : '150',
+            textDay:       noon  ? noon.text  : '',
+            textNight:     night ? night.text : '',
             tempMax:       dw.tempMax,
             tempMin:       dw.tempMin,
-            windSpeedDay:  '',
-            windDirDay:    dw.windDir,
-            windScaleDay:  '',
+            // 风力来自 weatherHourly（weatherDaily 无风场字段）
+            windSpeedDay:  noon ? noon.windSpeed : '',
+            windDirDay:    noon ? noon.windDir   : '',
+            windScaleDay:  noon ? noon.windScale : '',
             precip:        dw.precip,
             humidity:      dw.humidity,
             uvIndex:       '',
             sunrise:       dw.sunrise,
             sunset:        dw.sunset,
-            moonPhase:     dw.moonPhase,
-            moonPhaseIcon: dw.moonPhaseIcon,
-            moonrise:      dw.moonrise,
-            moonset:       dw.moonset,
+            // weatherDaily 返回月相名称，通过反向映射表推导图标码
+            moonPhase:     dw.moonPhase || '',
+            moonPhaseIcon: MOON_PHASE_ICON[dw.moonPhase] || '',
+            moonrise:      dw.moonrise      || '',
+            moonset:       dw.moonset       || '',
             air:           null,
           };
         });

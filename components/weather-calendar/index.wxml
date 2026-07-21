@@ -43,6 +43,7 @@
       <!-- 范围内格子 -->
       <view wx:else
             class="wc-cell
+                   {{item.isPast && item.hasData ? 'wc-cell-hist' : ''}}
                    {{item.isToday  ? 'wc-cell-today' : ''}}
                    {{item.isSunday ? 'wc-cell-sun'   : ''}}
                    {{selectedDate === item.date ? 'wc-cell-sel' : ''}}"
@@ -62,10 +63,13 @@
           <!-- 斜线分隔（限定在天气内容区，不延伸至日期行） -->
           <view class="wc-cell-line" />
 
-          <!-- 白天：图标 + 最高温（左上对齐） -->
+          <!-- 白天：图标 + 最高温（左上对齐），下方显示天气文案 -->
           <view class="wc-day-info">
-            <text class="wc-icon-d qi-{{item.iconDay}}-fill icon-color-{{ic.category(item.iconDay)}}" />
-            <text class="wc-temp-hi">{{tu.fmt(item.tempMax, tempUnit)}}°</text>
+            <view class="wc-day-row">
+              <text class="wc-icon-d qi-{{item.iconDay}}-fill icon-color-{{ic.category(item.iconDay)}}" />
+              <text class="wc-temp-hi">{{tu.fmt(item.tempMax, tempUnit)}}°</text>
+            </view>
+            <text wx:if="{{item.textDay}}" class="wc-day-text">{{item.textDay}}</text>
           </view>
 
           <!-- 夜间：天气文字 + 图标 + 最低温（右下对齐） -->

@@ -137,6 +137,11 @@
   pointer-events: none;
 }
 
+/* 历史天气格：暖色调背景，与预报格（冷蓝灰）区分 */
+.wc-cell-hist {
+  background: rgba(48, 42, 38, 0.92);
+}
+
 /* 空格占位 & 范围外：透明无高度，所在行整行空白时自动塌陷 */
 .wc-cell-blank {
   background: transparent;
@@ -208,13 +213,32 @@
   position: relative;
 }
 
-/* 白天：左对齐，贴顶，图标与温度横排 */
+/* 白天：左对齐，贴顶，纵向排列（图标+温度行 / 天气文案行） */
 .wc-day-info {
   align-self: flex-start;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5rpx;
+}
+
+/* 白天第一行：图标 + 最高温横排 */
+.wc-day-row {
+  display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 3rpx;
+  gap: 5rpx;
+}
+
+/* 白天天气文案（"晴"/"多云"等） */
+.wc-day-text {
+  font-size: 13rpx;
+  color: #8C9AA5;
+  line-height: 1.2;
+  max-width: 52rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .wc-icon-d {

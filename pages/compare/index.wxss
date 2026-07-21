@@ -254,7 +254,7 @@ page {
 .aqi-tag {
   font-size: 22rpx;
   font-weight: 700;
-  color: #fff;
+  color: #111;
   padding: 2rpx 10rpx;
   border-radius: 8rpx;
   line-height: 1.5;

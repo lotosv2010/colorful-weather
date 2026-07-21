@@ -269,8 +269,8 @@ Page({
     const h = this._ch;
     const padL = 8;
     const padR = 8;
-    const padT = 24;  // 温度标注区
-    const padB = 20;  // 日期标注区
+    const padT = 24;  // 高温标注区
+    const padB = 36;  // 低温标注区 + 日期标注区
     const chartW = w - padL - padR;
     const chartH = h - padT - padB;
 
@@ -321,6 +321,15 @@ Page({
       hiPts.forEach((p, i) => {
         const val = convert(daily[i].tempMax, tempUnit);
         ctx.fillText(`${Math.round(val)}°`, p.x, p.y - 5);
+      });
+
+      // 低温数字（虚线下方）
+      ctx.fillStyle = colorLow;
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'center';
+      loPts.forEach((p, i) => {
+        const val = convert(daily[i].tempMin, tempUnit);
+        ctx.fillText(`${Math.round(val)}°`, p.x, p.y + 12);
       });
     };
 
