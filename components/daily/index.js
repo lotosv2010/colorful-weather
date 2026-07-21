@@ -28,6 +28,10 @@ Component({
     tempUnit: {
       type: String,
       value: 'C'
+    },
+    cityId: {
+      type: String,
+      value: ''
     }
   },
   data: {
@@ -67,9 +71,9 @@ Component({
       navigateTo('/pages/hourly/index', { location, province, city, district }, { date: fxdate });
     },
     onMore30Day() {
-      const { location, province, city, district } = this.data;
+      const { location, province, city, district, cityId } = this.data;
       if (!location) return;
-      navigateTo('/pages/weather30/index', { location, province, city, district });
+      navigateTo('/pages/weather30/index', { location, province, city, district, cityId });
     }
   }
 })

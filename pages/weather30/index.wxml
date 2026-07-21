@@ -15,14 +15,27 @@
       <text class="summary-text">未来30天{{summary.rainDays ? '将有' + summary.rainDays + '天下雨' : ''}}{{summary.snowDays ? '，' + summary.snowDays + '天下雪' : ''}}，最高温度{{tu.fmt(summary.maxTemp, tempUnit)}}°（{{summary.maxDate}}），最低温度{{tu.fmt(summary.minTemp, tempUnit)}}°（{{summary.minDate}}）</text>
     </view>
 
-    <!-- Tabs -->
+    <!-- Tabs：月历排第一 -->
     <view class="tabs">
+      <view class="tab {{activeTab === 'calendar' ? 'active' : ''}}" bindtap="onTabChange" data-tab="calendar">
+        <text>月历</text>
+      </view>
       <view class="tab {{activeTab === 'list' ? 'active' : ''}}" bindtap="onTabChange" data-tab="list">
         <text>列表</text>
       </view>
       <view class="tab {{activeTab === 'chart' ? 'active' : ''}}" bindtap="onTabChange" data-tab="chart">
         <text>图表</text>
       </view>
+    </view>
+
+    <!-- 月历：view[hidden] 实现 display:none，保留组件实例不销毁（自定义组件标签不支持 hidden 属性） -->
+    <view hidden="{{activeTab !== 'calendar'}}">
+      <weather-calendar
+        daily="{{daily}}"
+        cityId="{{cityId}}"
+        tempUnit="{{tempUnit}}"
+        themeColor="{{themeColor}}"
+      />
     </view>
 
     <!-- 列表模式 -->
@@ -38,5 +51,6 @@
     <view wx:if="{{activeTab === 'chart'}}" class="chart-container">
       <weather30-chart id="weather30Chart" daily="{{daily}}" tempUnit="{{tempUnit}}" bind:select="onChartSelect" />
     </view>
+
   </block>
 </view>

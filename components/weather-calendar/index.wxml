@@ -1,0 +1,96 @@
+<!--components/weather-calendar/index.wxml-->
+<wxs src="../../utils/tempUnit.wxs" module="tu" />
+<wxs src="../../utils/iconColor.wxs" module="ic" />
+
+<view class="wc-wrap" style="--theme:{{themeColor}}">
+
+  <!-- 月份导航 -->
+  <view class="wc-nav">
+    <view class="wc-nav-btn {{!canGoPrev ? 'wc-nav-btn--off' : ''}}" bindtap="onPrevMonth">‹</view>
+    <text class="wc-nav-title">{{viewYear}}年{{viewMonth}}月</text>
+    <view class="wc-nav-btn {{!canGoNext ? 'wc-nav-btn--off' : ''}}" bindtap="onNextMonth">›</view>
+  </view>
+
+  <!-- 加载历史数据中 -->
+  <view wx:if="{{loading}}" class="wc-loading">
+    <view class="wc-spinner" />
+  </view>
+
+  <!-- 错误态 -->
+  <view wx:if="{{errorMsg}}" class="wc-error-wrap">
+    <text class="wc-error-text">{{errorMsg}}</text>
+    <view class="wc-retry-btn" bindtap="onRetry">重试</view>
+  </view>
+
+  <!-- 星期列头（周一起始，周日红色） -->
+  <view class="wc-weekdays">
+    <text class="wc-wd">一</text>
+    <text class="wc-wd">二</text>
+    <text class="wc-wd">三</text>
+    <text class="wc-wd">四</text>
+    <text class="wc-wd">五</text>
+    <text class="wc-wd">六</text>
+    <text class="wc-wd wc-wd-sun">日</text>
+  </view>
+
+  <!-- 日历网格 -->
+  <view class="wc-grid">
+    <block wx:for="{{cells}}" wx:key="key">
+
+      <!-- 前置占位 & 范围外：透明空白，保留位置 -->
+      <view wx:if="{{item.empty || !item.inRange}}" class="wc-cell wc-cell-blank" />
+
+      <!-- 范围内格子 -->
+      <view wx:else
+            class="wc-cell
+                   {{item.isToday  ? 'wc-cell-today' : ''}}
+                   {{item.isSunday ? 'wc-cell-sun'   : ''}}
+                   {{selectedDate === item.date ? 'wc-cell-sel' : ''}}"
+            bindtap="onDayTap"
+            data-date="{{item.date}}">
+
+        <!-- 第一行：日期（左）+ 农历（右） -->
+        <view class="wc-row-top">
+          <text class="wc-day">{{item.isToday ? '今天' : item.day}}</text>
+          <text wx:if="{{item.lunarLabel}}"
+                class="wc-lunar {{item.lunarLabel.length <= 2 ? 'wc-jieqi' : ''}}">{{item.lunarLabel}}</text>
+        </view>
+
+        <!-- 天气内容：白天左上 / 夜间右下 -->
+        <view wx:if="{{item.hasData}}" class="wc-body">
+
+          <!-- 斜线分隔（限定在天气内容区，不延伸至日期行） -->
+          <view class="wc-cell-line" />
+
+          <!-- 白天：图标 + 最高温（左上对齐） -->
+          <view class="wc-day-info">
+            <text class="wc-icon-d qi-{{item.iconDay}}-fill icon-color-{{ic.category(item.iconDay)}}" />
+            <text class="wc-temp-hi">{{tu.fmt(item.tempMax, tempUnit)}}°</text>
+          </view>
+
+          <!-- 夜间：天气文字 + 图标 + 最低温（右下对齐） -->
+          <view class="wc-night-info">
+            <text wx:if="{{item.textNight}}" class="wc-night-text">{{item.textNight}}</text>
+            <view class="wc-night-row">
+              <text class="wc-temp-lo">{{tu.fmt(item.tempMin, tempUnit)}}°</text>
+              <text class="wc-icon-n qi-{{item.iconNight}}-fill icon-color-{{ic.category(item.iconNight)}}" />
+            </view>
+          </view>
+
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 选中日详情卡（weather30-card） -->
+  <view wx:if="{{selectedItem}}" class="wc-detail">
+    <weather30-card
+      item="{{selectedItem}}"
+      tempUnit="{{tempUnit}}"
+      active="{{true}}"
+      maxTemp="{{summaryMax}}"
+      minTemp="{{summaryMin}}"
+    />
+  </view>
+
+</view>

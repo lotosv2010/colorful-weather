@@ -13,9 +13,9 @@ const flattenVal = (val) => {
   if (typeof val !== 'object') return val;
   if (Array.isArray(val)) return val.length ? flattenVal(val[0]) : '';
   if (val.value != null) return String(val.value);
-  if (val.text != null) return String(val.text);
-  if (val.name != null) return String(val.name);
-  if (val.desc != null) return String(val.desc);
+  if (val.text  != null) return String(val.text);
+  if (val.name  != null) return String(val.name);
+  if (val.desc  != null) return String(val.desc);
   for (const k of Object.keys(val)) {
     if (typeof val[k] !== 'object' && val[k] != null) return String(val[k]);
   }
@@ -39,14 +39,16 @@ Page({
     city: '',
     province: '',
     district: '',
+    cityId: '',
     activeDate: '',
     scrollToDate: '',
     daily: [],
     summary: {},
-    activeTab: 'list',
+    // 默认展示月历 tab
+    activeTab: 'calendar',
     updateTime: '',
     tempUnit: 'C',
-    themeColor: '#1296db'
+    themeColor: '#1296db',
   },
 
   _syncPrefs() {
@@ -63,16 +65,17 @@ Page({
     this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
-    const { location, province, city, district, date } = options;
+    const { location, province, city, district, date, cityId } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
       return;
     }
     this.location = location;
     this.setData({
-      province: province ? decodeURIComponent(province) : '',
-      city: city ? decodeURIComponent(city) : '',
-      district: district ? decodeURIComponent(district) : ''
+      province:  province  ? decodeURIComponent(province)  : '',
+      city:      city      ? decodeURIComponent(city)      : '',
+      district:  district  ? decodeURIComponent(district)  : '',
+      cityId:    cityId    || '',
     });
     if (date) this.setData({ activeDate: date });
     this.fetchData();
@@ -100,9 +103,9 @@ Page({
         const date = new Date(item.fxDate);
         return {
           ...flattenObj(item),
-          week: weekMap[date.getDay()],
-          month: date.getMonth() + 1,
-          day: date.getDate(),
+          week:      weekMap[date.getDay()],
+          month:     date.getMonth() + 1,
+          day:       date.getDate(),
           dateLabel: `${date.getMonth() + 1}月${date.getDate()}日`
         };
       });
@@ -154,16 +157,16 @@ Page({
     const airMap = {};
     airRes.days.forEach(day => {
       const dateKey = (day.forecastStartTime || '').substring(0, 10);
-      const idx = (day.indexes && day.indexes[0]) || {};
-      const c = idx.color || {};
+      const idx     = (day.indexes && day.indexes[0]) || {};
+      const c       = idx.color || {};
       const colorHex = c.red != null ? toHex(c) : '#4caf50';
       airMap[dateKey] = {
-        aqi: idx.aqi,
+        aqi:        idx.aqi,
         aqiDisplay: idx.aqiDisplay || idx.aqi,
-        category: idx.category || '',
-        color: colorHex,
-        textColor: getTextColor(colorHex),
-        level: idx.level || ''
+        category:   idx.category || '',
+        color:      colorHex,
+        textColor:  getTextColor(colorHex),
+        level:      idx.level || ''
       };
     });
     daily.forEach(item => {
@@ -179,15 +182,11 @@ Page({
         item.tempDesc = '';
         return;
       }
-      const prev = daily[i - 1];
+      const prev    = daily[i - 1];
       const maxDiff = Number(item.tempMax) - Number(prev.tempMax);
-      if (maxDiff === 0) {
-        item.tempDesc = '温度持平';
-      } else if (maxDiff > 0) {
-        item.tempDesc = `升温+${Math.abs(maxDiff)}°`;
-      } else {
-        item.tempDesc = `降温-${Math.abs(maxDiff)}°`;
-      }
+      if (maxDiff === 0)      item.tempDesc = '温度持平';
+      else if (maxDiff > 0)   item.tempDesc = `升温+${Math.abs(maxDiff)}°`;
+      else                    item.tempDesc = `降温-${Math.abs(maxDiff)}°`;
     });
   },
 
@@ -199,28 +198,15 @@ Page({
 
     daily.forEach(item => {
       const code = Number(item.iconDay);
-      // 雨类
-      if ((code >= 300 && code <= 318) || code === 350 || code === 351 || code === 399) {
-        rainDays++;
-      }
-      // 雪类
-      if ((code >= 400 && code <= 410) || code === 456 || code === 457 || code === 499) {
-        snowDays++;
-      }
-      if (Number(item.tempMax) > maxTemp) {
-        maxTemp = Number(item.tempMax);
-        maxDate = item.dateLabel;
-      }
-      if (Number(item.tempMin) < minTemp) {
-        minTemp = Number(item.tempMin);
-        minDate = item.dateLabel;
-      }
+      if ((code >= 300 && code <= 318) || code === 350 || code === 351 || code === 399) rainDays++;
+      if ((code >= 400 && code <= 410) || code === 456 || code === 457 || code === 499) snowDays++;
+      if (Number(item.tempMax) > maxTemp) { maxTemp = Number(item.tempMax); maxDate = item.dateLabel; }
+      if (Number(item.tempMin) < minTemp) { minTemp = Number(item.tempMin); minDate = item.dateLabel; }
     });
 
     return { rainDays, snowDays, maxTemp, maxDate, minTemp, minDate };
   },
 
-  // 重试：清除错误并重新加载
   onRetry() {
     this.setData({ loading: true, errorMsg: '' });
     this.fetchData();
@@ -228,6 +214,7 @@ Page({
 
   onTabChange(e) {
     const tab = e.currentTarget.dataset.tab;
+    if (tab === this.data.activeTab) return;
     this.setData({ activeTab: tab });
     if (tab === 'chart') {
       wx.nextTick(() => {
@@ -242,9 +229,10 @@ Page({
         }
       });
     }
+    // 月历 tab 由 weather-calendar 组件自行管理，无需页面干预
   },
 
-  onChartSelect(e) {
+  onChartSelect() {
     // 图表组件内部已处理选中状态
   },
 

@@ -181,6 +181,7 @@
         province="{{province}}"
         city="{{city}}"
         district="{{district}}"
+        cityId="{{cityId}}"
       />
       <weather-air
         air="{{air}}"

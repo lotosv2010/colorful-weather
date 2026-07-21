@@ -1,4 +1,6 @@
 /* pages/weather30/index.wxss */
+@import "/static/qweather-icons.wxss";
+
 page {
   background: #000;
   color: #fff;
@@ -30,7 +32,7 @@ page {
   line-height: 1.8;
 }
 
-/* Tabs */
+/* Tabs（三等分） */
 .tabs {
   display: flex;
   background: rgb(34, 37, 48);
@@ -55,15 +57,6 @@ page {
 }
 
 /* 列表容器 */
-.list-container {
-  /* 无特殊样式 */
-}
-
 .list-scroll {
   height: 70vh;
-}
-
-/* 图表容器 */
-.chart-container {
-  /* 无特殊样式 */
 }

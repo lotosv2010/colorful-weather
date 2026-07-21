@@ -1,0 +1,271 @@
+/* components/weather-calendar/index.wxss */
+
+/* ── 外层容器 ──────────────────────────────────────────────────────────── */
+.wc-wrap {
+  /* 组件内使用 --theme CSS 变量 */
+}
+
+/* ── 月份导航行 ─────────────────────────────────────────────────────────── */
+.wc-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  padding: 12rpx 0 18rpx;
+}
+
+.wc-nav-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42rpx;
+  color: #8C9AA5;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.wc-nav-btn--off {
+  opacity: 0.25;
+}
+
+.wc-nav-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  min-width: 190rpx;
+  text-align: center;
+  letter-spacing: 1rpx;
+}
+
+/* ── 加载 / 错误 ─────────────────────────────────────────────────────────── */
+.wc-loading {
+  display: flex;
+  justify-content: center;
+  padding: 12rpx 0;
+}
+
+.wc-spinner {
+  width: 36rpx;
+  height: 36rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--theme, #1296db);
+  border-radius: 50%;
+  animation: wc-spin 0.75s linear infinite;
+}
+
+@keyframes wc-spin {
+  to { transform: rotate(360deg); }
+}
+
+.wc-error-wrap {
+  text-align: center;
+  padding: 40rpx 0 20rpx;
+}
+
+.wc-error-text {
+  font-size: 26rpx;
+  color: #f87171;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.wc-retry-btn {
+  display: inline-block;
+  padding: 12rpx 36rpx;
+  background: var(--theme, #1296db);
+  color: #fff;
+  font-size: 26rpx;
+  border-radius: 20rpx;
+}
+
+/* ── 星期列头 ────────────────────────────────────────────────────────────── */
+.wc-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 5rpx;
+}
+
+.wc-wd {
+  text-align: center;
+  font-size: 20rpx;
+  color: #8C9AA5;
+  padding: 4rpx 0;
+}
+
+.wc-wd-sun {
+  color: #f87171;
+}
+
+/* ── 日历网格 ────────────────────────────────────────────────────────────── */
+.wc-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5rpx;
+}
+
+/* ── 单元格基础 ──────────────────────────────────────────────────────────── */
+.wc-cell {
+  background: rgba(46, 48, 61, 0.9);
+  border-radius: 10rpx;
+  padding: 7rpx 6rpx;
+  min-height: 132rpx;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 右上→左下斜线：
+   linear-gradient 的 iso-color 线（色带方向）垂直于渐变方向
+   "to bottom right"（左上→右下）→ iso-color 线为右上→左下（/）✓
+   "to bottom left" 则是 iso-color 线 \，方向相反 */
+.wc-cell-line {
+  position: absolute;
+  top: 25%;
+  right: 25%;
+  bottom: 25%;
+  left: 25%;
+  background: linear-gradient(
+    to bottom right,
+    transparent calc(50% - 1rpx),
+    rgba(255, 255, 255, 0.10) calc(50% - 1rpx),
+    rgba(255, 255, 255, 0.10) calc(50% + 1rpx),
+    transparent calc(50% + 1rpx)
+  );
+  pointer-events: none;
+}
+
+/* 空格占位 & 范围外：透明无高度，所在行整行空白时自动塌陷 */
+.wc-cell-blank {
+  background: transparent;
+  min-height: 0;
+  padding: 0;
+}
+
+/* 已选中：统一边框高亮（今天与其他日期相同） */
+.wc-cell-sel {
+  box-shadow: inset 0 0 0 2rpx var(--theme, #1296db);
+}
+
+/* 周日：日期数字红色 */
+.wc-cell-sun .wc-day {
+  color: #f87171;
+}
+
+/* 今天：日期数字用主题色标注，无背景填充 */
+.wc-cell-today .wc-day {
+  color: var(--theme, #1296db);
+}
+
+/* ── 第一行：日期 + 农历（左右排列） ───────────────────────────────────── */
+.wc-row-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3rpx;
+  flex-shrink: 0;
+}
+
+.wc-day {
+  font-size: 23rpx;
+  font-weight: 600;
+  color: #d5d5d5;
+  line-height: 1.2;
+}
+
+.wc-lunar {
+  font-size: 14rpx;
+  color: #8C9AA5;
+  line-height: 1.1;
+  max-width: 54rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* 节气 / 月首：橙色加粗 */
+.wc-jieqi {
+  color: #f0a040;
+  font-weight: 600;
+}
+
+
+/* ── 天气内容区：弹性拉伸，白天左上 / 夜间右下 ─────────────────────────── */
+.wc-body {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* 上下内边距让两组内容脱离格子边缘、向对角线中心聚拢 */
+  padding-top: 6rpx;
+  padding-bottom: 5rpx;
+  /* 供斜线绝对定位，仅覆盖天气内容区 */
+  position: relative;
+}
+
+/* 白天：左对齐，贴顶，图标与温度横排 */
+.wc-day-info {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3rpx;
+}
+
+.wc-icon-d {
+  font-size: 30rpx;
+  line-height: 1;
+}
+
+.wc-temp-hi {
+  font-size: 19rpx;
+  color: #ffb370;
+  line-height: 1;
+}
+
+/* 夜间：右对齐，贴底 */
+.wc-night-info {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rpx;
+}
+
+.wc-night-text {
+  font-size: 13rpx;
+  color: #8C9AA5;
+  line-height: 1.2;
+  max-width: 52rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 夜间最低温 + 图标同行 */
+.wc-night-row {
+  display: flex;
+  align-items: center;
+  gap: 2rpx;
+}
+
+.wc-temp-lo {
+  font-size: 19rpx;
+  color: #6cb4ee;
+  line-height: 1;
+}
+
+.wc-icon-n {
+  font-size: 24rpx;
+  line-height: 1;
+}
+
+/* ── 选中日详情卡 ────────────────────────────────────────────────────────── */
+.wc-detail {
+  margin-top: 20rpx;
+}
