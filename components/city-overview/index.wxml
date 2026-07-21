@@ -12,6 +12,10 @@
       <view class="co-handle-bar"></view>
       <view class="co-header">
         <text class="co-title">城市</text>
+        <view class="co-compare-btn" catchtap="onCompareTap">
+          <text class="co-compare-icon">⇄</text>
+          <text class="co-compare-text">对比</text>
+        </view>
       </view>
     </view>
 

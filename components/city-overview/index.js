@@ -165,6 +165,10 @@ Component({
       this.setData({ panelStyle: '' });
     },
 
+    onCompareTap() {
+      this.triggerEvent('compare');
+    },
+
     onClose() {
       this.triggerEvent('close');
     },

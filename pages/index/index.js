@@ -791,6 +791,10 @@ Page({
     this.setData({ citiesOverviewVisible: false });
     this.switchToCity(e.detail.index);
   },
+  onCitiesOverviewCompare() {
+    this.setData({ citiesOverviewVisible: false });
+    wx.navigateTo({ url: '/pages/compare/index' });
+  },
 
   // 显示组件
   showSelector() {

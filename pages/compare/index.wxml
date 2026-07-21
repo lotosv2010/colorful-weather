@@ -1,0 +1,183 @@
+<!--pages/compare/index.wxml-->
+<wxs src="/utils/tempUnit.wxs" module="tu" />
+<wxs src="/utils/iconColor.wxs" module="ic" />
+<wxs src="/utils/fmt.wxs" module="fmt" />
+
+<view class="compare-page" style="--theme:{{themeColor}}">
+
+  <!-- 城市选择槽 -->
+  <view class="slot-row">
+    <!-- 城市 A -->
+    <view class="city-slot city-slot-a" catchtap="onSelectSlot1">
+      <view wx:if="{{city1}}" class="slot-filled">
+        <text class="slot-name">{{city1.name || city1.district}}</text>
+        <text class="slot-region">{{city1.province}}</text>
+      </view>
+      <view wx:else class="slot-empty">
+        <text class="slot-add">＋</text>
+        <text class="slot-hint">选择城市</text>
+      </view>
+      <text class="slot-tag slot-tag-a">A</text>
+    </view>
+
+    <!-- 中间 VS 分隔 -->
+    <view class="vs-badge">VS</view>
+
+    <!-- 城市 B -->
+    <view class="city-slot city-slot-b" catchtap="onSelectSlot2">
+      <view wx:if="{{city2}}" class="slot-filled">
+        <text class="slot-name">{{city2.name || city2.district}}</text>
+        <text class="slot-region">{{city2.province}}</text>
+      </view>
+      <view wx:else class="slot-empty">
+        <text class="slot-add">＋</text>
+        <text class="slot-hint">选择城市</text>
+      </view>
+      <text class="slot-tag slot-tag-b">B</text>
+    </view>
+  </view>
+
+  <!-- 天气概览对比行 -->
+  <view class="overview-row">
+    <!-- 城市 A 概览 -->
+    <view class="overview-col">
+      <block wx:if="{{loading1}}">
+        <view class="sk-icon"></view>
+        <view class="sk-temp"></view>
+        <view class="sk-text"></view>
+      </block>
+      <block wx:elif="{{error1}}">
+        <error-state errorMsg="{{error1}}" compact bind:retry="onRetry1" />
+      </block>
+      <block wx:elif="{{now1}}">
+        <text class="ov-icon qi-{{now1.icon}}-fill ic-{{ic.category(now1.icon)}}"></text>
+        <text class="ov-temp">{{tu.fmt(now1.temp, tempUnit)}}°</text>
+        <text class="ov-text">{{now1.text}}</text>
+        <text class="ov-update">{{now1.updateTime}} 更新</text>
+      </block>
+      <block wx:elif="{{city1}}">
+        <view class="ov-placeholder">暂无数据</view>
+      </block>
+    </view>
+
+    <!-- 城市 B 概览 -->
+    <view class="overview-col overview-col-b">
+      <block wx:if="{{loading2}}">
+        <view class="sk-icon"></view>
+        <view class="sk-temp"></view>
+        <view class="sk-text"></view>
+      </block>
+      <block wx:elif="{{error2}}">
+        <error-state errorMsg="{{error2}}" compact bind:retry="onRetry2" />
+      </block>
+      <block wx:elif="{{now2}}">
+        <text class="ov-icon qi-{{now2.icon}}-fill ic-{{ic.category(now2.icon)}}"></text>
+        <text class="ov-temp ov-temp-b">{{tu.fmt(now2.temp, tempUnit)}}°</text>
+        <text class="ov-text">{{now2.text}}</text>
+        <text class="ov-update">{{now2.updateTime}} 更新</text>
+      </block>
+      <block wx:elif="{{city2}}">
+        <view class="ov-placeholder">暂无数据</view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 指标对比表格（仅当至少一个城市有数据时显示） -->
+  <view wx:if="{{now1 || now2}}" class="compare-card">
+    <view class="card-title">实时对比</view>
+
+    <!-- 表头 -->
+    <view class="table-header">
+      <view class="table-col-label"></view>
+      <view class="table-col-val table-val-a">{{city1.name || '城市A'}}</view>
+      <view class="table-col-val table-val-b">{{city2.name || '城市B'}}</view>
+    </view>
+
+    <!-- 体感温度 -->
+    <view class="table-row">
+      <text class="table-col-label">体感温度</text>
+      <text class="table-col-val">
+        {{now1 ? tu.fmt(now1.feelsLike, tempUnit) + '°' : '—'}}
+      </text>
+      <text class="table-col-val table-val-b">
+        {{now2 ? tu.fmt(now2.feelsLike, tempUnit) + '°' : '—'}}
+      </text>
+    </view>
+
+    <!-- 湿度 -->
+    <view class="table-row">
+      <text class="table-col-label">相对湿度</text>
+      <text class="table-col-val">{{now1 ? now1.humidity + '%' : '—'}}</text>
+      <text class="table-col-val table-val-b">{{now2 ? now2.humidity + '%' : '—'}}</text>
+    </view>
+
+    <!-- 风力 -->
+    <view class="table-row">
+      <text class="table-col-label">风力</text>
+      <text class="table-col-val">{{now1 ? now1.windDir + ' ' + now1.windScale + '级' : '—'}}</text>
+      <text class="table-col-val table-val-b">{{now2 ? now2.windDir + ' ' + now2.windScale + '级' : '—'}}</text>
+    </view>
+
+    <!-- 能见度 -->
+    <view class="table-row">
+      <text class="table-col-label">能见度</text>
+      <text class="table-col-val">{{now1 ? now1.vis + 'km' : '—'}}</text>
+      <text class="table-col-val table-val-b">{{now2 ? now2.vis + 'km' : '—'}}</text>
+    </view>
+
+    <!-- AQI -->
+    <view class="table-row" wx:if="{{air1 || air2}}">
+      <text class="table-col-label">空气质量</text>
+      <view class="table-col-val">
+        <block wx:if="{{air1}}">
+          <view class="aqi-tag" style="background: {{air1.color}}">{{air1.aqiDisplay}}</view>
+          <text class="aqi-cat">{{fmt.airCat(air1.category)}}</text>
+        </block>
+        <text wx:else>—</text>
+      </view>
+      <view class="table-col-val table-val-b">
+        <block wx:if="{{air2}}">
+          <view class="aqi-tag" style="background: {{air2.color}}">{{air2.aqiDisplay}}</view>
+          <text class="aqi-cat">{{fmt.airCat(air2.category)}}</text>
+        </block>
+        <text wx:else>—</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 7 天温度趋势折线图 -->
+  <view wx:if="{{daily1.length || daily2.length}}" class="compare-card chart-card">
+    <view class="card-title">7天温度趋势</view>
+
+    <!-- 图例 -->
+    <view class="legend-row">
+      <view class="legend-item">
+        <view class="legend-color" style="background: {{themeColor}}"></view>
+        <text class="legend-label">{{city1 ? (city1.name || '城市A') : '城市A'}}</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-color legend-color-b"></view>
+        <text class="legend-label">{{city2 ? (city2.name || '城市B') : '城市B'}}</text>
+      </view>
+      <text class="legend-note">实线=高温 虚线=低温</text>
+    </view>
+
+    <!-- Canvas -->
+    <canvas type="2d" id="compareChart" class="compare-canvas"></canvas>
+  </view>
+
+  <!-- 未选任何城市时的引导提示 -->
+  <view wx:if="{{!city1 && !city2}}" class="empty-hint">
+    <text class="empty-icon">🌤</text>
+    <text class="empty-text">点击上方选择要对比的城市</text>
+  </view>
+
+</view>
+
+<!-- 城市搜索面板 -->
+<city-search
+  show="{{selectorVisible}}"
+  tempUnit="{{tempUnit}}"
+  bind:select="onSelectCity"
+  bind:close="onSelectorClose"
+/>

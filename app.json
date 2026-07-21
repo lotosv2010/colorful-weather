@@ -25,7 +25,8 @@
     "pages/hourly/index",
     "pages/minutely/index",
     "pages/typhoon/index",
-    "pages/settings/index"
+    "pages/settings/index",
+    "pages/compare/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

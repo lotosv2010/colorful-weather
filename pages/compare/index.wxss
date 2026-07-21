@@ -1,0 +1,326 @@
+/* pages/compare/index.wxss */
+page {
+  background: #0f1014;
+  color: #fff;
+  font-size: 28rpx;
+}
+
+.compare-page {
+  min-height: 100vh;
+  padding: 24rpx 24rpx env(safe-area-inset-bottom, 0);
+  box-sizing: border-box;
+}
+
+/* ── 城市选择槽 ────────────────────────────────── */
+.slot-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.city-slot {
+  flex: 1;
+  min-height: 120rpx;
+  border-radius: 20rpx;
+  padding: 24rpx 24rpx 24rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2rpx solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  active-opacity: 0.7;
+}
+.city-slot-a {
+  border-left: 4rpx solid var(--theme, #1296db);
+}
+.city-slot-b {
+  border-left: 4rpx solid #FF9B50;
+}
+
+.slot-filled {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.slot-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.slot-region {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.slot-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  opacity: 0.5;
+}
+.slot-add {
+  font-size: 40rpx;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.6);
+}
+.slot-hint {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.slot-tag {
+  position: absolute;
+  top: 10rpx;
+  right: 12rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  opacity: 0.45;
+}
+.slot-tag-a { color: var(--theme, #1296db); }
+.slot-tag-b { color: #FF9B50; }
+
+/* VS 徽章 */
+.vs-badge {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 2rpx;
+  flex-shrink: 0;
+  width: 56rpx;
+  text-align: center;
+}
+
+/* ── 天气概览对比行 ─────────────────────────────── */
+.overview-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.overview-col {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20rpx;
+  padding: 28rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-top: 4rpx solid var(--theme, #1296db);
+}
+.overview-col-b {
+  border-top-color: #FF9B50;
+}
+
+.ov-icon {
+  font-size: 64rpx;
+  line-height: 1;
+  margin-bottom: 8rpx;
+}
+.ov-temp {
+  font-size: 60rpx;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.1;
+  color: var(--theme, #1296db);
+}
+.ov-temp-b {
+  color: #FF9B50;
+}
+.ov-text {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 4rpx;
+}
+.ov-update {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 8rpx;
+}
+.ov-placeholder {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* 骨架屏 */
+.sk-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 8rpx;
+}
+.sk-temp {
+  width: 100rpx;
+  height: 48rpx;
+  border-radius: 8rpx;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 8rpx;
+}
+.sk-text {
+  width: 80rpx;
+  height: 26rpx;
+  border-radius: 6rpx;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* 天气图标颜色 */
+.ic-sunny { color: #FFD54F; }
+.ic-partlyCloudy { color: #FFA726; }
+.ic-cloudy { color: #90A4AE; }
+.ic-overcast { color: #78909C; }
+.ic-thunder { color: #CE93D8; }
+.ic-rainLight { color: #5BA3D9; }
+.ic-rainHeavy { color: #5E9FD4; }
+.ic-sleet { color: #80DEEA; }
+.ic-snow { color: #E1F5FE; }
+.ic-snowHeavy { color: #E1F5FE; }
+.ic-fog { color: #B0BEC5; }
+.ic-haze { color: #A1887F; }
+.ic-sand { color: #D7CCC8; }
+.ic-typhoon { color: #EF5350; }
+.ic-hot { color: #FF7043; }
+.ic-cold { color: #64B5F6; }
+.ic-default { color: rgba(255, 255, 255, 0.7); }
+
+/* ── 对比卡片 ──────────────────────────────────── */
+.compare-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.card-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 2rpx;
+  margin-bottom: 20rpx;
+  text-transform: uppercase;
+}
+
+/* ── 表格布局 ──────────────────────────────────── */
+.table-header,
+.table-row {
+  display: flex;
+  align-items: center;
+  padding: 14rpx 0;
+}
+.table-header {
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 8rpx;
+}
+
+.table-col-label {
+  flex: 2;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.45);
+}
+.table-col-val {
+  flex: 2.5;
+  font-size: 28rpx;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+/* 表头城市名 */
+.table-header .table-col-val {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--theme, #1296db);
+}
+.table-header .table-val-b {
+  color: #FF9B50;
+}
+
+.table-row + .table-row {
+  border-top: 1rpx solid rgba(255, 255, 255, 0.05);
+}
+
+/* AQI 行 */
+.aqi-tag {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #fff;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  line-height: 1.5;
+}
+.aqi-cat {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ── 折线图 ────────────────────────────────────── */
+.chart-card {
+  padding-bottom: 20rpx;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 16rpx;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.legend-color {
+  width: 24rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: var(--theme, #1296db);
+}
+.legend-color-b {
+  background: #FF9B50;
+}
+.legend-label {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.65);
+}
+.legend-note {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.3);
+  margin-left: auto;
+}
+
+.compare-canvas {
+  width: 100%;
+  height: 220rpx;
+  display: block;
+}
+
+/* ── 空状态引导 ────────────────────────────────── */
+.empty-hint {
+  margin-top: 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  opacity: 0.5;
+}
+.empty-icon {
+  font-size: 80rpx;
+  line-height: 1;
+}
+.empty-text {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}

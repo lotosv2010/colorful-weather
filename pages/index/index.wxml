@@ -283,5 +283,6 @@
     tempUnit="{{tempUnit}}"
     bind:selectcity="onCitiesOverviewSelect"
     bind:close="onCitiesOverviewClose"
+    bind:compare="onCitiesOverviewCompare"
   />
 </view>

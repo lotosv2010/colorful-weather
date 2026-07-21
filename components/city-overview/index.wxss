@@ -44,11 +44,35 @@
 .co-header {
   padding: 20rpx 40rpx 24rpx;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .co-title {
   font-size: 34rpx;
   font-weight: 700;
   color: #fff;
+  letter-spacing: 1rpx;
+}
+
+/* 对比按钮 */
+.co-compare-btn {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.06);
+}
+.co-compare-icon {
+  font-size: 30rpx;
+  color: var(--theme, #1296db);
+  line-height: 1;
+}
+.co-compare-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--theme, #1296db);
   letter-spacing: 1rpx;
 }
 
