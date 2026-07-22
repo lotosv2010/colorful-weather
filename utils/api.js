@@ -156,6 +156,7 @@ module.exports = {
 
   // ── 实时天气 ─────────────────────────────────────────────────────────────
   now:           (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/now`,      'GET', data, tc, TTL.NOW,      opts), // 实时天气
+  gridNow:       (data, tc, opts) => cachedRequest(`${BASE_URL}/grid-weather/now`, 'GET', data, tc, TTL.NOW,      opts), // 格点实时天气（精确坐标，3-5km 分辨率）
 
   // ── 天气预报 ─────────────────────────────────────────────────────────────
   sevenDay:      (data, tc, opts) => cachedRequest(`${BASE_URL}/weather/7d`,       'GET', data, tc, TTL.DAILY,    opts), // 7天天气预报

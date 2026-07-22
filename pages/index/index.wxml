@@ -28,7 +28,13 @@
     style="background: {{weatherBg}}; left: {{mapTipsData.tipX}}px; top: {{mapTipsData.tipY}}px;"
   >
     <view class="map-tips-header">
-      <view class="map-tips-location">{{mapTipsData.district}}</view>
+      <view class="map-tips-location">
+        <!-- POI 点击时显示 POI 名称，普通点击显示行政区 -->
+        <text wx:if="{{mapTipsData.poiName}}" class="map-tips-poi-name">{{mapTipsData.poiName}}</text>
+        <text wx:else>{{mapTipsData.district}}</text>
+        <!-- POI 模式下，行政区作为副标签展示 -->
+        <text wx:if="{{mapTipsData.poiName && mapTipsData.district && mapTipsData.district !== mapTipsData.poiName}}" class="map-tips-district-sub"> · {{mapTipsData.district}}</text>
+      </view>
       <view class="map-tips-close" catchtap="onMapTipsClose">✕</view>
     </view>
     <view class="map-tips-content" catchtap="onMapTipsTap">
@@ -43,6 +49,7 @@
         </view>
       </view>
     </view>
+    <view class="map-tips-hint">精确坐标预览 · 点击查看完整预报</view>
   </view>
 
   <!-- 天气粒子动效层 -->

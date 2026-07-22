@@ -1,4 +1,4 @@
-const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather, solarElevationAngle } = require('../../utils/api');
+const { now, gridNow, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather, solarElevationAngle } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
 const { getLunarLabels, getSolarTermCard } = require('../../utils/lunar');
 const prefs = require('../../utils/prefs');
@@ -223,10 +223,12 @@ Page({
   },
   async onMapPoiTap(e) {
     const { longitude, latitude } = e.detail;
+    // bindpoitap detail 带有 POI 名称（name 或 pointOfInterest），直接取用
+    const poiName = e.detail.name || e.detail.pointOfInterest || '';
     if (this._mapLoading || longitude == null || latitude == null) return;
-    await this._handleMapClick(longitude, latitude);
+    await this._handleMapClick(longitude, latitude, poiName);
   },
-  async _handleMapClick(longitude, latitude) {
+  async _handleMapClick(longitude, latitude, poiName = '') {
     // 计算屏幕坐标：通过地图可视区域和点击经纬度换算
     let tapX = null;
     let tapY = null;
@@ -252,9 +254,9 @@ Page({
         tapY = screenH / 2 - dLat * pxPerLat;
       }
     } catch (_) {}
-    await this._fetchMapTips(longitude, latitude, tapX, tapY);
+    await this._fetchMapTips(longitude, latitude, tapX, tapY, poiName);
   },
-  async _fetchMapTips(longitude, latitude, x, y) {
+  async _fetchMapTips(longitude, latitude, x, y, poiName = '') {
     this._mapLoading = true;
     this.setData({
       mapTipsVisible: false,
@@ -274,7 +276,10 @@ Page({
       const qwLocation = `${Number(longitude).toFixed(2)},${Number(latitude).toFixed(2)}`;
       const [cityInfo, weatherRes] = await Promise.all([
         this.getCity(qqLocation),
-        now({ location: qwLocation }),
+        // 地图坐标点击使用格点实时天气，精度 3-5km，避免漂移到最近城市站点。
+        // 设计取舍：tips 仅作精确预览；点击进入详情后 getWeather() 仍走城市级接口，
+        // 因为 air/warning/indices 无格点版本，全量视图需要城市级数据。
+        gridNow({ location: qwLocation }),
       ]);
       const { city, province, district } = cityInfo;
       const nw = weatherRes?.now || {};
@@ -314,6 +319,8 @@ Page({
           city,
           province,
           district,
+          // POI 点击时额外携带 POI 名称，供 WXML 显示副标签
+          poiName,
           locationLabel,
           icon: nw.icon || '100',
           iconColor: this._iconColor(nw.icon || '100'),
