@@ -1,0 +1,217 @@
+<!--pages/trip/index.wxml-->
+<wxs src="/utils/tempUnit.wxs" module="tu" />
+<wxs src="/utils/iconColor.wxs" module="ic" />
+
+<view class="trip-page" style="--theme:{{themeColor}}">
+
+  <!-- ── 城市选择卡 ─────────────────────────────────── -->
+  <view class="city-slot" catchtap="onSelectSlot">
+    <view wx:if="{{city}}" class="slot-filled">
+      <view class="slot-left">
+        <text class="slot-icon">✈️</text>
+        <view>
+          <text class="slot-name">{{city.name || city.district}}</text>
+          <text class="slot-region">{{city.province}}</text>
+        </view>
+      </view>
+      <text class="slot-change">切换</text>
+    </view>
+    <view wx:else class="slot-empty">
+      <text class="slot-add-icon">✈️</text>
+      <view>
+        <text class="slot-empty-title">选择目的地城市</text>
+        <text class="slot-empty-sub">点此搜索目的地，查看出行建议</text>
+      </view>
+      <text class="slot-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- ── 日期横向选择列表 ──────────────────────────── -->
+  <block wx:if="{{daily.length}}">
+    <scroll-view scroll-x class="date-scroll" enhanced="{{true}}" show-scrollbar="{{false}}">
+      <view class="date-list">
+        <view
+          wx:for="{{daily}}"
+          wx:key="fxDate"
+          class="date-card {{item.active ? 'date-card-active' : ''}}"
+          catchtap="onDateTap"
+          data-idx="{{index}}"
+        >
+          <text class="date-week">{{item.week}}</text>
+          <text class="date-label">{{item.dateLabel}}</text>
+          <text class="date-icon qi-{{item.iconDay}}-fill ic-{{ic.category(item.iconDay)}}"></text>
+          <text class="date-temp">{{tu.fmt(item.tempMax, tempUnit)}}°/{{tu.fmt(item.tempMin, tempUnit)}}°</text>
+        </view>
+      </view>
+    </scroll-view>
+  </block>
+
+  <!-- 日期骨架屏 -->
+  <block wx:elif="{{loading}}">
+    <view class="date-scroll">
+      <view class="date-list">
+        <view class="date-card sk-date" wx:for="{{7}}" wx:key="*this">
+          <view class="sk-bar sk-xs"></view>
+          <view class="sk-bar sk-xs"></view>
+          <view class="sk-circle-sm"></view>
+          <view class="sk-bar sk-xs"></view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ── 主内容区 ──────────────────────────────────── -->
+
+  <!-- 错误状态 -->
+  <block wx:if="{{errorMsg}}">
+    <error-state errorMsg="{{errorMsg}}" bind:retry="onRetry" />
+  </block>
+
+  <!-- 内容骨架 -->
+  <block wx:elif="{{loading}}">
+    <view class="trip-card sk-card-wrap">
+      <view class="sk-bar sk-lg"></view>
+      <view class="sk-bar sk-md" style="margin-top:16rpx;"></view>
+    </view>
+    <view class="trip-card sk-card-wrap">
+      <view class="sk-bar sk-md"></view>
+      <view class="sk-bar sk-sm" style="margin-top:16rpx;"></view>
+    </view>
+    <view class="trip-card sk-card-wrap">
+      <view class="sk-grid-4">
+        <view class="sk-grid-item" wx:for="{{4}}" wx:key="*this">
+          <view class="sk-circle-sm"></view>
+          <view class="sk-bar sk-xs" style="margin-top:12rpx;"></view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 正常内容 -->
+  <block wx:elif="{{selectedDay}}">
+
+    <!-- ① 综合出行建议卡 -->
+    <view class="trip-card advice-card" style="border-top-color: {{selectedDay.advice.color}}">
+      <view class="advice-header">
+        <text class="advice-icon">{{selectedDay.advice.icon}}</text>
+        <view>
+          <text class="advice-label" style="color: {{selectedDay.advice.color}}">{{selectedDay.advice.label}}</text>
+          <text class="advice-date">{{selectedDay.week}} · {{selectedDay.dateLabel}}</text>
+        </view>
+        <view class="advice-score-badge" style="background: {{selectedDay.advice.color}}20; color: {{selectedDay.advice.color}}">
+          {{selectedDay.advice.score > 0 ? '+' : ''}}{{selectedDay.advice.score}}分
+        </view>
+      </view>
+      <view wx:if="{{selectedDay.advice.tips.length}}" class="advice-tips">
+        <view wx:for="{{selectedDay.advice.tips}}" wx:key="*this" class="advice-tip-item">
+          <text class="tip-dot">·</text>
+          <text class="tip-text">{{item}}</text>
+        </view>
+      </view>
+      <view wx:else class="advice-tip-item advice-tip-ok">
+        <text class="tip-dot">·</text>
+        <text class="tip-text">天气良好，一切顺利！</text>
+      </view>
+    </view>
+
+    <!-- ② 天气详情卡 -->
+    <view class="trip-card">
+      <view class="card-title">天气详情</view>
+      <view class="weather-row">
+        <view class="weather-icon-wrap">
+          <text class="weather-icon qi-{{selectedDay.iconDay}}-fill ic-{{ic.category(selectedDay.iconDay)}}"></text>
+          <text class="weather-text">{{selectedDay.textDay}}</text>
+        </view>
+        <view class="weather-temp-wrap">
+          <text class="temp-high">{{tu.fmt(selectedDay.tempMaxRaw, tempUnit)}}°</text>
+          <text class="temp-sep">/</text>
+          <text class="temp-low">{{tu.fmt(selectedDay.tempMinRaw, tempUnit)}}°</text>
+        </view>
+      </view>
+      <view class="detail-grid">
+        <view class="detail-item" wx:if="{{selectedDay.pop > 0}}">
+          <text class="detail-label">降水概率</text>
+          <text class="detail-val">{{selectedDay.pop}}%</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.humidity > 0}}">
+          <text class="detail-label">相对湿度</text>
+          <text class="detail-val">{{selectedDay.humidity}}%</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.windDirDay}}">
+          <text class="detail-label">风向</text>
+          <text class="detail-val">{{selectedDay.windDirDay}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.windScaleDay}}">
+          <text class="detail-label">风力</text>
+          <text class="detail-val">{{selectedDay.windScaleDay}}级</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.uvIndex > 0}}">
+          <text class="detail-label">紫外线</text>
+          <text class="detail-val">{{selectedDay.uvIndex}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.vis > 0}}">
+          <text class="detail-label">能见度</text>
+          <text class="detail-val">{{selectedDay.vis}}km</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ③ 关键生活指数卡（仅前3天有数据） -->
+    <view wx:if="{{selectedDay.indices}}" class="trip-card">
+      <view class="card-title">生活指数</view>
+      <view class="index-grid">
+        <view
+          wx:for="{{selectedDay.indices}}"
+          wx:key="type"
+          class="index-item"
+        >
+          <view class="index-dot" style="background: {{item.color}}"></view>
+          <text class="index-name">{{item.name}}</text>
+          <text class="index-cat" style="color: {{item.color}}">{{item.category}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:elif="{{selectedDay.indices === null}}" class="trip-card indices-na-card">
+      <text class="indices-na-text">该日期超出生活指数预报范围（仅提供3天）</text>
+    </view>
+
+    <!-- ④ 空气质量卡 -->
+    <view wx:if="{{selectedDay.air}}" class="trip-card">
+      <view class="card-title-row">
+        <text class="card-title">空气质量</text>
+        <text class="card-note">当前实况</text>
+      </view>
+      <view class="air-row">
+        <view class="aqi-badge" style="background: {{selectedDay.air.color}}">
+          <text class="aqi-num">{{selectedDay.air.aqiDisplay}}</text>
+          <text class="aqi-label">AQI</text>
+        </view>
+        <view class="air-info">
+          <text class="air-cat" style="color: {{selectedDay.air.color}}">{{selectedDay.air.category}}</text>
+          <text class="air-sub">
+            {{selectedDay.air.level <= 2 ? '空气清新，适合户外活动' :
+              selectedDay.air.level == 3 ? '轻度污染，敏感人群减少外出' :
+              '空气较差，建议佩戴口罩'}}
+          </text>
+        </view>
+      </view>
+    </view>
+
+  </block>
+
+  <!-- 未选城市引导 -->
+  <view wx:if="{{!city && !loading}}" class="empty-hint">
+    <text class="empty-icon">🗺</text>
+    <text class="empty-title">规划你的出行</text>
+    <text class="empty-sub">选择目的地城市，查看未来7天天气预报与出行建议</text>
+  </view>
+
+</view>
+
+<!-- 城市搜索面板 -->
+<city-search
+  show="{{selectorVisible}}"
+  tempUnit="{{tempUnit}}"
+  bind:select="onSelectCity"
+  bind:close="onSelectorClose"
+/>

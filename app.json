@@ -27,7 +27,8 @@
     "pages/typhoon/index",
     "pages/settings/index",
     "pages/compare/index",
-    "pages/astronomy/index"
+    "pages/astronomy/index",
+    "pages/trip/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -1,0 +1,516 @@
+/* pages/trip/index.wxss */
+page {
+  background: #0f1014;
+  color: #fff;
+  font-size: 28rpx;
+}
+
+.trip-page {
+  min-height: 100vh;
+  padding: 24rpx 24rpx env(safe-area-inset-bottom, 0);
+  box-sizing: border-box;
+}
+
+/* ── 城市选择卡 ─────────────────────────────── */
+.city-slot {
+  background: rgba(255, 255, 255, 0.06);
+  border: 2rpx solid rgba(255, 255, 255, 0.1);
+  border-left: 4rpx solid var(--theme, #1296db);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+
+.slot-filled {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.slot-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.slot-icon {
+  font-size: 48rpx;
+  line-height: 1;
+}
+
+.slot-name {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.slot-region {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 4rpx;
+}
+
+.slot-change {
+  font-size: 24rpx;
+  color: var(--theme, #1296db);
+  padding: 8rpx 20rpx;
+  border: 1rpx solid var(--theme, #1296db);
+  border-radius: 100rpx;
+  flex-shrink: 0;
+}
+
+.slot-empty {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.slot-add-icon {
+  font-size: 48rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.slot-empty-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.slot-empty-sub {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4rpx;
+}
+
+.slot-arrow {
+  margin-left: auto;
+  font-size: 40rpx;
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+/* ── 日期横向选择 ─────────────────────────── */
+.date-scroll {
+  width: 100%;
+  margin-bottom: 20rpx;
+}
+
+.date-list {
+  display: flex;
+  gap: 12rpx;
+  padding-bottom: 4rpx;
+  /* 让内容宽度自适应，撑开 scroll-view */
+  width: max-content;
+}
+
+.date-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2rpx solid rgba(255, 255, 255, 0.08);
+  min-width: 96rpx;
+  gap: 6rpx;
+  flex-shrink: 0;
+}
+
+.date-card-active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--theme, #1296db);
+}
+
+.date-week {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1;
+}
+
+.date-card-active .date-week {
+  color: var(--theme, #1296db);
+}
+
+.date-label {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+}
+
+.date-icon {
+  font-size: 40rpx;
+  line-height: 1;
+  margin: 4rpx 0;
+}
+
+.date-temp {
+  font-size: 19rpx;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ── 通用卡片 ─────────────────────────────── */
+.trip-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.card-title {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 2rpx;
+  text-transform: uppercase;
+  margin-bottom: 20rpx;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.card-note {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* ── 出行建议卡 ─────────────────────────── */
+.advice-card {
+  border-top: 4rpx solid var(--theme, #1296db);
+}
+
+.advice-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.advice-icon {
+  font-size: 52rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.advice-label {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.advice-date {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4rpx;
+}
+
+.advice-score-badge {
+  margin-left: auto;
+  font-size: 22rpx;
+  font-weight: 700;
+  padding: 6rpx 16rpx;
+  border-radius: 100rpx;
+  flex-shrink: 0;
+}
+
+.advice-tips {
+  border-top: 1rpx solid rgba(255, 255, 255, 0.06);
+  padding-top: 16rpx;
+}
+
+.advice-tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.advice-tip-item:last-child {
+  margin-bottom: 0;
+}
+
+.advice-tip-ok .tip-dot,
+.advice-tip-ok .tip-text {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.tip-dot {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.tip-text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+}
+
+/* ── 天气详情卡 ──────────────────────────── */
+.weather-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.weather-icon-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.weather-icon {
+  font-size: 72rpx;
+  line-height: 1;
+}
+
+.weather-text {
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+.weather-temp-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.temp-high {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: var(--theme, #1296db);
+  line-height: 1;
+}
+
+.temp-sep {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.temp-low {
+  font-size: 36rpx;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx 0;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.detail-label {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.detail-val {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+/* ── 生活指数卡 ──────────────────────────── */
+.index-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.index-item {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14rpx;
+  padding: 18rpx 16rpx;
+}
+
+.index-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.index-name {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+  flex: 1;
+}
+
+.index-cat {
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.indices-na-card {
+  padding: 20rpx 24rpx;
+}
+
+.indices-na-text {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.25);
+  line-height: 1.6;
+}
+
+/* ── 空气质量卡 ─────────────────────────── */
+.air-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.aqi-badge {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.aqi-num {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.1;
+}
+
+.aqi-label {
+  font-size: 18rpx;
+  font-weight: 600;
+  color: #111;
+  opacity: 0.7;
+}
+
+.air-cat {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.air-sub {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 6rpx;
+  line-height: 1.5;
+}
+
+/* ── 天气图标颜色（与 compare 一致）── */
+.ic-sunny { color: #FFD54F; }
+.ic-partlyCloudy { color: #FFA726; }
+.ic-cloudy { color: #90A4AE; }
+.ic-overcast { color: #78909C; }
+.ic-thunder { color: #CE93D8; }
+.ic-rainLight { color: #5BA3D9; }
+.ic-rainHeavy { color: #5E9FD4; }
+.ic-sleet { color: #80DEEA; }
+.ic-snow { color: #E1F5FE; }
+.ic-snowHeavy { color: #E1F5FE; }
+.ic-fog { color: #B0BEC5; }
+.ic-haze { color: #A1887F; }
+.ic-sand { color: #D7CCC8; }
+.ic-typhoon { color: #EF5350; }
+.ic-hot { color: #FF7043; }
+.ic-cold { color: #64B5F6; }
+.ic-default { color: rgba(255, 255, 255, 0.7); }
+
+/* ── 骨架屏 ─────────────────────────────── */
+.sk-date {
+  pointer-events: none;
+}
+
+.sk-bar {
+  border-radius: 8rpx;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sk-xs { width: 64rpx; height: 20rpx; margin: 0 auto; }
+.sk-sm { width: 100rpx; height: 24rpx; }
+.sk-md { width: 200rpx; height: 28rpx; }
+.sk-lg { width: 280rpx; height: 48rpx; }
+
+.sk-circle-sm {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 auto;
+}
+
+.sk-card-wrap {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.sk-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+}
+
+.sk-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+/* ── 空状态引导 ──────────────────────────── */
+.empty-hint {
+  margin-top: 100rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  line-height: 1;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-sub {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1.6;
+  max-width: 480rpx;
+}

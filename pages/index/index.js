@@ -109,6 +109,9 @@ Page({
   onSettingsTap() {
     wx.navigateTo({ url: '/pages/settings/index' });
   },
+  onTripTap() {
+    wx.navigateTo({ url: '/pages/trip/index' });
+  },
   onRefresh() {
     this.getWeather({ force: true });
   },

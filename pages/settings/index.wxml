@@ -79,6 +79,17 @@
   </view>
 
   <view class="section">
+    <view class="section-title">工具</view>
+    <view class="cache-row" bindtap="onTripTap">
+      <view class="cache-info">
+        <view class="cache-name">出行规划</view>
+        <view class="cache-sub">选目的地城市，查看7天天气与综合出行建议</view>
+      </view>
+      <view class="cache-arrow">›</view>
+    </view>
+  </view>
+
+  <view class="section">
     <view class="section-title">快速访问</view>
     <view class="cache-row" bindtap="onAddShortcut">
       <view class="cache-info">

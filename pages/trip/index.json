@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "出行规划",
+  "navigationBarBackgroundColor": "#000",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "city-search": "/components/city-search/index",
+    "error-state": "/components/error-state/index"
+  }
+}

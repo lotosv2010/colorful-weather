@@ -78,6 +78,9 @@ Page({
     const { id } = e.currentTarget.dataset;
     prefs.togglePin(id);
   },
+  onTripTap() {
+    wx.navigateTo({ url: '/pages/trip/index' });
+  },
   onAddShortcut() {
     if (wx.canIUse('addShortcut')) {
       wx.addShortcut({ fail: () => this._showShortcutGuide() });

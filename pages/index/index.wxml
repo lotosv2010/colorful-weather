@@ -203,6 +203,17 @@
         tempUnit="{{tempUnit}}"
         themeColor="{{themeColor}}"
       />
+      <!-- 出行规划入口卡 -->
+      <view class="trip-entry-card" catchtap="onTripTap">
+        <view class="trip-entry-left">
+          <text class="trip-entry-icon">✈️</text>
+          <view>
+            <text class="trip-entry-title">出行规划</text>
+            <text class="trip-entry-sub">查看目的地天气，获取出行建议</text>
+          </view>
+        </view>
+        <text class="trip-entry-arrow">›</text>
+      </view>
       </block>
       <block wx:elif="{{errorMsg}}">
         <error-state errorMsg="{{errorMsg}}" bind:retry="onRetry" />
