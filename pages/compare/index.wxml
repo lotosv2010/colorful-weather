@@ -50,7 +50,7 @@
         <error-state errorMsg="{{error1}}" compact bind:retry="onRetry1" />
       </block>
       <block wx:elif="{{now1}}">
-        <text class="ov-icon qi-{{now1.icon}}-fill ic-{{ic.category(now1.icon)}}"></text>
+        <text class="ov-icon qi-{{now1.icon}}-fill icon-color-{{ic.category(now1.icon)}}"></text>
         <text class="ov-temp">{{tu.fmt(now1.temp, tempUnit)}}°</text>
         <text class="ov-text">{{now1.text}}</text>
         <text class="ov-update">{{now1.updateTime}} 更新</text>
@@ -71,7 +71,7 @@
         <error-state errorMsg="{{error2}}" compact bind:retry="onRetry2" />
       </block>
       <block wx:elif="{{now2}}">
-        <text class="ov-icon qi-{{now2.icon}}-fill ic-{{ic.category(now2.icon)}}"></text>
+        <text class="ov-icon qi-{{now2.icon}}-fill icon-color-{{ic.category(now2.icon)}}"></text>
         <text class="ov-temp ov-temp-b">{{tu.fmt(now2.temp, tempUnit)}}°</text>
         <text class="ov-text">{{now2.text}}</text>
         <text class="ov-update">{{now2.updateTime}} 更新</text>

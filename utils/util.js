@@ -29,9 +29,45 @@ const tzDiffText = (utcOffset) => {
   return diff > 0 ? `早${label}` : `晚${label}`;
 };
 
+// 构建省/市/区位置标签，自动去除直辖市等场景下的冗余层级
+// district: 区县；city: 地级市；province: 省
+function buildLocationLabel(district, city, province) {
+  let displayCity = city;
+  let displayProvince = province;
+
+  // 直辖市：province === city，去掉重复的省级
+  if (province && city && province === city) {
+    displayProvince = '';
+  }
+
+  // 直辖市 GeoAPI 场景：adm2="重庆" adm1="重庆市"，city + '市' === province，去掉冗余的 city 层
+  if (city && province && city + '市' === province) {
+    displayCity = '';
+  }
+
+  // district === city，去掉重复的市级
+  if (district && city && district === city) {
+    displayCity = '';
+  }
+
+  // district === province，去掉重复的省级
+  if (district && province && district === province) {
+    displayProvince = '';
+  }
+
+  // city === province（直辖市且 district === city），去掉重复的省级
+  if (displayCity && province && displayCity === province) {
+    displayProvince = '';
+  }
+
+  const parts = [district, displayCity, displayProvince].filter(Boolean);
+  return parts.join('，');
+}
+
 module.exports = {
   formatDate,
   toHex,
   getTextColor,
   tzDiffText,
+  buildLocationLabel,
 };

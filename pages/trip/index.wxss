@@ -425,24 +425,7 @@ page {
   line-height: 1.5;
 }
 
-/* ── 天气图标颜色（与 compare 一致）── */
-.ic-sunny { color: #FFD54F; }
-.ic-partlyCloudy { color: #FFA726; }
-.ic-cloudy { color: #90A4AE; }
-.ic-overcast { color: #78909C; }
-.ic-thunder { color: #CE93D8; }
-.ic-rainLight { color: #5BA3D9; }
-.ic-rainHeavy { color: #5E9FD4; }
-.ic-sleet { color: #80DEEA; }
-.ic-snow { color: #E1F5FE; }
-.ic-snowHeavy { color: #E1F5FE; }
-.ic-fog { color: #B0BEC5; }
-.ic-haze { color: #A1887F; }
-.ic-sand { color: #D7CCC8; }
-.ic-typhoon { color: #EF5350; }
-.ic-hot { color: #FF7043; }
-.ic-cold { color: #64B5F6; }
-.ic-default { color: rgba(255, 255, 255, 0.7); }
+
 
 /* ── 骨架屏 ─────────────────────────────── */
 .sk-date {

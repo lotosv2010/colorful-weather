@@ -1,31 +1,9 @@
 // pages/share/index.js
-const { resolveThemeBg, resolveThemeBgColors, getWeatherCategory } = require('../../utils/autoTheme');
+const { resolveThemeBg, resolveThemeBgColors } = require('../../utils/autoTheme');
+const { iconColor: getIconColor } = require('../../utils/iconColor');
 const { convert } = require('../../utils/temp');
 const prefs = require('../../utils/prefs');
 const monitor = require('../../utils/monitor');
-
-// ── 天气图标颜色（与 app.wxss --icon-* 变量保持一致）────────────────────────
-const ICON_COLORS = {
-  sunny:        '#FDB813',
-  partlyCloudy: '#F0A500',
-  cloudy:       '#7B9BB5',
-  overcast:     '#5A7080',
-  rainLight:    '#5BA3D9',
-  rainHeavy:    '#1E4D8C',
-  thunder:      '#7B3FA0',
-  sleet:        '#6AAFD6',
-  snow:         '#A8D8EA',
-  snowHeavy:    '#D0EEF8',
-  fog:          '#9E9E9E',
-  haze:         '#B5854A',
-  sand:         '#C49A3C',
-  typhoon:      '#E53935',
-  hot:          '#DC143C',
-  cold:         '#81D4FA',
-  default:      '#8C9AA5',
-};
-
-const getIconColor = (code) => ICON_COLORS[getWeatherCategory(code)] || ICON_COLORS.default;
 
 // ── QWeather fill 图标 code → Unicode 字符 ──────────────────────────────────
 // 摘自 static/qweather-icons.wxss 的 -fill 条目；台风码使用线框版

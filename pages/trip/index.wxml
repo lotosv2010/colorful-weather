@@ -39,7 +39,7 @@
         >
           <text class="date-week">{{item.week}}</text>
           <text class="date-label">{{item.dateLabel}}</text>
-          <text class="date-icon qi-{{item.iconDay}}-fill ic-{{ic.category(item.iconDay)}}"></text>
+          <text class="date-icon qi-{{item.iconDay}}-fill icon-color-{{ic.category(item.iconDay)}}"></text>
           <text class="date-temp">{{tu.fmt(item.tempMax, tempUnit)}}°/{{tu.fmt(item.tempMin, tempUnit)}}°</text>
         </view>
       </view>
@@ -119,7 +119,7 @@
       <view class="card-title">天气详情</view>
       <view class="weather-row">
         <view class="weather-icon-wrap">
-          <text class="weather-icon qi-{{selectedDay.iconDay}}-fill ic-{{ic.category(selectedDay.iconDay)}}"></text>
+          <text class="weather-icon qi-{{selectedDay.iconDay}}-fill icon-color-{{ic.category(selectedDay.iconDay)}}"></text>
           <text class="weather-text">{{selectedDay.textDay}}</text>
         </view>
         <view class="weather-temp-wrap">

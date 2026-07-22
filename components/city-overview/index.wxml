@@ -50,7 +50,7 @@
         <!-- 右：天气图标 + 当前温度 + 最高/最低温 -->
         <view class="city-card-right">
           <block wx:if="{{weathers[index]}}">
-            <text class="city-card-icon qi-{{weathers[index].icon}}-fill ic-{{ic.category(weathers[index].icon)}}"></text>
+            <text class="city-card-icon qi-{{weathers[index].icon}}-fill icon-color-{{ic.category(weathers[index].icon)}}"></text>
             <text class="city-card-temp">{{tu.fmt(weathers[index].temp, tempUnit)}}°</text>
             <text wx:if="{{weathers[index].tempMax !== null}}" class="city-card-hilo">
               {{tu.fmt(weathers[index].tempMax, tempUnit)}}° / {{tu.fmt(weathers[index].tempMin, tempUnit)}}°

@@ -1,6 +1,9 @@
 const { now, gridNow, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather, solarElevationAngle } = require('../../utils/api');
-const { formatDate } = require('../../utils/util');
-const { getLunarLabels, getSolarTermCard } = require('../../utils/lunar');
+const { formatDate, buildLocationLabel } = require('../../utils/util');
+const { getSolarTermCard } = require('../../utils/lunar');
+const { formatHourly, formatDaily, formatAir, formatDateStr } = require('../../utils/weatherFormat');
+const { iconColor } = require('../../utils/iconColor');
+const { calcTripAdvice } = require('../../utils/tripAdvice');
 const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
 const { navigateTo } = require('../../utils/route');
@@ -292,41 +295,9 @@ Page({
     const pad = n => `${n}`.padStart(2, '0');
     const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
 
-    // ── 出行建议评分（复用 trip 页逻辑，基于实时天气 + 今日预报 + 空气质量）──
-    const ADVICE_GRADE_MAP = [
-      { minScore: 4,   icon: '🌟', label: '晴好出行',           color: '#4caf50' },
-      { minScore: 2,   icon: '👍', label: '适合出行',           color: '#8bc34a' },
-      { minScore: 0,   icon: '☂️', label: '可以出行，建议备伞',  color: '#ffb300' },
-      { minScore: -2,  icon: '⚠️', label: '谨慎出行，做好防护',  color: '#ff9800' },
-      { minScore: -99, icon: '🚫', label: '不建议出行',          color: '#f44336' },
-    ];
+    // ── 出行建议评分（基于实时天气 + 今日预报 + 空气质量）──
     const daily0 = this.data.daily && this.data.daily[0];
-    const advice = (() => {
-      let score = 0;
-      const tips = [];
-      const ic = parseInt(String(currentWeather && currentWeather.icon || '100'), 10);
-      if (ic <= 103) score += 2;
-      else if (ic <= 299) score += 1;
-      else if (ic >= 300 && ic <= 313) { score -= 1; tips.push('可能有降雨，建议携带雨具'); }
-      else if (ic >= 314 && ic <= 349) { score -= 2; tips.push('降水较强，谨慎出行'); }
-      else if (ic >= 350 && ic <= 399) { score -= 3; tips.push('强对流天气，不建议外出'); }
-      else if (ic >= 400 && ic <= 499) { score -= 1; tips.push('有降雪天气，注意路况'); }
-      else if (ic >= 500 && ic <= 515) { score -= 1; tips.push('能见度较低，注意行车安全'); }
-      else if (ic >= 516 && ic <= 599) { score -= 2; tips.push('沙尘天气，注意防护'); }
-      const pop = daily0 && daily0.pop != null ? Number(daily0.pop) : 0;
-      if (pop >= 70 && !tips.some(t => t.includes('降水') || t.includes('雨'))) {
-        score -= 1; tips.push(`降水概率 ${pop}%，建议备伞`);
-      }
-      const ws = parseInt(String(currentWeather && currentWeather.windScale || '0').split('-')[0], 10) || 0;
-      if (ws >= 6) { score -= 1; tips.push(`风力较大（${currentWeather.windScale}级），注意出行安全`); }
-      if (air) {
-        const lvl = parseInt(String(air.level || '1'), 10) || 1;
-        if (lvl >= 4) { score -= 2; tips.push('空气质量较差，建议佩戴口罩'); }
-        else if (lvl === 3) { score -= 1; tips.push('空气轻度污染，敏感人群注意防护'); }
-      }
-      const grade = ADVICE_GRADE_MAP.find(g => score >= g.minScore) || ADVICE_GRADE_MAP[ADVICE_GRADE_MAP.length - 1];
-      return { score, icon: grade.icon, label: grade.label, color: grade.color, tips };
-    })();
+    const advice = calcTripAdvice({ currentWeather, daily0, air });
 
     // ── 关键生活指数（旅游/穿衣/运动/感冒）──
     const KEY_IDX_TYPES = ['6', '3', '1', '9'];
@@ -487,7 +458,7 @@ Page({
           poiName,
           locationLabel,
           icon: nw.icon || '100',
-          iconColor: this._iconColor(nw.icon || '100'),
+          iconColor: iconColor(nw.icon || '100'),
           temp,
           text: nw.text || '',
           tipX,
@@ -505,35 +476,6 @@ Page({
     } finally {
       this._mapLoading = false;
     }
-  },
-  _iconColor(code) {
-    const c = parseInt(code, 10);
-    const map = {
-      sunny: '#FDB813', partlyCloudy: '#F0A500', cloudy: '#7B9BB5',
-      overcast: '#5A7080', rainLight: '#5BA3D9', rainHeavy: '#1E4D8C',
-      thunder: '#7B3FA0', sleet: '#6AAFD6', snow: '#A8D8EA',
-      snowHeavy: '#D0EEF8', fog: '#9E9E9E', haze: '#B5854A',
-      sand: '#C49A3C', typhoon: '#E53935', hot: '#DC143C',
-      cold: '#81D4FA', default: '#8C9AA5',
-    };
-    let cat = 'default';
-    if (c === 100 || c === 150) cat = 'sunny';
-    else if (c === 101 || c === 151) cat = 'partlyCloudy';
-    else if (c === 102 || c === 103 || c === 152 || c === 153) cat = 'cloudy';
-    else if (c === 104 || c === 154) cat = 'overcast';
-    else if (c === 302 || c === 303 || c === 304) cat = 'thunder';
-    else if (c === 300 || c === 305 || c === 309 || c === 313 || c === 399 || c === 350 || c === 351) cat = 'rainLight';
-    else if (c === 301 || c === 306 || c === 307 || c === 308 || c === 310 || c === 311 || c === 312 || c === 314 || c === 315 || c === 316 || c === 317 || c === 318) cat = 'rainHeavy';
-    else if (c === 404 || c === 405) cat = 'sleet';
-    else if (c === 400 || c === 406 || c === 407 || c === 408 || c === 456 || c === 457 || c === 499) cat = 'snow';
-    else if (c === 401 || c === 402 || c === 403 || c === 409 || c === 410) cat = 'snowHeavy';
-    else if (c === 500 || c === 501 || c === 502 || c === 509 || c === 510 || c === 514 || c === 515) cat = 'fog';
-    else if (c === 503 || c === 504 || c === 511 || c === 512 || c === 513) cat = 'haze';
-    else if (c === 507 || c === 508) cat = 'sand';
-    else if (c >= 800 && c <= 807) cat = 'typhoon';
-    else if (c === 900) cat = 'hot';
-    else if (c === 901) cat = 'cold';
-    return map[cat] || map.default;
   },
   onMapTipsTap() {
     const d = this.data.mapTipsData;
@@ -605,36 +547,7 @@ Page({
     }
   },
   _buildLocationLabel(district, city, province) {
-    let displayCity = city;
-    let displayProvince = province;
-
-    // 直辖市：province === city，去掉重复的省级
-    if (province && city && province === city) {
-      displayProvince = '';
-    }
-
-    // 直辖市 GeoAPI 场景：adm2="重庆" adm1="重庆市"，city + '市' === province，去掉冗余的 city 层
-    if (city && province && city + '市' === province) {
-      displayCity = '';
-    }
-
-    // district === city，去掉重复的市级
-    if (district && city && district === city) {
-      displayCity = '';
-    }
-
-    // district === province，去掉重复的省级
-    if (district && province && district === province) {
-      displayProvince = '';
-    }
-
-    // city === province（直辖市且 district === city），去掉重复的省级
-    if (displayCity && province && displayCity === province) {
-      displayProvince = '';
-    }
-
-    const parts = [district, displayCity, displayProvince].filter(Boolean);
-    return parts.join('，');
+    return buildLocationLabel(district, city, province);
   },
   // 事件处理函数
   onLoad() {
@@ -818,64 +731,6 @@ Page({
       }
     } catch (_) {}
   },
-  formatHourly(data=[]) {
-    return data?.map(h => {
-      const res = {...h};
-      res.hour = res.fxTime.substr(11, 2);
-      return res;
-    });
-  },
-  formatDaily(data=[]) {
-    const weekMap = new Map([
-      [1, '周一'],
-      [2, '周二'],
-      [3, '周三'],
-      [4, '周四'],
-      [5, '周五'],
-      [6, '周六'],
-      [0, '周日'],
-    ]);
-    const today = new Date();
-    const mapped = data.map(d => {
-      const res = {...d};
-      const date = new Date(res.fxDate);
-      const isToday = date.getFullYear() === today.getFullYear() &&
-                      date.getMonth() === today.getMonth() &&
-                      date.getDate() === today.getDate();
-      res.week = isToday ? '今天' : weekMap.get(date.getDay());
-      res.month = date.getMonth() + 1;
-      res.day = `${date.getDate()}`.padStart(2, '0');
-      return res;
-    });
-    const lunarLabels = getLunarLabels(mapped.map(d => d.fxDate));
-    mapped.forEach(d => { d.lunarLabel = lunarLabels[d.fxDate] || ''; });
-    return mapped;
-  },
-  // 转换空气质量数据：indexes[0] + pollutants[] → 组件可用结构
-  formatAir(res) {
-    if (!res || !res.indexes || !res.indexes.length) return {};
-    const idx = res.indexes[0];
-    const c = idx.color || {};
-    const colorHex = `#${(c.red ?? 0).toString(16).padStart(2, '0')}${(c.green ?? 0).toString(16).padStart(2, '0')}${(c.blue ?? 0).toString(16).padStart(2, '0')}`;
-    const pollutants = (res.pollutants || []).map(p => ({
-      name: p.name,
-      value: p.concentration ? p.concentration.value : '-',
-      unit: p.concentration ? p.concentration.unit : '',
-      originData: p
-    }));
-    return {
-      aqi: idx.aqi,
-      aqiDisplay: idx.aqiDisplay,
-      category: idx.category,
-      level: idx.level,
-      colorHex,
-      primary: idx.primaryPollutant ? idx.primaryPollutant.name : '',
-      healthEffect: idx.health ? idx.health.effect : '',
-      generalAdvice: idx.health && idx.health.advice ? idx.health.advice.generalPopulation : '',
-      sensitiveAdvice: idx.health && idx.health.advice ? idx.health.advice.sensitivePopulation : '',
-      pollutants
-    };
-  },
   async getWeather(opts = {}) {
     // 防止并发重复调用
     if (this._fetching) return;
@@ -894,12 +749,12 @@ Page({
         this.setData({ loading: false, errorMsg: '请先选择城市', selectorVisible: true });
         return;
       }
-      const today = this.formatDateStr(new Date());
+      const today = formatDateStr(new Date());
       const tc = _pendingTasks; // 当前批次 taskCollector
       const { force = false } = opts;
       const reqOpts = force ? { force: true } : undefined;
       const cityId = this.data.cityId;
-      const yesterdayStr = this.formatDateStr(new Date(Date.now() - 86400000));
+      const yesterdayStr = formatDateStr(new Date(Date.now() - 86400000));
       // 太阳高度角所需的当前时间 / 时区参数
       const _now = new Date();
       const _tzOff = -_now.getTimezoneOffset();
@@ -920,7 +775,7 @@ Page({
       ]);
 
       // 转换空气质量数据：indexes[0] + pollutants[] → 扁平结构供组件使用
-      const airData = this.formatAir(airRes);
+      const airData = formatAir(airRes);
 
       // 昨日最高温（用于"比昨天"温度对比）
       const yMax = histRes && histRes.code === '200' && histRes.weatherDaily
@@ -949,8 +804,8 @@ Page({
         clothingTip: (() => { const c = daily.find(d => d.type === '3'); return c ? { category: c.category, text: c.text } : null; })(),
         desc,
         shortDesc,
-        hourly: this.formatHourly(hourlyData),
-        daily: this.formatDaily(dailyData),
+        hourly: formatHourly(hourlyData),
+        daily: formatDaily(dailyData),
         air: airData,
         indices: daily,
         astronomySun: sunData,
@@ -988,13 +843,6 @@ Page({
     } finally {
       this._fetching = false;
     }
-  },
-  // 格式化日期为 yyyyMMdd（天文 API 要求）
-  formatDateStr(date) {
-    const y = date.getFullYear();
-    const m = `${date.getMonth() + 1}`.padStart(2, '0');
-    const d = `${date.getDate()}`.padStart(2, '0');
-    return `${y}${m}${d}`;
   },
   async getLocation(){
     const { latitude, longitude } = await wx.getLocation({

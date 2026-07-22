@@ -12,10 +12,10 @@ page {
 }
 
 /* ── 营地绿色 accent ──────────────────────────────── */
+/* 注意：CSS 变量值中含 rgba() 在真机部分基础库下解析失败，
+   故 camping-light / camping-border 直接内联到各选择器，不用变量传递 */
 :root, .camping-page {
   --camping: #2a7b3e;
-  --camping-light: rgba(42, 123, 62, 0.15);
-  --camping-border: rgba(42, 123, 62, 0.35);
 }
 
 /* ── 城市选择卡 ──────────────────────────────────── */
@@ -137,8 +137,8 @@ page {
 }
 
 .poi-chip-active {
-  background: var(--camping-light);
-  border-color: var(--camping-border);
+  background: rgba(42, 123, 62, 0.15);
+  border-color: rgba(42, 123, 62, 0.35);
 }
 
 .poi-chip-name {
@@ -209,8 +209,8 @@ page {
 }
 
 .date-card-active {
-  background: var(--camping-light);
-  border-color: var(--camping-border);
+  background: rgba(42, 123, 62, 0.15);
+  border-color: rgba(42, 123, 62, 0.35);
 }
 
 .date-week {
@@ -605,13 +605,3 @@ page {
   50% { opacity: 1; }
   100% { opacity: 0.5; }
 }
-
-/* 和风天气图标色 */
-.ic-sunny    { color: #FDB813; }
-.ic-cloudy   { color: #7B9BB5; }
-.ic-overcast { color: #5A7080; }
-.ic-rain     { color: #5BA3D9; }
-.ic-snow     { color: #A8D8EA; }
-.ic-fog      { color: #9E9E9E; }
-.ic-sand     { color: #C49A3C; }
-.ic-default  { color: #8C9AA5; }
