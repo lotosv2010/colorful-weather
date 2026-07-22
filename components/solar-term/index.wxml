@@ -1,0 +1,44 @@
+<!--components/solar-term/index.wxml-->
+<view class="solar-term" style="--theme:{{themeColor}}">
+  <!-- 标题行 -->
+  <view class="solar-term-header">
+    <text class="title">节气 · 节日</text>
+    <text class="lunar-info" wx:if="{{solarTermInfo}}">{{solarTermInfo.lunarYear}}年 {{solarTermInfo.lunarDate}}</text>
+  </view>
+
+  <!-- 今日高亮块：仅当天有节气或节日时显示 -->
+  <view wx:if="{{todayHighlight}}" class="today-highlight">
+    <view class="today-accent"></view>
+    <view class="today-content">
+      <text class="today-emoji">{{todayHighlight.emoji}}</text>
+      <view class="today-text">
+        <text class="today-name">{{todayHighlight.name}}</text>
+        <text class="today-label">{{todayHighlight.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 下一个节气 / 下一个节日双列 -->
+  <view class="next-row" wx:if="{{solarTermInfo}}">
+    <!-- 下一个节气 -->
+    <view class="next-card" wx:if="{{solarTermInfo.nextSolarTerm}}">
+      <text class="next-card-subtitle">下一节气</text>
+      <view class="next-card-main">
+        <text class="next-emoji">{{nextSTEmoji}}</text>
+        <text class="next-name">{{solarTermInfo.nextSolarTerm.name}}</text>
+      </view>
+      <text class="next-date">{{solarTermInfo.nextSolarTerm.dateLabel}}</text>
+      <text class="next-days">还有 <text class="next-days-num">{{solarTermInfo.nextSolarTerm.daysLeft}}</text> 天</text>
+    </view>
+    <!-- 下一个传统节日 -->
+    <view class="next-card" wx:if="{{solarTermInfo.nextFestival}}">
+      <text class="next-card-subtitle">下一节日</text>
+      <view class="next-card-main">
+        <text class="next-emoji">{{nextFestEmoji}}</text>
+        <text class="next-name">{{solarTermInfo.nextFestival.name}}</text>
+      </view>
+      <text class="next-date">{{solarTermInfo.nextFestival.dateLabel}}</text>
+      <text class="next-days">还有 <text class="next-days-num">{{solarTermInfo.nextFestival.daysLeft}}</text> 天</text>
+    </view>
+  </view>
+</view>

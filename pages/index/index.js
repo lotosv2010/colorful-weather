@@ -1,6 +1,6 @@
 const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather, solarElevationAngle } = require('../../utils/api');
 const { formatDate } = require('../../utils/util');
-const { getLunarLabels } = require('../../utils/lunar');
+const { getLunarLabels, getSolarTermCard } = require('../../utils/lunar');
 const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
 const { navigateTo } = require('../../utils/route');
@@ -65,6 +65,7 @@ Page({
     currentPageIndex: 0,
     loading: true,
     errorMsg: '',
+    solarTermInfo: null,
     mapTipsVisible: false,
     mapTipsData: {},
     mapMarkers: [],
@@ -485,7 +486,20 @@ Page({
     if (handoff && handoff.payload && handoff.payload.city) {
       app.globalData.agentHandoffCity = handoff.payload.city;
     }
+    this._computeSolarTermInfo();
     this.init({ force });
+  },
+  // 同步计算节气/节日卡片数据（无网络依赖，onLoad 时调用一次）
+  _computeSolarTermInfo() {
+    try {
+      const today = new Date();
+      const pad = n => `${n}`.padStart(2, '0');
+      const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+      const info = getSolarTermCard(dateStr);
+      this.setData({ solarTermInfo: info });
+    } catch (e) {
+      console.error('节气计算失败', e);
+    }
   },
   onReady() {
     monitor.recordPageLoad('/pages/index/index', this._loadStart);

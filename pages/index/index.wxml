@@ -210,6 +210,11 @@
         city="{{city}}"
         district="{{district}}"
       />
+      <weather-solar-term
+        wx:if="{{solarTermInfo}}"
+        solarTermInfo="{{solarTermInfo}}"
+        themeColor="{{themeColor}}"
+      />
       <weather-timemachine
         cityId="{{cityId}}"
         tempUnit="{{tempUnit}}"
@@ -274,6 +279,18 @@
                 <view class="sk-circle-sm"></view>
                 <view class="sk-bar sk-bar-xs" style="margin-top: 12rpx;"></view>
               </view>
+            </view>
+          </view>
+          <!-- solar-term 骨架 -->
+          <view class="sk-card">
+            <view class="sk-row" style="justify-content: space-between;">
+              <view class="sk-bar sk-bar-sm"></view>
+              <view class="sk-bar sk-bar-xs"></view>
+            </view>
+            <view class="sk-bar sk-bar-fill" style="margin-top: 12rpx; height: 60rpx;"></view>
+            <view class="sk-row" style="margin-top: 10rpx; gap: 10rpx;">
+              <view class="sk-bar sk-bar-fill" style="flex:1; height: 80rpx;"></view>
+              <view class="sk-bar sk-bar-fill" style="flex:1; height: 80rpx;"></view>
             </view>
           </view>
           <!-- timemachine 骨架 -->

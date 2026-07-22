@@ -1,0 +1,130 @@
+/* components/solar-term/index.wxss */
+
+.solar-term {
+  background-color: rgb(34, 37, 48);
+  padding: 15px;
+  border-radius: 15px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+
+/* 标题行 */
+.solar-term-header {
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.solar-term-header .title {
+  color: rgb(181, 187, 204);
+}
+
+.lunar-info {
+  font-size: 0.72rem;
+  color: rgba(181, 187, 204, 0.6);
+}
+
+/* 今日高亮块 */
+.today-highlight {
+  display: flex;
+  align-items: stretch;
+  background-color: rgb(46, 48, 61);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.today-accent {
+  width: 3px;
+  background-color: var(--theme, rgb(68, 179, 255));
+  border-radius: 3px 0 0 3px;
+  flex-shrink: 0;
+}
+
+.today-content {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  gap: 10px;
+  flex: 1;
+}
+
+.today-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.today-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.today-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.today-label {
+  font-size: 0.68rem;
+  color: var(--theme, rgb(68, 179, 255));
+}
+
+/* 双列下一节气/节日 */
+.next-row {
+  display: flex;
+  gap: 10px;
+}
+
+.next-card {
+  flex: 1;
+  background-color: rgb(46, 48, 61);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.next-card-subtitle {
+  font-size: 0.68rem;
+  color: rgba(181, 187, 204, 0.55);
+  margin-bottom: 2px;
+}
+
+.next-card-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.next-emoji {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.next-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.next-date {
+  font-size: 0.72rem;
+  color: rgba(181, 187, 204, 0.7);
+}
+
+.next-days {
+  font-size: 0.72rem;
+  color: rgba(181, 187, 204, 0.55);
+}
+
+.next-days-num {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--theme, rgb(68, 179, 255));
+}

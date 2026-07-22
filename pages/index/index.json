@@ -16,6 +16,7 @@
     "compact-weather": "../../components/compact-weather/index",
     "weather-particles": "../../components/weather-particles/index",
     "weather-decor": "../../components/weather-decor/index",
-    "city-overview": "../../components/city-overview/index"
+    "city-overview": "../../components/city-overview/index",
+    "weather-solar-term": "../../components/solar-term/index"
   }
 }
