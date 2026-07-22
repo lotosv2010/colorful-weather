@@ -9,6 +9,7 @@ const { resolveWeatherEffect } = require('../../utils/weatherEffect');
 const monitor = require('../../utils/monitor');
 const { fmt: fmtTemp } = require('../../utils/temp');
 const { buildSummary, buildShortDesc } = require('../../utils/summary');
+const { getColor, getDefinition } = require('../../utils/lifeMeta');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
 
 // index.js
@@ -122,6 +123,55 @@ Page({
     const today = new Date();
     const pad = n => `${n}`.padStart(2, '0');
     const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+
+    // ── 出行建议评分（复用 trip 页逻辑，基于实时天气 + 今日预报 + 空气质量）──
+    const ADVICE_GRADE_MAP = [
+      { minScore: 4,   icon: '🌟', label: '晴好出行',           color: '#4caf50' },
+      { minScore: 2,   icon: '👍', label: '适合出行',           color: '#8bc34a' },
+      { minScore: 0,   icon: '☂️', label: '可以出行，建议备伞',  color: '#ffb300' },
+      { minScore: -2,  icon: '⚠️', label: '谨慎出行，做好防护',  color: '#ff9800' },
+      { minScore: -99, icon: '🚫', label: '不建议出行',          color: '#f44336' },
+    ];
+    const daily0 = this.data.daily && this.data.daily[0];
+    const advice = (() => {
+      let score = 0;
+      const tips = [];
+      const ic = parseInt(String(currentWeather && currentWeather.icon || '100'), 10);
+      if (ic <= 103) score += 2;
+      else if (ic <= 299) score += 1;
+      else if (ic >= 300 && ic <= 313) { score -= 1; tips.push('可能有降雨，建议携带雨具'); }
+      else if (ic >= 314 && ic <= 349) { score -= 2; tips.push('降水较强，谨慎出行'); }
+      else if (ic >= 350 && ic <= 399) { score -= 3; tips.push('强对流天气，不建议外出'); }
+      else if (ic >= 400 && ic <= 499) { score -= 1; tips.push('有降雪天气，注意路况'); }
+      else if (ic >= 500 && ic <= 515) { score -= 1; tips.push('能见度较低，注意行车安全'); }
+      else if (ic >= 516 && ic <= 599) { score -= 2; tips.push('沙尘天气，注意防护'); }
+      const pop = daily0 && daily0.pop != null ? Number(daily0.pop) : 0;
+      if (pop >= 70 && !tips.some(t => t.includes('降水') || t.includes('雨'))) {
+        score -= 1; tips.push(`降水概率 ${pop}%，建议备伞`);
+      }
+      const ws = parseInt(String(currentWeather && currentWeather.windScale || '0').split('-')[0], 10) || 0;
+      if (ws >= 6) { score -= 1; tips.push(`风力较大（${currentWeather.windScale}级），注意出行安全`); }
+      if (air) {
+        const lvl = parseInt(String(air.level || '1'), 10) || 1;
+        if (lvl >= 4) { score -= 2; tips.push('空气质量较差，建议佩戴口罩'); }
+        else if (lvl === 3) { score -= 1; tips.push('空气轻度污染，敏感人群注意防护'); }
+      }
+      const grade = ADVICE_GRADE_MAP.find(g => score >= g.minScore) || ADVICE_GRADE_MAP[ADVICE_GRADE_MAP.length - 1];
+      return { score, icon: grade.icon, label: grade.label, color: grade.color, tips };
+    })();
+
+    // ── 关键生活指数（旅游/穿衣/运动/感冒）──
+    const KEY_IDX_TYPES = ['6', '3', '1', '9'];
+    const shareIndices = KEY_IDX_TYPES
+      .map(type => (this.data.indices || []).find(idx => idx.type === type))
+      .filter(Boolean)
+      .map(idx => ({
+        type: idx.type,
+        name: idx.name || (getDefinition(idx.type) || {}).name || '',
+        category: idx.category,
+        color: getColor(idx.type, idx.level, idx.category),
+      }));
+
     getApp().globalData.shareData = {
       city: district || city || '',
       province: province || '',
@@ -132,9 +182,18 @@ Page({
       humidity: currentWeather && currentWeather.humidity,
       windDir: currentWeather && currentWeather.windDir,
       windScale: currentWeather && currentWeather.windScale,
+      windSpeed: currentWeather && currentWeather.windSpeed,
+      vis: currentWeather && currentWeather.vis,
+      precip: currentWeather && currentWeather.precip,
+      pressure: currentWeather && currentWeather.pressure,
+      desc: this.data.desc || '',
+      clothingTip: this.data.clothingTip ? { category: this.data.clothingTip.category } : null,
       aqiDisplay: air && air.aqiDisplay,
       aqiCategory: air && air.category,
       aqiColor: air && air.colorHex,
+      aqiLevel: air && air.level ? parseInt(String(air.level), 10) : 1,
+      advice,
+      indices: shareIndices,
       tempUnit,
       themeColor,
       weatherBg,

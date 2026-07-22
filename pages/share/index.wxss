@@ -1,6 +1,6 @@
 /* pages/share/index.wxss */
 page {
-  background: #0f1014;
+  background: #0a0c12;
   color: #fff;
 }
 
@@ -9,129 +9,283 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40rpx 0 env(safe-area-inset-bottom, 0);
+  padding: 52rpx 0 env(safe-area-inset-bottom, 40rpx);
   box-sizing: border-box;
 }
 
-/* ── 可见卡片 ────────────────────────────────── */
+/* ── 卡片容器 ──────────────────────────────────────── */
 .sc-card {
   position: relative;
   width: 375px;
-  min-height: 560px;
   border-radius: 28rpx;
   overflow: hidden;
-  box-shadow: 0 16rpx 64rpx rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 4rpx 12rpx rgba(0, 0, 0, 0.25),
+    0 20rpx 56rpx rgba(0, 0, 0, 0.55),
+    0 48rpx 100rpx rgba(0, 0, 0, 0.30);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 40rpx 40rpx 32rpx;
+  padding: 36rpx 36rpx 28rpx;
   box-sizing: border-box;
 }
 
+/* 右上角装饰光晕球 */
+.sc-orb {
+  position: absolute;
+  right: -52rpx;
+  top: -72rpx;
+  width: 320rpx;
+  height: 320rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 220rpx 100rpx rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+}
+
+/* ── 顶栏 ─────────────────────────────────────────── */
+.sc-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
 .sc-logo {
-  align-self: flex-start;
   font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.38);
   font-weight: 500;
-  letter-spacing: 2rpx;
-  margin-bottom: 48rpx;
+  letter-spacing: 3rpx;
+}
+
+.sc-topbar-date {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 1rpx;
+}
+
+/* ── 城市标题 ─────────────────────────────────────── */
+.sc-location {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
 }
 
 .sc-city {
-  font-size: 64rpx;
+  font-size: 56rpx;
   font-weight: 700;
   color: #fff;
+  letter-spacing: 4rpx;
   line-height: 1.1;
   text-align: center;
 }
 
-.sc-sub {
-  font-size: 24rpx;
+.sc-province {
+  font-size: 22rpx;
   color: rgba(255, 255, 255, 0.5);
-  margin-top: 10rpx;
-  text-align: center;
+  margin-top: 8rpx;
+  letter-spacing: 2rpx;
 }
 
+/* ── 主天气区（仿 weather-header-main）────────────── */
+.sc-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+  padding: 20rpx 0 24rpx;
+}
+
+/* 天气字体图标（仿 weather-header-svg：font-size = 行高） */
 .sc-icon {
-  font-size: 128rpx;
-  margin: 40rpx 0 16rpx;
+  font-size: 96rpx;
   line-height: 1;
+  flex-shrink: 0;
+}
+
+/* 右侧：温度 + 天气描述（仿 weather-header-left） */
+.sc-main-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6rpx;
 }
 
 .sc-temp {
-  font-size: 112rpx;
-  font-weight: 700;
+  font-size: 88rpx;
+  font-weight: 800;
   color: #fff;
   line-height: 1;
-  letter-spacing: -4rpx;
+  letter-spacing: -5rpx;
+}
+
+/* 度数符号小一号 */
+.sc-deg {
+  font-size: 48rpx;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .sc-weather-text {
-  font-size: 32rpx;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 2rpx;
 }
 
-.sc-feels {
+/* ── 天气概述（仿 weather-header-desc）───────────── */
+.sc-desc {
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.45);
-  margin-top: 8rpx;
+  text-align: center;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.58);
+  margin-bottom: 14rpx;
+  line-height: 1.6;
+  padding: 0 8rpx;
 }
 
-/* ── 信息条 ─────────────────────────────────── */
-.sc-info-row {
+/* ── 穿衣提示（仿 clothing-tip）──────────────────── */
+.sc-clothing-tip {
   display: flex;
-  align-items: center;
-  justify-content: space-around;
+  justify-content: center;
+  margin-bottom: 18rpx;
+}
+
+.sc-clothing-tip-text {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 24rpx;
+  padding: 5rpx 24rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ── 详情面板（仿 weather-header-other）───────────── */
+.sc-detail {
+  display: flex;
   width: 100%;
   background: rgba(255, 255, 255, 0.1);
+  border: 1rpx solid rgba(255, 255, 255, 0.08);
   border-radius: 20rpx;
-  padding: 20rpx 0;
-  margin-top: 40rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
 }
 
-.sc-info-item {
+/* ── 左：风向 ─────────────────────────────────────── */
+.sc-detail-wind {
+  width: 30%;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
+  justify-content: center;
+  padding: 20rpx 0;
+  gap: 4rpx;
 }
 
-.sc-info-label {
+/* qi-2150：风向符号图标 */
+.sc-wind-qi {
+  font-size: 52rpx;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 10rpx;
+  line-height: 1;
+}
+
+.sc-wind-dir {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 1rpx;
+}
+
+.sc-wind-scale {
   font-size: 20rpx;
-  color: rgba(255, 255, 255, 0.45);
-  margin-bottom: 6rpx;
+  color: rgba(255, 255, 255, 0.58);
 }
 
-.sc-info-val {
+.sc-wind-speed {
+  font-size: 18rpx;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+/* 纵向分割线 */
+.sc-detail-vline {
+  width: 1rpx;
+  background: rgba(255, 255, 255, 0.13);
+  margin: 16rpx 0;
+  flex-shrink: 0;
+}
+
+/* ── 右：3行×2列数据格 ──────────────────────────── */
+.sc-detail-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 每一行 */
+.sc-detail-row {
+  flex: 1;
+  display: flex;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.06);
+}
+
+.sc-detail-row:last-child {
+  border-bottom: none;
+}
+
+/* 每个数据格 */
+.sc-detail-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 0;
+  gap: 4rpx;
+}
+
+.sc-cell-val {
   font-size: 26rpx;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
 }
 
-.sc-sep {
-  width: 1rpx;
-  height: 40rpx;
-  background: rgba(255, 255, 255, 0.15);
+.sc-cell-label {
+  font-size: 18rpx;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 1rpx;
 }
 
-/* ── 底部水印 ─────────────────────────────────── */
-.sc-divider {
+/* ── 底部水印 ─────────────────────────────────────── */
+.sc-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sc-hr {
   width: 100%;
   height: 1rpx;
   background: rgba(255, 255, 255, 0.12);
-  margin-top: 32rpx;
+  margin-bottom: 18rpx;
 }
 
 .sc-watermark {
   font-size: 20rpx;
   color: rgba(255, 255, 255, 0.25);
-  margin-top: 20rpx;
-  letter-spacing: 2rpx;
+  letter-spacing: 3rpx;
   text-align: center;
 }
 
-/* ── 隐藏 Canvas（仅用于导出，视觉上不显示） ── */
+/* ── 提示文字 ─────────────────────────────────────── */
+.save-hint {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.28);
+  margin-top: 22rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ── 隐藏 Canvas ──────────────────────────────────── */
 .export-canvas {
   position: absolute;
   left: -9999px;
@@ -139,11 +293,11 @@ page {
   pointer-events: none;
 }
 
-/* ── 按钮 ─────────────────────────────────── */
+/* ── 保存按钮 ─────────────────────────────────────── */
 .action-row {
-  margin-top: 40rpx;
+  margin-top: 36rpx;
   width: 100%;
-  padding: 0 48rpx;
+  padding: 0 52rpx;
   box-sizing: border-box;
 }
 
@@ -151,19 +305,205 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 14rpx;
   height: 96rpx;
   border-radius: 48rpx;
   background: var(--theme, #1296db);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.35);
   transition: opacity 0.15s;
 }
 
 .action-btn.btn-loading {
-  opacity: 0.6;
+  opacity: 0.55;
   pointer-events: none;
 }
 
-.action-btn-label {
+.btn-dl-icon {
+  width: 38rpx;
+  height: 38rpx;
+}
+
+.btn-label {
   font-size: 30rpx;
   font-weight: 600;
   color: #fff;
+}
+
+/* ══ trip 风格信息卡（出行建议 / 生活指数 / 空气质量）══════════════ */
+
+.sc-trip-card {
+  width: 375px;
+  background: transparent; /* 由 inline style 的 cardBg 渐变覆盖 */
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  margin-top: 16rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow:
+    0 4rpx 12rpx rgba(0, 0, 0, 0.2),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.4);
+}
+
+.sc-card-title {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 2rpx;
+  margin-bottom: 20rpx;
+}
+
+/* ── 出行建议卡 ──────────────────────────────────────── */
+.sc-advice-card {
+  border-top: 4rpx solid transparent; /* 颜色由 inline style 覆盖 */
+}
+
+.sc-advice-header {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.sc-advice-icon {
+  font-size: 52rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.sc-advice-title {
+  flex: 1;
+}
+
+.sc-advice-label {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sc-score-badge {
+  font-size: 22rpx;
+  font-weight: 700;
+  padding: 6rpx 16rpx;
+  border-radius: 100rpx;
+  flex-shrink: 0;
+}
+
+.sc-advice-tips {
+  border-top: 1rpx solid rgba(255, 255, 255, 0.06);
+  padding-top: 16rpx;
+}
+
+.sc-tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.sc-tip-item:last-child {
+  margin-bottom: 0;
+}
+
+.sc-tip-ok .sc-tip-dot,
+.sc-tip-ok .sc-tip-text {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.sc-tip-dot {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.sc-tip-text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+}
+
+/* ── 生活指数卡 ──────────────────────────────────────── */
+.sc-index-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.sc-index-item {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14rpx;
+  padding: 18rpx 16rpx;
+}
+
+.sc-index-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sc-index-name {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+  flex: 1;
+}
+
+.sc-index-cat {
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+/* ── 空气质量卡 ──────────────────────────────────────── */
+.sc-air-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.sc-aqi-badge {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sc-aqi-num {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.1;
+}
+
+.sc-aqi-label {
+  font-size: 18rpx;
+  font-weight: 600;
+  color: #111;
+  opacity: 0.7;
+}
+
+.sc-air-info {
+  flex: 1;
+}
+
+.sc-air-cat {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sc-air-sub {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 6rpx;
+  line-height: 1.5;
 }

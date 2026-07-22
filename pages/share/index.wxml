@@ -4,57 +4,172 @@
 
 <view class="share-page" style="--theme:{{themeColor}}">
 
-  <!-- ── 可见卡片（WXML + CSS，图标沿用 qi-*-fill 字体类） ── -->
+  <!-- ── 天气分享卡片 ── -->
   <view class="sc-card" style="background:{{cardBg}}">
-    <text class="sc-logo">霁色天气</text>
+    <!-- 装饰光晕球 -->
+    <view class="sc-orb"></view>
 
-    <text class="sc-city">{{city}}</text>
-    <text class="sc-sub">{{subLabel}}</text>
+    <!-- 顶栏：logo | 日期时间 -->
+    <view class="sc-topbar">
+      <text class="sc-logo">霁色天气</text>
+      <text class="sc-topbar-date">{{dateLabel}}</text>
+    </view>
 
-    <text class="sc-icon qi-{{icon}}-fill icon-color-{{ic.category(icon)}}"></text>
+    <!-- 城市标题 -->
+    <view class="sc-location">
+      <text class="sc-city">{{city}}</text>
+      <text wx:if="{{province}}" class="sc-province">{{province}}</text>
+    </view>
 
-    <text class="sc-temp">{{tu.fmt(temp, tempUnit)}}°</text>
-    <text class="sc-weather-text">{{weatherText}}</text>
-    <text wx:if="{{feelsLike != null}}" class="sc-feels">体感 {{tu.fmt(feelsLike, tempUnit)}}°</text>
-
-    <view class="sc-info-row">
-      <view class="sc-info-item">
-        <text class="sc-info-label">AQI</text>
-        <text class="sc-info-val" style="color:{{aqiColor || 'rgba(255,255,255,0.9)'}}">
-          {{aqiDisplay || '--'}}
-        </text>
-      </view>
-      <view class="sc-sep"></view>
-      <view class="sc-info-item">
-        <text class="sc-info-label">湿度</text>
-        <text class="sc-info-val">{{humidity != null ? humidity + '%' : '--'}}</text>
-      </view>
-      <view class="sc-sep"></view>
-      <view class="sc-info-item">
-        <text class="sc-info-label">风力</text>
-        <text class="sc-info-val">{{windScale ? windScale + '级' : '--'}}</text>
+    <!-- 主天气区：图标（左）+ 温度 & 描述（右） 仿 weather-header-main -->
+    <view class="sc-main">
+      <i class="sc-icon qi-{{icon}}-fill icon-color-{{ic.category(icon)}}"></i>
+      <view class="sc-main-right">
+        <text class="sc-temp">{{tu.fmt(temp, tempUnit)}}<text class="sc-deg">°</text></text>
+        <text class="sc-weather-text">{{weatherText}}</text>
       </view>
     </view>
 
-    <view class="sc-divider"></view>
-    <text class="sc-watermark">霁色天气 · 精准天气预报</text>
+    <!-- 天气概述（仿 weather-header-desc） -->
+    <view wx:if="{{desc}}" class="sc-desc">{{desc}}</view>
+
+    <!-- 穿衣提示（仿 clothing-tip） -->
+    <view wx:if="{{clothingTip}}" class="sc-clothing-tip">
+      <text class="sc-clothing-tip-text">穿衣 · {{clothingTip.category}}</text>
+    </view>
+
+    <!-- 详情面板：仿 weather-header-other（左：风向 | 右：3行×2列数据格） -->
+    <view class="sc-detail">
+
+      <!-- 左：风向 -->
+      <view class="sc-detail-wind">
+        <i class="sc-wind-qi qi-2150"></i>
+        <text class="sc-wind-dir">{{windDir || '--'}}</text>
+        <text class="sc-wind-scale">{{windScale != null ? windScale + '级' : '--'}}</text>
+        <text wx:if="{{windSpeed}}" class="sc-wind-speed">{{windSpeed}}km/h</text>
+      </view>
+
+      <!-- 纵向分割线 -->
+      <view class="sc-detail-vline"></view>
+
+      <!-- 右：3行 × 2列 数据格 -->
+      <view class="sc-detail-grid">
+        <view class="sc-detail-row">
+          <view class="sc-detail-cell">
+            <text class="sc-cell-val">{{humidity != null ? humidity + '%' : '--'}}</text>
+            <text class="sc-cell-label">湿度</text>
+          </view>
+          <view class="sc-detail-cell">
+            <text class="sc-cell-val">{{feelsLike != null ? tu.fmt(feelsLike, tempUnit) + '°' : '--'}}</text>
+            <text class="sc-cell-label">体感温度</text>
+          </view>
+        </view>
+        <view class="sc-detail-row">
+          <view class="sc-detail-cell">
+            <text class="sc-cell-val" style="color:{{aqiColor || 'rgba(255,255,255,0.9)'}}">
+              {{aqiDisplay || '--'}}
+            </text>
+            <text class="sc-cell-label">AQI</text>
+          </view>
+          <view class="sc-detail-cell">
+            <text class="sc-cell-val" style="color:{{aqiColor || 'rgba(255,255,255,0.9)'}}">
+              {{aqiCategory || '--'}}
+            </text>
+            <text class="sc-cell-label">空气质量</text>
+          </view>
+        </view>
+        <view class="sc-detail-row">
+          <view class="sc-detail-cell">
+            <text class="sc-cell-val">{{precip != null ? precip + 'mm' : '--'}}</text>
+            <text class="sc-cell-label">降水量</text>
+          </view>
+          <view class="sc-detail-cell">
+            <text class="sc-cell-val">{{vis != null ? vis + 'km' : '--'}}</text>
+            <text class="sc-cell-label">能见度</text>
+          </view>
+        </view>
+      </view>
+
+    </view>
+
+    <!-- 底部水印 -->
+    <view class="sc-footer">
+      <view class="sc-hr"></view>
+      <text class="sc-watermark">霁色天气  ·  精准天气预报</text>
+    </view>
   </view>
 
-  <!-- ── 隐藏 Canvas（仅用于 wx.canvasToTempFilePath 导出图片） ── -->
+  <!-- ── ① 综合出行建议卡 ── -->
+  <view wx:if="{{advice}}" class="sc-trip-card sc-advice-card" style="background:{{cardBg}};border-top-color:{{advice.color}}">
+    <view class="sc-advice-header">
+      <text class="sc-advice-icon">{{advice.icon}}</text>
+      <view class="sc-advice-title">
+        <text class="sc-advice-label" style="color:{{advice.color}}">{{advice.label}}</text>
+      </view>
+      <view class="sc-score-badge" style="background:{{advice.color}}20;color:{{advice.color}}">
+        {{advice.score > 0 ? '+' : ''}}{{advice.score}}分
+      </view>
+    </view>
+    <view wx:if="{{advice.tips.length}}" class="sc-advice-tips">
+      <view wx:for="{{advice.tips}}" wx:key="*this" class="sc-tip-item">
+        <text class="sc-tip-dot">·</text>
+        <text class="sc-tip-text">{{item}}</text>
+      </view>
+    </view>
+    <view wx:else class="sc-tip-item sc-tip-ok">
+      <text class="sc-tip-dot">·</text>
+      <text class="sc-tip-text">天气良好，一切顺利！</text>
+    </view>
+  </view>
+
+  <!-- ── ② 关键生活指数卡 ── -->
+  <view wx:if="{{indices.length}}" class="sc-trip-card" style="background:{{cardBg}}">
+    <view class="sc-card-title">生活指数</view>
+    <view class="sc-index-grid">
+      <view wx:for="{{indices}}" wx:key="type" class="sc-index-item">
+        <view class="sc-index-dot" style="background:{{item.color}}"></view>
+        <text class="sc-index-name">{{item.name}}</text>
+        <text class="sc-index-cat" style="color:{{item.color}}">{{item.category}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── ③ 空气质量卡 ── -->
+  <view wx:if="{{aqiDisplay}}" class="sc-trip-card" style="background:{{cardBg}}">
+    <view class="sc-card-title">空气质量</view>
+    <view class="sc-air-row">
+      <view class="sc-aqi-badge" style="background:{{aqiColor}}">
+        <text class="sc-aqi-num">{{aqiDisplay}}</text>
+        <text class="sc-aqi-label">AQI</text>
+      </view>
+      <view class="sc-air-info">
+        <text class="sc-air-cat" style="color:{{aqiColor}}">{{aqiCategory}}</text>
+        <text class="sc-air-sub">
+          {{aqiLevel <= 2 ? '空气清新，适合户外活动' : aqiLevel == 3 ? '轻度污染，敏感人群减少外出' : '空气较差，建议佩戴口罩'}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提示 -->
+  <text class="save-hint">截图可直接分享给好友</text>
+
+  <!-- 隐藏 Canvas（高度调整为 640px 以容纳更丰富的内容） -->
   <canvas
     type="2d"
     id="exportCanvas"
     class="export-canvas"
-    style="width:375px;height:560px;"
+    style="width:375px;height:640px;"
   ></canvas>
 
-  <!-- ── 按钮 ── -->
+  <!-- 保存按钮 -->
   <view class="action-row">
     <view
       class="action-btn {{saving ? 'btn-loading' : ''}}"
       catchtap="onSave"
     >
-      <text class="action-btn-label">{{saving ? '保存中…' : '💾  保存到相册'}}</text>
+      <weather-icon class="btn-dl-icon" src="/static/icons/download.svg" colors="{{['#fff']}}" />
+      <text class="btn-label">{{saving ? '保存中…' : '保存到相册'}}</text>
     </view>
   </view>
 

@@ -2,5 +2,7 @@
   "navigationBarTitleText": "分享天气",
   "navigationBarBackgroundColor": "#000",
   "navigationBarTextStyle": "white",
-  "usingComponents": {}
+  "usingComponents": {
+    "weather-icon": "/components/icon/index"
+  }
 }
