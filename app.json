@@ -29,7 +29,8 @@
     "pages/compare/index",
     "pages/astronomy/index",
     "pages/trip/index",
-    "pages/share/index"
+    "pages/share/index",
+    "pages/camping/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
