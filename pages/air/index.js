@@ -25,6 +25,7 @@ Page({
     pollutants: [],
     hourly: [],
     daily: [],
+    stations: [],    // 周边监测站名称列表
     loading: false,
     errorMsg: '',
     themeColor: ''
@@ -113,7 +114,7 @@ Page({
   },
 
   async loadData() {
-    this.setData({ loading: true, errorMsg: '' });
+    this.setData({ loading: true, errorMsg: '', stations: [] });
     try {
       const { location } = this.data;
 
@@ -130,6 +131,9 @@ Page({
       if (dailyRes && dailyRes.days) {
         this.processDaily(dailyRes.days);
       }
+
+      // 主界面就绪后提取周边监测站名称（直接来自 air() 响应，无需额外请求）
+      this.loadStations(airRes);
     } catch (e) {
       console.log(e);
       monitor.recordError('page', e?.message || '空气质量加载失败', { page: '/pages/air/index', stack: e?.stack });
@@ -137,6 +141,16 @@ Page({
     } finally {
       this.setData({ loading: false });
     }
+  },
+
+  // 从 air() 响应提取周边监测站名称，直接展示（stations[] 仅含 id/name，无需再调监测站接口）
+  loadStations(airRes) {
+    const list = (airRes && Array.isArray(airRes.stations))
+      ? airRes.stations.slice(0, 5)
+      : [];
+    if (!list.length) return;
+    const stations = list.map(s => ({ id: s.id, name: s.name || s.id }));
+    this.setData({ stations });
   },
 
   // 解析新 API 响应：indexes[0] + pollutants[]

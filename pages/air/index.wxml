@@ -78,5 +78,13 @@
         </view>
       </view>
     </view>
+
+    <!-- 周边监测站 -->
+    <view class="air-card" wx:if="{{stations.length}}">
+      <view class="card-title">周边监测站</view>
+      <view class="station-tags">
+        <text class="station-tag" wx:for="{{stations}}" wx:key="id">{{item.name}}</text>
+      </view>
+    </view>
   </block>
 </view>

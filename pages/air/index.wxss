@@ -286,3 +286,18 @@ page {
   font-size: 24rpx;
   font-weight: 500;
 }
+
+/* 周边监测站 — 标签行 */
+.station-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.station-tag {
+  font-size: 24rpx;
+  color: #b5bbcc;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 8rpx;
+  padding: 8rpx 20rpx;
+}
