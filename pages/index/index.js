@@ -944,8 +944,8 @@ Page({
     this.getWeather().catch(console.error);
   },
   gotoWarning() {
-    const { longitude, latitude, province, district, city } = this.data;
-    navigateTo('/pages/warning/index', { location: `${longitude},${latitude}`, province, city, district });
+    const { longitude, latitude, province, district, city, cityId } = this.data;
+    navigateTo('/pages/warning/index', { location: `${longitude},${latitude}`, province, city, district, cityId });
   },
   onHourlyTap(e) {
     const { longitude, latitude, province, district, city } = this.data;

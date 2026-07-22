@@ -2,6 +2,7 @@
 const { warning } = require('../../utils/api');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
+const prefs = require('../../utils/prefs');
 
 // RGBA 对象 → CSS 颜色值
 const toRgba = (c = {}) => `rgba(${c.red || 0},${c.green || 0},${c.blue || 0},${c.alpha != null ? c.alpha : 1})`;
@@ -59,6 +60,9 @@ Page({
     province: '',
     city: '',
     district: '',
+    cityId: '',
+    themeColor: '#1296db',
+    isFavorite: false,
     alerts: [],
     attributions: '',
     loading: false,
@@ -67,16 +71,40 @@ Page({
 
   onLoad(options = {}) {
     this._loadStart = Date.now();
-    const location = options.location || '';
-    const province = options.province ? decodeURIComponent(options.province) : '';
-    const city = options.city ? decodeURIComponent(options.city) : '';
-    const district = options.district ? decodeURIComponent(options.district) : '';
-    this.setData({ location, province, city, district });
+    const location  = options.location  || '';
+    const province  = options.province  ? decodeURIComponent(options.province)  : '';
+    const city      = options.city      ? decodeURIComponent(options.city)      : '';
+    const district  = options.district  ? decodeURIComponent(options.district)  : '';
+    const cityId    = options.cityId    || '';
+
+    // 订阅偏好（主题色 + 收藏状态同步）
+    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
+    const p = prefs.getPrefs();
+
+    this.setData({
+      location, province, city, district, cityId,
+      themeColor: p.themeColor,
+      isFavorite: cityId ? !!prefs.findCity(cityId) : false,
+    });
+
     if (location) {
       this.loadData();
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
     }
+  },
+
+  onUnload() {
+    if (this._unsubPrefs) this._unsubPrefs();
+  },
+
+  _syncPrefs() {
+    const p = prefs.getPrefs();
+    const { cityId } = this.data;
+    this.setData({
+      themeColor: p.themeColor,
+      isFavorite: cityId ? !!prefs.findCity(cityId) : false,
+    });
   },
 
   onReady() {
@@ -132,6 +160,31 @@ Page({
   onRetry() {
     this.setData({ loading: true, errorMsg: '' });
     this.loadData();
+  },
+
+  // 切换城市收藏状态
+  onToggleFavorite() {
+    const { cityId, city, district, province, location, isFavorite } = this.data;
+    if (!cityId) return;
+    if (isFavorite) {
+      prefs.removeCity(cityId);
+      wx.showToast({ title: '已取消关注', icon: 'none' });
+    } else {
+      // 从 location 字符串解析 lon/lat
+      const parts = (location || '').split(',');
+      const lon = parseFloat(parts[0]) || 0;
+      const lat = parseFloat(parts[1]) || 0;
+      prefs.addCity({
+        id: cityId,
+        name: district || city || '',
+        adm1: province || '',
+        adm2: city || '',
+        lat,
+        lon,
+      });
+      wx.showToast({ title: '已关注', icon: 'success' });
+    }
+    // _syncPrefs 会通过订阅回调自动更新 isFavorite，这里不用手动 setData
   },
 
   _shareParams() {

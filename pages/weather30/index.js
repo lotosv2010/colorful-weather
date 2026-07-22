@@ -1,5 +1,26 @@
 const api = require('../../utils/api');
 const { formatDate, toHex, getTextColor } = require('../../utils/util');
+
+// hex 主题色 → "r,g,b" 字符串（供 rgba() 内联使用）
+const hexToRgbStr = (hex) => {
+  const h = hex.replace('#', '');
+  const len = h.length;
+  if (len === 3) {
+    return [
+      parseInt(h[0] + h[0], 16),
+      parseInt(h[1] + h[1], 16),
+      parseInt(h[2] + h[2], 16),
+    ].join(',');
+  }
+  if (len >= 6) {
+    return [
+      parseInt(h.substr(0, 2), 16),
+      parseInt(h.substr(2, 2), 16),
+      parseInt(h.substr(4, 2), 16),
+    ].join(',');
+  }
+  return '18,150,219'; // 兜底默认蓝
+};
 const { getLunarLabels } = require('../../utils/lunar');
 const prefs = require('../../utils/prefs');
 const { buildPath } = require('../../utils/route');
@@ -44,6 +65,8 @@ Page({
     scrollToDate: '',
     daily: [],
     summary: {},
+    heatCells: [],
+    heatLegend: [],
     // 默认展示月历 tab
     activeTab: 'calendar',
     updateTime: '',
@@ -54,7 +77,14 @@ Page({
   _syncPrefs() {
     const p = prefs.getPrefs();
     if (p.tempUnit === this.data.tempUnit && p.themeColor === this.data.themeColor) return;
-    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor });
+    const patch = { tempUnit: p.tempUnit, themeColor: p.themeColor };
+    // 主题色变化时同步重算热力格颜色
+    if (p.themeColor !== this.data.themeColor && this.data.daily.length) {
+      const { cells, legend } = this.computeHeatmap(this.data.daily, p.themeColor);
+      patch.heatCells = cells;
+      patch.heatLegend = legend;
+    }
+    this.setData(patch);
   },
 
   onUnload() {
@@ -129,10 +159,15 @@ Page({
       // 计算统计摘要
       const summary = this.computeSummary(daily);
 
+      // 计算降水热力格
+      const { cells: heatCells, legend: heatLegend } = this.computeHeatmap(daily);
+
       const { activeDate } = this.data;
       this.setData({
         daily,
         summary,
+        heatCells,
+        heatLegend,
         loading: false,
         updateTime: weatherRes.updateTime
           ? formatDate(new Date(weatherRes.updateTime))
@@ -188,6 +223,49 @@ Page({
       else if (maxDiff > 0)   item.tempDesc = `升温+${Math.abs(maxDiff)}°`;
       else                    item.tempDesc = `降温-${Math.abs(maxDiff)}°`;
     });
+  },
+
+  // 计算降水热力格数据：返回带前置空格的日历 cells 数组
+  computeHeatmap(daily, themeColor) {
+    if (!daily || !daily.length) return [];
+    const rgbStr = hexToRgbStr(themeColor || this.data.themeColor);
+    // 最大降水量（归一化用），兜底 0.1 避免除零
+    const maxPrecip = Math.max(...daily.map(d => parseFloat(d.precip) || 0), 0.1);
+    // 第一天是周几（0=周日，1=周一...）→ 转为周一起始偏移
+    const firstDate = new Date(daily[0].fxDate + 'T00:00:00');
+    const dow = firstDate.getDay(); // 0–6
+    const offset = dow === 0 ? 6 : dow - 1; // 周一起始
+    const cells = [];
+    // 前置空格
+    for (let i = 0; i < offset; i++) cells.push({ empty: true, key: 'empty-' + i });
+    // 30 天数据
+    daily.forEach(d => {
+      const precip = parseFloat(d.precip) || 0;
+      // alpha：0mm → 0.06（淡底色），>0 → 0.15~1 区间线性映射
+      const alpha = precip === 0 ? 0.06 : Math.max(0.15, Math.min(1, precip / maxPrecip));
+      const bgColor = precip > 0
+        ? `rgba(${rgbStr},${alpha.toFixed(2)})`
+        : 'rgba(255,255,255,0.04)';
+      cells.push({
+        key: d.fxDate,
+        day: d.day,
+        fxDate: d.fxDate,
+        lunarLabel: d.lunarLabel || '',
+        precip,
+        precipDisplay: precip > 0 ? String(precip) : '',
+        bgColor,
+        isToday: d.week === '今天',
+      });
+    });
+    // 图例色：从无到最深共 5 档
+    const legend = [
+      'rgba(255,255,255,0.04)',
+      `rgba(${rgbStr},0.20)`,
+      `rgba(${rgbStr},0.45)`,
+      `rgba(${rgbStr},0.70)`,
+      `rgba(${rgbStr},1.00)`,
+    ];
+    return { cells, legend };
   },
 
   // 计算统计摘要

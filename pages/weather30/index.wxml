@@ -26,6 +26,9 @@
       <view class="tab {{activeTab === 'chart' ? 'active' : ''}}" bindtap="onTabChange" data-tab="chart">
         <text>图表</text>
       </view>
+      <view class="tab {{activeTab === 'heatmap' ? 'active' : ''}}" bindtap="onTabChange" data-tab="heatmap">
+        <text>热力</text>
+      </view>
     </view>
 
     <!-- 月历：view[hidden] 实现 display:none，保留组件实例不销毁（自定义组件标签不支持 hidden 属性） -->
@@ -50,6 +53,44 @@
     <!-- 图表模式 -->
     <view wx:if="{{activeTab === 'chart'}}" class="chart-container">
       <weather30-chart id="weather30Chart" daily="{{daily}}" tempUnit="{{tempUnit}}" bind:select="onChartSelect" />
+    </view>
+
+    <!-- 热力格模式 -->
+    <view wx:if="{{activeTab === 'heatmap'}}" class="heatmap-container">
+      <!-- 星期列头 -->
+      <view class="hm-weekdays">
+        <text class="hm-wd">一</text>
+        <text class="hm-wd">二</text>
+        <text class="hm-wd">三</text>
+        <text class="hm-wd">四</text>
+        <text class="hm-wd">五</text>
+        <text class="hm-wd">六</text>
+        <text class="hm-wd hm-wd-sun">日</text>
+      </view>
+      <!-- 日历格网格 -->
+      <view class="hm-grid">
+        <block wx:for="{{heatCells}}" wx:key="key">
+          <!-- 空格占位 -->
+          <view wx:if="{{item.empty}}" class="hm-cell hm-cell-blank" />
+          <!-- 数据格 -->
+          <view wx:else
+                class="hm-cell {{item.isToday ? 'hm-cell-today' : ''}}"
+                style="background:{{item.bgColor}}">
+            <text class="hm-day">{{item.isToday ? '今' : item.day}}</text>
+            <text wx:if="{{item.precipDisplay}}" class="hm-precip">{{item.precipDisplay}}</text>
+            <text wx:elif="{{item.lunarLabel}}" class="hm-lunar">{{item.lunarLabel}}</text>
+          </view>
+        </block>
+      </view>
+      <!-- 图例 -->
+      <view class="hm-legend">
+        <text class="hm-legend-label">无降水</text>
+        <view class="hm-legend-bar">
+          <view wx:for="{{heatLegend}}" wx:key="index" class="hm-legend-seg" style="background:{{item}}" />
+        </view>
+        <text class="hm-legend-label">最多</text>
+      </view>
+      <text class="hm-legend-unit">单位：mm</text>
     </view>
 
   </block>

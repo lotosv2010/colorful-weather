@@ -1,5 +1,5 @@
 <!--pages/warning/index.wxml-->
-<view class="warning-page">
+<view class="warning-page" style="--theme:{{themeColor}}">
 
   <!-- 头部城市信息 -->
   <page-header district="{{district}}" city="{{city}}" province="{{province}}" />
@@ -80,6 +80,12 @@
         <text class="alert-desc">{{item.criteria}}</text>
       </view>
 
+    </view>
+
+    <!-- 关注城市按钮（有 cityId 时显示） -->
+    <view wx:if="{{cityId}}" class="fav-bar" bindtap="onToggleFavorite">
+      <text class="fav-icon">{{isFavorite ? '♥' : '♡'}}</text>
+      <text class="fav-text">{{isFavorite ? '已关注此城市' : '关注此城市'}}</text>
     </view>
 
     <!-- 数据来源声明 -->

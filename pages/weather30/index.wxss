@@ -60,3 +60,99 @@ page {
 .list-scroll {
   height: 70vh;
 }
+
+/* ── 热力格 ─────────────────────────── */
+.heatmap-container {
+  background: rgb(34, 37, 48);
+  border-radius: 15px;
+  padding: 20rpx 20rpx 28rpx;
+}
+
+/* 星期列头 */
+.hm-weekdays {
+  display: flex;
+  margin-bottom: 10rpx;
+}
+.hm-wd {
+  flex: 1;
+  text-align: center;
+  font-size: 22rpx;
+  color: #8C9AA5;
+}
+.hm-wd-sun {
+  color: #ff6b6b;
+}
+
+/* 网格 */
+.hm-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+.hm-cell {
+  width: calc(100% / 7);
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  border-radius: 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rpx 2rpx;
+  margin-bottom: 6rpx;
+  position: relative;
+}
+.hm-cell-blank {
+  background: transparent !important;
+}
+.hm-cell-today {
+  outline: 2rpx solid var(--theme, #1296db);
+}
+.hm-day {
+  font-size: 24rpx;
+  color: #e0e0e0;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.hm-precip {
+  font-size: 18rpx;
+  color: #fff;
+  margin-top: 2rpx;
+  line-height: 1;
+}
+.hm-lunar {
+  font-size: 18rpx;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 2rpx;
+  line-height: 1;
+}
+
+/* 图例 */
+.hm-legend {
+  display: flex;
+  align-items: center;
+  margin-top: 18rpx;
+  padding: 0 4rpx;
+}
+.hm-legend-label {
+  font-size: 20rpx;
+  color: #8C9AA5;
+  flex-shrink: 0;
+}
+.hm-legend-bar {
+  flex: 1;
+  display: flex;
+  margin: 0 12rpx;
+  border-radius: 6rpx;
+  overflow: hidden;
+  height: 16rpx;
+}
+.hm-legend-seg {
+  flex: 1;
+}
+.hm-legend-unit {
+  display: block;
+  text-align: right;
+  font-size: 20rpx;
+  color: #8C9AA5;
+  margin-top: 8rpx;
+}

@@ -103,6 +103,29 @@ page {
   display: block;
 }
 
+/* 关注城市按钮 */
+.fav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(34, 37, 48);
+  border-radius: 50rpx;
+  padding: 28rpx 0;
+  margin-bottom: 24rpx;
+  border: 2rpx solid var(--theme, #1296db);
+}
+.fav-icon {
+  font-size: 36rpx;
+  color: var(--theme, #1296db);
+  margin-right: 12rpx;
+  line-height: 1;
+}
+.fav-text {
+  font-size: 28rpx;
+  color: var(--theme, #1296db);
+  font-weight: 500;
+}
+
 /* 数据来源 */
 .attributions {
   text-align: center;
