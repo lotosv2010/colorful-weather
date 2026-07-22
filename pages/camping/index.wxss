@@ -522,13 +522,13 @@ page {
 .aqi-num {
   font-size: 32rpx;
   font-weight: 700;
-  color: #fff;
+  color: #333;
   line-height: 1;
 }
 
 .aqi-label {
   font-size: 18rpx;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .air-cat {
