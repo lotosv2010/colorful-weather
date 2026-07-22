@@ -214,6 +214,17 @@
         </view>
         <text class="trip-entry-arrow">›</text>
       </view>
+      <!-- 分享天气卡片入口卡 -->
+      <view class="trip-entry-card share-entry-card" catchtap="onShareCardTap">
+        <view class="trip-entry-left">
+          <text class="trip-entry-icon">🖼️</text>
+          <view>
+            <text class="trip-entry-title">分享天气</text>
+            <text class="trip-entry-sub">生成精美天气卡片，保存或分享给朋友</text>
+          </view>
+        </view>
+        <text class="trip-entry-arrow">›</text>
+      </view>
       </block>
       <block wx:elif="{{errorMsg}}">
         <error-state errorMsg="{{errorMsg}}" bind:retry="onRetry" />

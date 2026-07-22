@@ -1,0 +1,61 @@
+<!--pages/share/index.wxml-->
+<wxs src="/utils/iconColor.wxs" module="ic" />
+<wxs src="/utils/tempUnit.wxs" module="tu" />
+
+<view class="share-page" style="--theme:{{themeColor}}">
+
+  <!-- ── 可见卡片（WXML + CSS，图标沿用 qi-*-fill 字体类） ── -->
+  <view class="sc-card" style="background:{{cardBg}}">
+    <text class="sc-logo">霁色天气</text>
+
+    <text class="sc-city">{{city}}</text>
+    <text class="sc-sub">{{subLabel}}</text>
+
+    <text class="sc-icon qi-{{icon}}-fill icon-color-{{ic.category(icon)}}"></text>
+
+    <text class="sc-temp">{{tu.fmt(temp, tempUnit)}}°</text>
+    <text class="sc-weather-text">{{weatherText}}</text>
+    <text wx:if="{{feelsLike != null}}" class="sc-feels">体感 {{tu.fmt(feelsLike, tempUnit)}}°</text>
+
+    <view class="sc-info-row">
+      <view class="sc-info-item">
+        <text class="sc-info-label">AQI</text>
+        <text class="sc-info-val" style="color:{{aqiColor || 'rgba(255,255,255,0.9)'}}">
+          {{aqiDisplay || '--'}}
+        </text>
+      </view>
+      <view class="sc-sep"></view>
+      <view class="sc-info-item">
+        <text class="sc-info-label">湿度</text>
+        <text class="sc-info-val">{{humidity != null ? humidity + '%' : '--'}}</text>
+      </view>
+      <view class="sc-sep"></view>
+      <view class="sc-info-item">
+        <text class="sc-info-label">风力</text>
+        <text class="sc-info-val">{{windScale ? windScale + '级' : '--'}}</text>
+      </view>
+    </view>
+
+    <view class="sc-divider"></view>
+    <text class="sc-watermark">霁色天气 · 精准天气预报</text>
+  </view>
+
+  <!-- ── 隐藏 Canvas（仅用于 wx.canvasToTempFilePath 导出图片） ── -->
+  <canvas
+    type="2d"
+    id="exportCanvas"
+    class="export-canvas"
+    style="width:375px;height:560px;"
+  ></canvas>
+
+  <!-- ── 按钮 ── -->
+  <view class="action-row">
+    <view
+      class="action-btn {{saving ? 'btn-loading' : ''}}"
+      catchtap="onSave"
+    >
+      <text class="action-btn-label">{{saving ? '保存中…' : '💾  保存到相册'}}</text>
+    </view>
+  </view>
+
+</view>

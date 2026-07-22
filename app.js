@@ -50,5 +50,6 @@ App({
     lastHideAt: 0,
     needForceRefresh: false,
     agentHandoffs: {},
+    shareData: null,         // 天气分享快照（index → share 页单次传递）
   }
 })

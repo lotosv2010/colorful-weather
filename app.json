@@ -28,7 +28,8 @@
     "pages/settings/index",
     "pages/compare/index",
     "pages/astronomy/index",
-    "pages/trip/index"
+    "pages/trip/index",
+    "pages/share/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

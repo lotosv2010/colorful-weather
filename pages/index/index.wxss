@@ -601,6 +601,11 @@ page {
   margin-top: 4rpx;
 }
 
+/* 分享入口卡与出行入口卡颜色区分 */
+.share-entry-card {
+  border-left-color: rgba(255, 255, 255, 0.3);
+}
+
 .trip-entry-arrow {
   font-size: 40rpx;
   color: rgba(255, 255, 255, 0.25);

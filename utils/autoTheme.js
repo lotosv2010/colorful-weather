@@ -120,8 +120,19 @@ const resolveThemeBg = (weatherIcon, sunriseISO, sunsetISO) => {
   const bgColor = BG_MAP[category]?.[period] || BG_MAP.default[period];
   return bgColor;
 };
+
+// Canvas 专用：从 BG_MAP 的 CSS 字符串里提取两个端点色，返回 { from, to } hex
+const resolveThemeBgColors = (weatherIcon, sunriseISO, sunsetISO) => {
+  const css = resolveThemeBg(weatherIcon, sunriseISO, sunsetISO);
+  const matches = [...css.matchAll(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/g)];
+  const toHex = (m) => '#' + [m[1], m[2], m[3]].map(n => parseInt(n).toString(16).padStart(2, '0')).join('');
+  if (matches.length >= 2) return { from: toHex(matches[0]), to: toHex(matches[1]) };
+  return { from: '#1c1e26', to: '#373a48' };
+};
+
 module.exports = {
   resolveTheme,
   resolveThemeBg,
+  resolveThemeBgColors,
   getWeatherCategory,
 };

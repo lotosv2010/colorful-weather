@@ -112,6 +112,39 @@ Page({
   onTripTap() {
     wx.navigateTo({ url: '/pages/trip/index' });
   },
+  onShareCardTap() {
+    // 将当前天气快照存入 globalData，供 share 页读取
+    const {
+      currentWeather, city, province, district,
+      air, tempUnit, themeColor, weatherBg,
+      astronomySun, dateNow,
+    } = this.data;
+    const today = new Date();
+    const pad = n => `${n}`.padStart(2, '0');
+    const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    getApp().globalData.shareData = {
+      city: district || city || '',
+      province: province || '',
+      temp: currentWeather && currentWeather.temp,
+      feelsLike: currentWeather && currentWeather.feelsLike,
+      icon: currentWeather && currentWeather.icon,
+      text: currentWeather && currentWeather.text,
+      humidity: currentWeather && currentWeather.humidity,
+      windDir: currentWeather && currentWeather.windDir,
+      windScale: currentWeather && currentWeather.windScale,
+      aqiDisplay: air && air.aqiDisplay,
+      aqiCategory: air && air.category,
+      aqiColor: air && air.colorHex,
+      tempUnit,
+      themeColor,
+      weatherBg,
+      sunrise: astronomySun && astronomySun.sunrise,
+      sunset: astronomySun && astronomySun.sunset,
+      dateStr,
+      timeStr: dateNow || '',
+    };
+    wx.navigateTo({ url: '/pages/share/index' });
+  },
   onRefresh() {
     this.getWeather({ force: true });
   },
