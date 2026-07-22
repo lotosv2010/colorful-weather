@@ -92,11 +92,6 @@
 
     </view>
 
-    <!-- 底部水印 -->
-    <view class="sc-footer">
-      <view class="sc-hr"></view>
-      <text class="sc-watermark">霁色天气  ·  精准天气预报</text>
-    </view>
   </view>
 
   <!-- ── ① 综合出行建议卡 ── -->
@@ -151,8 +146,11 @@
     </view>
   </view>
 
-  <!-- 提示 -->
-  <text class="save-hint">截图可直接分享给好友</text>
+  <!-- 底部水印（所有卡片之后） -->
+  <view class="sc-footer sc-page-footer">
+    <view class="sc-hr"></view>
+    <text class="sc-watermark">霁色天气  ·  精准天气预报</text>
+  </view>
 
   <!-- 隐藏 Canvas（高度调整为 640px 以容纳更丰富的内容） -->
   <canvas
@@ -171,6 +169,13 @@
       <weather-icon class="btn-dl-icon" src="/static/icons/download.svg" colors="{{['#fff']}}" />
       <text class="btn-label">{{saving ? '保存中…' : '保存到相册'}}</text>
     </view>
+  </view>
+
+  <!-- 底部提示（页面最底部） -->
+  <view class="save-hint-row">
+    <view class="save-hint-line"></view>
+    <text class="save-hint">截图可直接分享给好友</text>
+    <view class="save-hint-line"></view>
   </view>
 
 </view>

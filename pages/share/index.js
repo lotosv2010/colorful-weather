@@ -1,8 +1,31 @@
 // pages/share/index.js
-const { resolveThemeBg, resolveThemeBgColors } = require('../../utils/autoTheme');
+const { resolveThemeBg, resolveThemeBgColors, getWeatherCategory } = require('../../utils/autoTheme');
 const { convert } = require('../../utils/temp');
 const prefs = require('../../utils/prefs');
 const monitor = require('../../utils/monitor');
+
+// ── 天气图标颜色（与 app.wxss --icon-* 变量保持一致）────────────────────────
+const ICON_COLORS = {
+  sunny:        '#FDB813',
+  partlyCloudy: '#F0A500',
+  cloudy:       '#7B9BB5',
+  overcast:     '#5A7080',
+  rainLight:    '#5BA3D9',
+  rainHeavy:    '#1E4D8C',
+  thunder:      '#7B3FA0',
+  sleet:        '#6AAFD6',
+  snow:         '#A8D8EA',
+  snowHeavy:    '#D0EEF8',
+  fog:          '#9E9E9E',
+  haze:         '#B5854A',
+  sand:         '#C49A3C',
+  typhoon:      '#E53935',
+  hot:          '#DC143C',
+  cold:         '#81D4FA',
+  default:      '#8C9AA5',
+};
+
+const getIconColor = (code) => ICON_COLORS[getWeatherCategory(code)] || ICON_COLORS.default;
 
 // ── QWeather fill 图标 code → Unicode 字符 ──────────────────────────────────
 // 摘自 static/qweather-icons.wxss 的 -fill 条目；台风码使用线框版
@@ -224,10 +247,17 @@ Page({
     });
   },
 
-  // ── Canvas 高度：根据数据是否含额外卡片动态计算 ──────────────────────────────
+  // ── Canvas 高度：精确同步 _drawCanvas 布局参数，避免底部空白过多 ────────────
   _calcCanvasH(d) {
-    if (!d) return 640;
-    let h = 640; // 主卡（含缓冲）
+    if (!d) return 540;
+    // 与 _drawCanvas 保持同步：nextY 起始 230，有 desc +22，有 clothing +32
+    let nextY = 230;
+    if (d.desc) nextY += 22;
+    if (d.clothingTip) nextY += 32;
+    const panelY = Math.max(nextY + 8, 248);
+    const footerY = panelY + 252 + 14; // panelH=252
+    let h = footerY + 40; // 分割线 + 水印文字 + 小缓冲
+
     if (d.advice) {
       const n = d.advice.tips ? d.advice.tips.length : 0;
       h += 14 + 16 + 52 + 8 + Math.max(n, 1) * 24 + 16; // gap+padTop+header+sep+tips+padBot
@@ -298,32 +328,32 @@ Page({
 
     ctx.textAlign = 'left';
     ctx.fillStyle = 'rgba(255,255,255,0.38)';
-    ctx.fillText('霁色天气', 22, 36);
+    ctx.fillText('霁色天气', 22, 30);
 
     const dateLabel = this._buildDateLabel(d.dateStr, d.timeStr);
     ctx.textAlign = 'right';
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.fillText(dateLabel, W - 22, 36);
+    ctx.fillText(dateLabel, W - 22, 30);
 
     // ══ 城市标题 ══
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 38px -apple-system, sans-serif';
-    ctx.fillText(d.city || '未知城市', W / 2, 86);
+    ctx.fillText(d.city || '未知城市', W / 2, 78);
 
     if (d.province) {
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = '400 13px -apple-system, sans-serif';
-      ctx.fillText(d.province, W / 2, 108);
+      ctx.fillText(d.province, W / 2, 98);
     }
 
     // ══ 主天气区（仿 weather-header-main）：图标（左）+ 温度+描述（右） ══
-    // 图标：font icon，居中于 Y=175
-    const iconRowCenterY = 175;
+    // 图标：font icon，居中于 Y=162
+    const iconRowCenterY = 162;
     ctx.textBaseline = 'middle';
     if (this._qiFontLoaded) {
       ctx.font = '72px "qweather-icons"';
-      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.fillStyle = getIconColor(d.icon); // 按天气分类着色，与页面图标一致
       ctx.fillText(getIconChar(d.icon), W * 0.28, iconRowCenterY);
     } else {
       ctx.font = '64px -apple-system, sans-serif';
@@ -337,17 +367,17 @@ Page({
     ctx.textAlign = 'left';
     ctx.fillStyle = '#fff';
     ctx.font = 'bold 56px -apple-system, sans-serif';
-    ctx.fillText(`${tempVal}°`, W * 0.52, 198);
+    ctx.fillText(`${tempVal}°`, W * 0.52, 184);
 
     // 天气描述（温度下方）
     ctx.fillStyle = 'rgba(255,255,255,0.82)';
     ctx.font = '400 18px -apple-system, sans-serif';
-    ctx.fillText(d.text || '', W * 0.52, 224);
+    ctx.fillText(d.text || '', W * 0.52, 208);
 
     ctx.textAlign = 'center';
 
     // ══ 天气概述 + 穿衣提示 ══
-    let nextY = 244;  // 主区结束后的起始 Y
+    let nextY = 230;  // 主区结束后的起始 Y（与 _calcCanvasH 同步）
 
     if (d.desc) {
       ctx.fillStyle = 'rgba(255,255,255,0.58)';
@@ -374,7 +404,7 @@ Page({
     }
 
     // ══ 详情面板（仿 weather-header-other）═══════════════════════════════
-    const panelX = 18, panelY = Math.max(nextY + 8, 258), panelW = W - 36, panelH = 268;
+    const panelX = 18, panelY = Math.max(nextY + 8, 248), panelW = W - 36, panelH = 252; // 与 _calcCanvasH 同步
     const windW = panelW * 0.30;    // 左：风向区宽度
     const gridX = panelX + windW;   // 右：数据格起始 X
     const gridW = panelW - windW;   // 右：数据格总宽

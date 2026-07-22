@@ -263,6 +263,14 @@ page {
   align-items: center;
 }
 
+/* 页面级水印：位于所有卡片之后，宽度与卡片一致 */
+.sc-page-footer {
+  width: 375px;
+  padding: 0 36rpx 10rpx;
+  box-sizing: border-box;
+  margin-top: 20rpx;
+}
+
 .sc-hr {
   width: 100%;
   height: 1rpx;
@@ -277,12 +285,27 @@ page {
   text-align: center;
 }
 
-/* ── 提示文字 ─────────────────────────────────────── */
+/* ── 底部提示（保存按钮之后，页面最底部）────────────── */
+.save-hint-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  width: 100%;
+  padding: 20rpx 52rpx 0;
+  box-sizing: border-box;
+}
+
+.save-hint-line {
+  flex: 1;
+  height: 1rpx;
+  background: rgba(255, 255, 255, 0.10);
+}
+
 .save-hint {
   font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.28);
-  margin-top: 22rpx;
-  letter-spacing: 1rpx;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 2rpx;
+  white-space: nowrap;
 }
 
 /* ── 隐藏 Canvas ──────────────────────────────────── */
