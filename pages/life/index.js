@@ -2,7 +2,7 @@
 const { indices3d, indices: indices1d } = require('../../utils/api');
 const { getDefinition, getColor, getMaxLevel } = require('../../utils/lifeMeta');
 const prefs = require('../../utils/prefs');
-const { buildPath } = require('../../utils/route');
+const { buildPath, parsePageOptions } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
 
 // 全量 16 类生活指数（无 SVG 的用文字兜底显示在圆内）
@@ -71,10 +71,7 @@ Page({
     this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
-    const location = options.location || '';
-    const province = options.province ? decodeURIComponent(options.province) : '';
-    const city = options.city ? decodeURIComponent(options.city) : '';
-    const district = options.district ? decodeURIComponent(options.district) : '';
+    const { location, province, city, district } = parsePageOptions(options);
     const activeType = options.type && this.matchType(options.type) ? options.type : '1';
     this.setData({ location, province, city, district, activeType, definition: getDefinition(activeType) });
     if (location) {

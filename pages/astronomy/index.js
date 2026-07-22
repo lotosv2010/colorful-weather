@@ -3,6 +3,7 @@ const { sun, moon, solarElevationAngle } = require('../../utils/api');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
 const prefs = require('../../utils/prefs');
+const { parsePageOptions } = require('../../utils/route');
 
 Page({
   data: {
@@ -48,10 +49,7 @@ Page({
 
   onLoad(options = {}) {
     this._loadStart = Date.now();
-    const location = options.location || '';
-    const province = options.province ? decodeURIComponent(options.province) : '';
-    const city = options.city ? decodeURIComponent(options.city) : '';
-    const district = options.district ? decodeURIComponent(options.district) : '';
+    const { location, province, city, district } = parsePageOptions(options);
     this.setData({ location, province, city, district });
 
     const p = prefs.getPrefs();

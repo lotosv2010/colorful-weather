@@ -1,5 +1,7 @@
 // components/hourly-precip-chart/index.js
+const chartCanvasBehavior = require('../../behaviors/chartCanvasBehavior');
 Component({
+  behaviors: [chartCanvasBehavior],
   options: {
     addGlobalClass: true
   },
@@ -80,29 +82,8 @@ Component({
       const chartContentWidth = Math.max(width, itemWidth * this.data.hourly.length);
       this.setData({ canvasWidth: width, chartContentWidth });
     },
-    initCanvas(cb) {
-      if (this._ctx) { cb && cb(); return; }
-      const query = this.createSelectorQuery();
-      query.select('#precipCanvas')
-        .fields({ node: true })
-        .exec((res) => {
-          if (!res || !res[0] || !res[0].node) return;
-          const canvas = res[0].node;
-          const ctx = canvas.getContext('2d');
-          const dpr = (wx.getDeviceInfo ? wx.getDeviceInfo().devicePixelRatio : null) || 2;
-          const cssW = this.data.chartContentWidth;
-          const cssH = this.data.canvasHeight;
-          canvas.width = cssW * dpr;
-          canvas.height = cssH * dpr;
-          ctx.scale(dpr, dpr);
-          this._ctx = ctx;
-          this._w = cssW;
-          this._h = cssH;
-          cb && cb();
-        });
-    },
     drawChart() {
-      this.initCanvas(() => this._drawChart());
+      this.initCanvas('#precipCanvas', () => this._drawChart());
     },
     _drawChart() {
       const ctx = this._ctx;

@@ -1,5 +1,5 @@
 const { minutely } = require('../../utils/api');
-const { buildPath } = require('../../utils/route');
+const { buildPath, parsePageOptions } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
 
 Page({
@@ -16,14 +16,10 @@ Page({
 
   onLoad(options) {
     this._loadStart = Date.now();
-    const { location, city, province, district } = options;
+    const { location, city, province, district } = parsePageOptions(options);
     if (!location) return;
     this._location = location;
-    this.setData({
-      city: city ? decodeURIComponent(city) : '',
-      province: province ? decodeURIComponent(province) : '',
-      district: district ? decodeURIComponent(district) : ''
-    });
+    this.setData({ city, province, district });
     this.fetchData(location);
   },
 

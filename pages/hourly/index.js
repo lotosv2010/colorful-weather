@@ -1,7 +1,7 @@
 // pages/hourly/index.js
 const api = require('../../utils/api');
 const prefs = require('../../utils/prefs');
-const { buildPath } = require('../../utils/route');
+const { buildPath, parsePageOptions } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
 const { getLunarLabels } = require('../../utils/lunar');
 
@@ -37,7 +37,8 @@ Page({
     this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
-    const { location, province, city, district, hour, date } = options;
+    const { location, province, city, district } = parsePageOptions(options);
+    const { hour, date } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
       return;
@@ -45,9 +46,9 @@ Page({
     this.location = location;
     this._targetDate = date || null;
     this.setData({
-      province: province ? decodeURIComponent(province) : '',
-      city: city ? decodeURIComponent(city) : '',
-      district: district ? decodeURIComponent(district) : ''
+      province,
+      city,
+      district
     });
     if (hour !== undefined) {
       this.setData({ selectedIndex: Number(hour) });

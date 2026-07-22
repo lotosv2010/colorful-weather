@@ -40,4 +40,17 @@ const navigateTo = (page, loc, extra) => {
   wx.navigateTo({ url: buildPath(page, loc, extra) });
 };
 
-module.exports = { buildQuery, buildPath, navigateTo };
+/**
+ * 解析子页通用 onLoad 参数：location / province / city / district / cityId
+ * province / city / district 做 decodeURIComponent；location / cityId 原样返回。
+ * @param {Object} options - Page onLoad 收到的 options 对象
+ */
+const parsePageOptions = (options = {}) => ({
+  location: options.location || '',
+  province: options.province ? decodeURIComponent(options.province) : '',
+  city:     options.city     ? decodeURIComponent(options.city)     : '',
+  district: options.district ? decodeURIComponent(options.district) : '',
+  cityId:   options.cityId   || '',
+});
+
+module.exports = { buildQuery, buildPath, navigateTo, parsePageOptions };

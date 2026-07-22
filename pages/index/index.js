@@ -1,8 +1,7 @@
-const { now, gridNow, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather, solarElevationAngle } = require('../../utils/api');
-const { formatDate, buildLocationLabel } = require('../../utils/util');
+const { now, indices, hourly, sevenDay, air, sun, moon, warning, minutely, cityLookup, historicalWeather, solarElevationAngle } = require('../../utils/api');
+const { pad, formatDate, buildLocationLabel } = require('../../utils/util');
 const { getSolarTermCard } = require('../../utils/lunar');
 const { formatHourly, formatDaily, formatAir, formatDateStr } = require('../../utils/weatherFormat');
-const { iconColor } = require('../../utils/iconColor');
 const { calcTripAdvice } = require('../../utils/tripAdvice');
 const prefs = require('../../utils/prefs');
 const network = require('../../utils/network');
@@ -14,6 +13,9 @@ const { fmt: fmtTemp } = require('../../utils/temp');
 const { buildSummary, buildShortDesc } = require('../../utils/summary');
 const { getColor, getDefinition } = require('../../utils/lifeMeta');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
+const campingBehavior = require('../../behaviors/campingBehavior');
+const mapTipsBehavior = require('../../behaviors/mapTipsBehavior');
+const cityPagesBehavior = require('../../behaviors/cityPagesBehavior');
 
 // index.js
 // 获取应用实例
@@ -27,6 +29,7 @@ const abortPending = () => {
 };
 
 Page({
+  behaviors: [campingBehavior, mapTipsBehavior, cityPagesBehavior],
   data: {
     // 注意：qqmapsdk 实例存放在 this.qqmapsdk（实例属性），不放入 data
     lbs: app.globalData.lbs,
@@ -64,21 +67,13 @@ Page({
     weatherEffect: { particle: null, decor: null },
     offline: false,
     cityId: '',
-    cityPages: [],
-    currentPageIndex: 0,
     loading: true,
     errorMsg: '',
     solarTermInfo: null,
-    mapTipsVisible: false,
-    mapTipsData: {},
-    mapMarkers: [],
-    mapCenterLat: null,  // 覆盖地图中心纬度（null 时回退 latitude）
-    mapCenterLon: null,  // 覆盖地图中心经度（null 时回退 longitude）
-    citiesOverviewVisible: false,
-    // 露营图层
-    campingLayerOn: false,
-    campingMarkers: [],
-    campingLoading: false,
+    // mapTipsVisible / mapTipsData              → mapTipsBehavior
+    // mapMarkers / mapCenterLat / mapCenterLon   → campingBehavior
+    // campingLayerOn / campingMarkers / campingLoading → campingBehavior
+    // cityPages / currentPageIndex / citiesOverviewVisible → cityPagesBehavior
   },
   onSheetChange(e) {
     const expanded = e.detail.expanded;
@@ -126,164 +121,7 @@ Page({
     wx.navigateTo({ url: '/pages/trip/index' });
   },
 
-  // ── 露营图层管理 ──────────────────────────────────────────────────────────
-
-  // marker 管理助手：始终将 campingMarkers + 当前天气图钉合并后写入 mapMarkers
-  _setWeatherPin(pin) {
-    this._currentWeatherPin = pin;
-    this.setData({ mapMarkers: [...this.data.campingMarkers, pin] });
-  },
-  _clearWeatherPin() {
-    this._currentWeatherPin = null;
-    this.setData({ mapMarkers: [...this.data.campingMarkers] });
-  },
-  _clearCampingLayer() {
-    this._campingPois = [];
-    // 清除 campingSession（图层关闭后详情页不再共享此次搜索结果）
-    app.globalData.campingSession = null;
-    // 保留天气图钉，只清除营地图层；同时重置地图中心覆盖
-    const pin = this._currentWeatherPin;
-    this.setData({
-      campingLayerOn: false,
-      campingMarkers: [],
-      mapMarkers: pin ? [pin] : [],
-      mapCenterLat: null,
-      mapCenterLon: null,
-    });
-  },
-
-  // 切换露营图层开关
-  onCampingLayerTap() {
-    if (this.data.campingLayerOn) {
-      this._clearCampingLayer();
-    } else {
-      this.setData({ campingLayerOn: true, campingLoading: true });
-      this._loadCampingPOI();
-    }
-  },
-
-  // 搜索地图当前视窗内的露营地 POI，结果转成地图 markers
-  async _loadCampingPOI() {
-    const { latitude, longitude } = this.data;
-    if (!latitude || !longitude) {
-      this.setData({ campingLoading: false });
-      wx.showToast({ title: '请先获取位置', icon: 'none' });
-      return;
-    }
-
-    // ① 取视窗矩形 + 中心点
-    let searchLat = Number(latitude);
-    let searchLng = Number(longitude);
-    let searchRadius = 50000;  // 降级：无法取视窗时用 50km
-    let viewBounds = null;     // { swLat, swLng, neLat, neLng } 用于精确矩形过滤
-    try {
-      const mapCtx = wx.createMapContext('bgMap', this);
-      const [region, center] = await Promise.all([
-        new Promise((res, rej) => mapCtx.getRegion({ success: res, fail: rej })),
-        new Promise((res, rej) => mapCtx.getCenterLocation({ success: res, fail: rej })),
-      ]);
-      const { northeast: ne, southwest: sw } = region;
-      searchLat = center.latitude;
-      searchLng = center.longitude;
-      // 圆形搜索半径 = 视窗中心到最远角点的距离，保证矩形四角全部覆盖
-      const latM = Math.abs(ne.latitude  - sw.latitude)  * 111000 / 2;
-      const lngM = Math.abs(ne.longitude - sw.longitude) * 111000 * Math.cos(searchLat * Math.PI / 180) / 2;
-      searchRadius = Math.round(Math.min(Math.sqrt(latM * latM + lngM * lngM), 50000));
-      viewBounds = { swLat: sw.latitude, swLng: sw.longitude, neLat: ne.latitude, neLng: ne.longitude };
-    } catch (_) {}
-
-    // ② 分页拉取（page_size 取 SDK 上限 20，循环直到最后一页，最多 5 页）
-    const PAGE_SIZE = 20;
-    const MAX_PAGES = 5;
-    let allPois = [];
-    try {
-      for (let page = 1; page <= MAX_PAGES; page++) {
-        const pagePois = await new Promise((resolve, reject) => {
-          this.qqmapsdk.search({
-            keyword: '露营',
-            location: `${searchLat},${searchLng}`,
-            distance: searchRadius,
-            auto_extend: 0,       // 禁止自动扩区，保证只搜视窗范围
-            page_size: PAGE_SIZE,
-            page_index: page,
-            success: (res, data) => resolve((data && data.searchSimplify) || []),
-            fail: err => reject(err),
-          });
-        });
-        allPois = allPois.concat(pagePois);
-        if (pagePois.length < PAGE_SIZE) break; // 已是最后一页
-      }
-    } catch (_) {
-      this.setData({ campingLoading: false });
-      wx.showToast({ title: '营地搜索失败', icon: 'none' });
-      return;
-    }
-
-    // ③ 精确裁剪：只保留落在视窗矩形内的点
-    if (viewBounds) {
-      allPois = allPois.filter(poi =>
-        poi.latitude  >= viewBounds.swLat && poi.latitude  <= viewBounds.neLat &&
-        poi.longitude >= viewBounds.swLng && poi.longitude <= viewBounds.neLng
-      );
-    }
-
-    this._campingPois = allPois;
-    if (!allPois.length) {
-      this.setData({ campingLoading: false });
-      wx.showToast({ title: '当前视图内未找到露营地', icon: 'none' });
-      return;
-    }
-
-    // ④ 全量转 markers（不再 slice）
-    const campingMarkers = allPois.map((poi, i) => ({
-      id: 1001 + i,
-      latitude: poi.latitude,
-      longitude: poi.longitude,
-      width: 28,
-      height: 36,
-      anchor: { x: 0.5, y: 1 },
-      callout: {
-        content: poi.title || '营地',
-        color: '#ffffff',
-        fontSize: 11,
-        borderWidth: 0,
-        borderRadius: 6,
-        bgColor: '#2a7b3e',
-        padding: 5,
-        display: 'ALWAYS',
-      },
-    }));
-
-    // 存入 campingSession：详情页直接读取，保证 POI 一一对应
-    app.globalData.campingSession = {
-      poiList: allPois.map(poi => ({
-        title: poi.title || '营地',
-        address: poi.address || poi.district || '',
-        lat: poi.latitude,
-        lon: poi.longitude,
-      })),
-      selection: null,
-    };
-
-    this._clearWeatherPin();
-    const pins = this._currentWeatherPin ? [...campingMarkers, this._currentWeatherPin] : campingMarkers;
-    this.setData({ campingMarkers, campingLoading: false, mapMarkers: pins });
-    wx.showToast({ title: `已标注 ${allPois.length} 处营地`, icon: 'none', duration: 1500 });
-  },
-
-  // 地图 marker 点击事件（区分营地 marker vs 天气图钉）
-  onMarkerTap(e) {
-    const { markerId } = e.detail;
-    if (markerId >= 1001) {
-      // 营地 marker
-      const idx = markerId - 1001;
-      const pois = this._campingPois || [];
-      const poi = pois[idx];
-      if (!poi) return;
-      this._handleMapClick(poi.longitude, poi.latitude, poi.title, true);
-    }
-    // id=1 的天气图钉不需要额外处理，onMapTipsTap 已覆盖
-  },
+  // camping / mapTips / cityPages 方法 → 已迁移至同名 Behavior
   onShareCardTap() {
     // 将当前天气快照存入 globalData，供 share 页读取
     const {
@@ -292,7 +130,6 @@ Page({
       astronomySun, dateNow,
     } = this.data;
     const today = new Date();
-    const pad = n => `${n}`.padStart(2, '0');
     const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
 
     // ── 出行建议评分（基于实时天气 + 今日预报 + 空气质量）──
@@ -353,169 +190,6 @@ Page({
     } else {
       this.init();
     }
-  },
-  async onMapTap(e) {
-    const { longitude, latitude } = e.detail;
-    if (this._mapLoading || longitude == null || latitude == null) return;
-    await this._handleMapClick(longitude, latitude);
-  },
-  async onMapPoiTap(e) {
-    const { longitude, latitude } = e.detail;
-    // bindpoitap detail 带有 POI 名称（name 或 pointOfInterest），直接取用
-    const poiName = e.detail.name || e.detail.pointOfInterest || '';
-    if (this._mapLoading || longitude == null || latitude == null) return;
-    await this._handleMapClick(longitude, latitude, poiName);
-  },
-  async _handleMapClick(longitude, latitude, poiName = '', isCamping = false) {
-    // 计算屏幕坐标：通过地图可视区域和点击经纬度换算
-    let tapX = null;
-    let tapY = null;
-    try {
-      const mapCtx = wx.createMapContext('bgMap', this);
-      const [region, center] = await Promise.all([
-        new Promise((res, rej) => mapCtx.getRegion({ success: res, fail: rej })),
-        new Promise((res, rej) => mapCtx.getCenterLocation({ success: res, fail: rej })),
-      ]);
-      const { northeast, southwest } = region;
-      const lngSpan = northeast.longitude - southwest.longitude;
-      const latSpan = northeast.latitude - southwest.latitude;
-      const windowInfo = wx.getWindowInfo();
-      const screenW = windowInfo.windowWidth || 375;
-      const screenH = windowInfo.windowHeight || 667;
-      if (lngSpan > 0 && latSpan > 0) {
-        // 以地图中心为基准做相对偏移，减小墨卡托累计误差
-        const dLng = longitude - center.longitude;
-        const dLat = latitude - center.latitude;
-        const pxPerLng = screenW / lngSpan;
-        const pxPerLat = screenH / latSpan;
-        tapX = screenW / 2 + dLng * pxPerLng;
-        tapY = screenH / 2 - dLat * pxPerLat;
-      }
-    } catch (_) {}
-    await this._fetchMapTips(longitude, latitude, tapX, tapY, poiName, isCamping);
-  },
-  async _fetchMapTips(longitude, latitude, x, y, poiName = '', isCamping = false) {
-    this._mapLoading = true;
-    this.setData({ mapTipsVisible: false, mapTipsData: {} });
-    this._setWeatherPin({
-      id: 1,
-      latitude: Number(latitude),
-      longitude: Number(longitude),
-      width: 24,
-      height: 32,
-      anchor: { x: 0.5, y: 1 },
-      callout: {},
-    });
-    try {
-      const qqLocation = `${latitude},${longitude}`;
-      const qwLocation = `${Number(longitude).toFixed(2)},${Number(latitude).toFixed(2)}`;
-      const [cityInfo, weatherRes] = await Promise.all([
-        this.getCity(qqLocation),
-        // 地图坐标点击使用格点实时天气，精度 3-5km，避免漂移到最近城市站点。
-        // 设计取舍：tips 仅作精确预览；点击进入详情后 getWeather() 仍走城市级接口，
-        // 因为 air/warning/indices 无格点版本，全量视图需要城市级数据。
-        gridNow({ location: qwLocation }),
-      ]);
-      const { city, province, district } = cityInfo;
-      const nw = weatherRes?.now || {};
-      const locationLabel = this._buildLocationLabel(district, city, province);
-      const temp = nw.temp;
-      const windowInfo = wx.getWindowInfo();
-      const screenW = windowInfo.windowWidth || 375;
-      const screenH = windowInfo.windowHeight || 667;
-      // tips 自适应宽度，估算约 240px（实际由内容撑开，这里用于边界检测）
-      const tipEstW = 240;
-      const tipH = 110;
-      const gap = 4;
-      const margin = 12;
-      let tipX, tipY;
-      if (x != null && y != null && !isNaN(x) && !isNaN(y)) {
-        // tips 位置：以点击点为中心
-        tipX = x - tipEstW / 2;
-        // 水平边界约束
-        if (tipX < margin) tipX = margin;
-        if (tipX + tipEstW > screenW - margin) tipX = screenW - tipEstW - margin;
-        // 垂直定位：优先显示在图钉上方
-        tipY = y - tipH - gap;
-        if (tipY < 60) {
-          // 上方空间不足，显示在图钉下方
-          tipY = y + gap;
-        }
-      } else {
-        // 无坐标时居中显示
-        tipX = margin;
-        tipY = Math.round(screenH * 0.35);
-      }
-      this.setData({
-        mapTipsVisible: true,
-        mapTipsData: {
-          latitude,
-          longitude,
-          city,
-          province,
-          district,
-          // POI 点击时额外携带 POI 名称，供 WXML 显示副标签
-          poiName,
-          locationLabel,
-          icon: nw.icon || '100',
-          iconColor: iconColor(nw.icon || '100'),
-          temp,
-          text: nw.text || '',
-          tipX,
-          tipY,
-          // 露营 marker 标记
-          isCamping,
-          campingName: isCamping ? (poiName || '') : '',
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      this._clearWeatherPin();
-      this.setData({ mapTipsVisible: false });
-      wx.showToast({ title: '城市解析失败', icon: 'none' });
-    } finally {
-      this._mapLoading = false;
-    }
-  },
-  onMapTipsTap() {
-    const d = this.data.mapTipsData;
-    if (!d || !d.latitude) return;
-    // 露营 marker 模式：跳转到露营详情页
-    if (d.isCamping) {
-      this._clearWeatherPin();
-      this.setData({ mapTipsVisible: false, mapTipsData: {} });
-      // 用首页当前城市坐标作为搜索中心（与首页 POI 搜索同源，避免再次搜索结果为空）
-      // location 键已在 NO_ENCODE_KEYS 中，坐标逗号不会被编码
-      navigateTo('/pages/camping/index', {
-        location: `${this.data.longitude},${this.data.latitude}`,
-        n: this.data.city || '',
-        p: this.data.province || '',
-        d: this.data.district || '',
-        pn: d.campingName || '',
-      });
-      return;
-    }
-    // 普通地图点击：用 tips 中暂存的坐标和城市信息更新主数据，再全量查询
-    this._clearWeatherPin();
-    this.setData({
-      mapTipsVisible: false,
-      mapTipsData: {},
-      latitude: d.latitude,
-      longitude: d.longitude,
-      city: d.city,
-      province: d.province,
-      district: d.district,
-      locationLabel: d.locationLabel,
-      cityId: '',
-    });
-    this._resolveCityId(`${d.longitude},${d.latitude}`);
-    const sheet = this.selectComponent('#sheet');
-    if (sheet) sheet.expand();
-    this.getWeather().catch(console.error);
-  },
-  onMapTipsClose() {
-    this._clearWeatherPin();
-    this.setData({ mapTipsVisible: false, mapTipsData: {} });
   },
   _syncPrefs() {
     const p = prefs.getPrefs();
@@ -597,7 +271,6 @@ Page({
   _computeSolarTermInfo() {
     try {
       const today = new Date();
-      const pad = n => `${n}`.padStart(2, '0');
       const dateStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
       const info = getSolarTermCard(dateStr);
       this.setData({ solarTermInfo: info });
@@ -875,96 +548,7 @@ Page({
   getIndices(location, tc, opts) {
     return indices({ location, type: 0 }, tc, opts);
   },
-  // 构建可横划城市页列表：GPS 定位城市（有定位时）+ 收藏城市
-  _buildCityPages() {
-    const { cities } = prefs.getPrefs();
-    const { cityId } = this.data;
-    const savedIds = new Set(cities.map(c => c.id));
-    const pages = [];
-
-    // 有 GPS 定位城市时，始终作为第一页
-    if (this._locatedGPS) {
-      pages.push({
-        id: '__located__',
-        name: this._locatedGPS.district || this._locatedGPS.city || '',
-        adm1: this._locatedGPS.province || '',
-        adm2: this._locatedGPS.city || '',
-        lat: this._locatedGPS.lat,
-        lon: this._locatedGPS.lon,
-        isLocated: true,
-      });
-    }
-
-    cities.forEach(c => pages.push({ ...c, isLocated: false }));
-    if (pages.length === 0) return;
-
-    // 确定当前页：_currentIsLocated 优先；否则按 cityId 匹配收藏城市
-    let currentPageIndex;
-    if (this._currentIsLocated && pages.some(p => p.id === '__located__')) {
-      currentPageIndex = pages.findIndex(p => p.id === '__located__');
-    } else if (cityId && savedIds.has(cityId)) {
-      currentPageIndex = pages.findIndex(p => p.id === cityId);
-      if (currentPageIndex < 0) currentPageIndex = 0;
-    } else {
-      currentPageIndex = pages.findIndex(p => p.id === '__located__');
-      if (currentPageIndex < 0) currentPageIndex = 0;
-    }
-
-    this.setData({ cityPages: pages, currentPageIndex });
-  },
-
-  // 切换到指定页（更新城市数据并重新拉取天气）
-  switchToCity(index) {
-    const { cityPages } = this.data;
-    if (index < 0 || index >= cityPages.length) return;
-    const c = cityPages[index];
-    this._currentIsLocated = (c.id === '__located__');
-    this.setData({
-      currentPageIndex: index,
-      latitude: c.lat,
-      longitude: c.lon,
-      city: c.adm2 || '',
-      province: c.adm1 || '',
-      district: c.name || c.adm2 || '',
-      locationLabel: this._buildLocationLabel(c.name || c.adm2, c.adm2, c.adm1),
-      cityId: c.id !== '__located__' ? c.id : (this._locatedCityId || ''),
-      mapTipsVisible: false,
-      mapTipsData: {},
-    });
-    this._clearCampingLayer();
-    this._clearWeatherPin();
-    this.getWeather().catch(console.error);
-  },
-
-  // bottom-sheet 水平滑动事件
-  onSheetSwipe(e) {
-    const { direction } = e.detail;
-    const { currentPageIndex } = this.data;
-    if (direction === 'left') this.switchToCity(currentPageIndex + 1);
-    else if (direction === 'right') this.switchToCity(currentPageIndex - 1);
-  },
-
-  // 点击圆点指示器
-  onDotTap(e) {
-    const index = e.currentTarget.dataset.index;
-    this.switchToCity(Number(index));
-  },
-
-  // 城市概览面板
-  onCitiesOverviewOpen() {
-    this.setData({ citiesOverviewVisible: true });
-  },
-  onCitiesOverviewClose() {
-    this.setData({ citiesOverviewVisible: false });
-  },
-  onCitiesOverviewSelect(e) {
-    this.setData({ citiesOverviewVisible: false });
-    this.switchToCity(e.detail.index);
-  },
-  onCitiesOverviewCompare() {
-    this.setData({ citiesOverviewVisible: false });
-    wx.navigateTo({ url: '/pages/compare/index' });
-  },
+  // _buildCityPages / switchToCity / onSheetSwipe / onDotTap / onCitiesOverview* → cityPagesBehavior
 
   // 显示组件
   showSelector() {

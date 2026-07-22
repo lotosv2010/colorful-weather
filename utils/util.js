@@ -1,5 +1,7 @@
+// 数字补零（2位），供日期格式化使用
+const pad = (n) => `${n}`.padStart(2, '0');
+
 const formatDate = (date) => {
-  const pad = (n) => `${n}`.padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 };
 
@@ -65,6 +67,7 @@ function buildLocationLabel(district, city, province) {
 }
 
 module.exports = {
+  pad,
   formatDate,
   toHex,
   getTextColor,

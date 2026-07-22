@@ -4,6 +4,7 @@ const { toHex, getTextColor } = require('../../utils/util');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
 const prefs = require('../../utils/prefs');
+const { parsePageOptions } = require('../../utils/route');
 
 // 各污染物浓度参考上限（用于进度条归一化）
 const POLLUTANT_MAX = { pm2p5: 250, pm10: 600, no2: 200, so2: 150, co: 35, o3: 200 };
@@ -33,10 +34,7 @@ Page({
 
   onLoad(options = {}) {
     this._loadStart = Date.now();
-    const location = options.location || '';
-    const province = options.province ? decodeURIComponent(options.province) : '';
-    const city = options.city ? decodeURIComponent(options.city) : '';
-    const district = options.district ? decodeURIComponent(options.district) : '';
+    const { location, province, city, district } = parsePageOptions(options);
     this.setData({ location, province, city, district });
     const p = prefs.getPrefs();
     this.setData({ themeColor: p.themeColor || '' });

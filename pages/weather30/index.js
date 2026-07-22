@@ -23,7 +23,7 @@ const hexToRgbStr = (hex) => {
 };
 const { getLunarLabels } = require('../../utils/lunar');
 const prefs = require('../../utils/prefs');
-const { buildPath } = require('../../utils/route');
+const { buildPath, parsePageOptions } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
 
 const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -95,18 +95,14 @@ Page({
     this._loadStart = Date.now();
     this._syncPrefs();
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
-    const { location, province, city, district, date, cityId } = options;
+    const { location, province, city, district, cityId } = parsePageOptions(options);
+    const { date } = options;
     if (!location) {
       this.setData({ loading: false, errorMsg: '缺少位置信息' });
       return;
     }
     this.location = location;
-    this.setData({
-      province:  province  ? decodeURIComponent(province)  : '',
-      city:      city      ? decodeURIComponent(city)      : '',
-      district:  district  ? decodeURIComponent(district)  : '',
-      cityId:    cityId    || '',
-    });
+    this.setData({ province, city, district, cityId });
     if (date) this.setData({ activeDate: date });
     this.fetchData();
   },

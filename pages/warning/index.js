@@ -3,6 +3,7 @@ const { warning } = require('../../utils/api');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
 const prefs = require('../../utils/prefs');
+const { parsePageOptions } = require('../../utils/route');
 
 // RGBA 对象 → CSS 颜色值
 const toRgba = (c = {}) => `rgba(${c.red || 0},${c.green || 0},${c.blue || 0},${c.alpha != null ? c.alpha : 1})`;
@@ -71,11 +72,7 @@ Page({
 
   onLoad(options = {}) {
     this._loadStart = Date.now();
-    const location  = options.location  || '';
-    const province  = options.province  ? decodeURIComponent(options.province)  : '';
-    const city      = options.city      ? decodeURIComponent(options.city)      : '';
-    const district  = options.district  ? decodeURIComponent(options.district)  : '';
-    const cityId    = options.cityId    || '';
+    const { location, province, city, district, cityId } = parsePageOptions(options);
 
     // 订阅偏好（主题色 + 收藏状态同步）
     this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());

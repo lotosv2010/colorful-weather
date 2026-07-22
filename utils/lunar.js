@@ -1,5 +1,6 @@
 // 农历日期 + 二十四节气封装（基于 6tail/lunar-javascript）
 const { Solar } = require('../libs/lunar');
+const { pad } = require('./util');
 
 // 批量获取农历标签，dates: ['YYYY-MM-DD', ...]
 // 返回 {'YYYY-MM-DD': label, ...}
@@ -39,7 +40,6 @@ function getLunarLabels(dates) {
  * }}
  */
 function getSolarTermCard(dateStr) {
-  const pad = n => `${n}`.padStart(2, '0');
   const [y, m, d] = dateStr.split('-').map(Number);
 
   try {
