@@ -194,6 +194,17 @@ page {
   pointer-events: auto;
 }
 
+/* 露营图层按钮激活态 */
+.map-action-btn.camping-active {
+  background-color: rgba(220, 243, 225, 0.95);
+  box-shadow: 0 4rpx 16rpx rgba(42, 123, 62, 0.3);
+}
+
+.map-camping-icon {
+  width: 30rpx;
+  height: 30rpx;
+}
+
 .cities-btn-icon {
   width: 32rpx;
   height: 32rpx;

@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "露营地查询",
+  "navigationBarBackgroundColor": "#0f1014",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#0f1014",
+  "usingComponents": {
+    "city-search": "../../components/city-search/index",
+    "error-state": "../../components/error-state/index"
+  }
+}

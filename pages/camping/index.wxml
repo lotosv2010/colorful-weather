@@ -1,0 +1,272 @@
+<!--pages/camping/index.wxml-->
+<wxs src="/utils/tempUnit.wxs" module="tu" />
+<wxs src="/utils/iconColor.wxs" module="ic" />
+
+<view class="camping-page" style="--theme:{{themeColor}}">
+
+  <!-- ── 城市选择卡 ─────────────────────────────────── -->
+  <view class="city-slot" catchtap="onSelectSlot">
+    <view wx:if="{{city}}" class="slot-filled">
+      <view class="slot-left">
+        <text class="slot-icon">⛺</text>
+        <view>
+          <text class="slot-name">{{city.name || city.district}}</text>
+          <text class="slot-region">{{city.province}}</text>
+        </view>
+      </view>
+      <text class="slot-change">切换</text>
+    </view>
+    <view wx:else class="slot-empty">
+      <text class="slot-add-icon">⛺</text>
+      <view>
+        <text class="slot-empty-title">选择露营目的地</text>
+        <text class="slot-empty-sub">搜索城市，查找附近营地与天气评估</text>
+      </view>
+      <text class="slot-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- ── 营地 POI 列表 ─────────────────────────────────── -->
+  <block wx:if="{{pois.length}}">
+    <view class="section-label">附近营地</view>
+    <scroll-view scroll-x class="poi-scroll" enhanced="{{true}}" show-scrollbar="{{false}}"
+      scroll-into-view="{{scrollToPoiId}}" scroll-with-animation="{{true}}">
+      <view class="poi-list">
+        <view
+          wx:for="{{pois}}"
+          wx:key="title"
+          id="poi-item-{{index}}"
+          class="poi-chip {{selectedPoiIdx === index ? 'poi-chip-active' : ''}}"
+          catchtap="onPoiTap"
+          data-idx="{{index}}"
+        >
+          <text class="poi-chip-name">{{item.title}}</text>
+          <text wx:if="{{item.address}}" class="poi-chip-addr">{{item.address}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </block>
+
+  <!-- POI 加载骨架 -->
+  <block wx:elif="{{poiLoading}}">
+    <view class="section-label">附近营地</view>
+    <view class="poi-scroll">
+      <view class="poi-list">
+        <view class="poi-chip sk-chip" wx:for="{{5}}" wx:key="*this">
+          <view class="sk-bar sk-sm"></view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 无 POI 提示 -->
+  <block wx:elif="{{city && !poiLoading && !errorMsg}}">
+    <view class="poi-empty">
+      <text class="poi-empty-text">附近暂未找到露营地，可尝试换个城市</text>
+    </view>
+  </block>
+
+  <!-- ── 7天日期选择条 ─────────────────────────────────── -->
+  <block wx:if="{{daily.length}}">
+    <scroll-view scroll-x class="date-scroll" enhanced="{{true}}" show-scrollbar="{{false}}">
+      <view class="date-list">
+        <view
+          wx:for="{{daily}}"
+          wx:key="fxDate"
+          class="date-card {{item.active ? 'date-card-active' : ''}}"
+          catchtap="onDateTap"
+          data-idx="{{index}}"
+        >
+          <text class="date-week">{{item.week}}</text>
+          <text class="date-label">{{item.dateLabel}}</text>
+          <text class="date-icon qi-{{item.iconDay}}-fill ic-{{ic.category(item.iconDay)}}"></text>
+          <text class="date-temp">{{tu.fmt(item.tempMax, tempUnit)}}°/{{tu.fmt(item.tempMin, tempUnit)}}°</text>
+        </view>
+      </view>
+    </scroll-view>
+  </block>
+
+  <!-- 日期骨架屏 -->
+  <block wx:elif="{{loading && selectedPoiIdx >= 0}}">
+    <view class="date-scroll">
+      <view class="date-list">
+        <view class="date-card sk-date" wx:for="{{7}}" wx:key="*this">
+          <view class="sk-bar sk-xs"></view>
+          <view class="sk-bar sk-xs"></view>
+          <view class="sk-circle-sm"></view>
+          <view class="sk-bar sk-xs"></view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ── 主内容区 ──────────────────────────────────────── -->
+
+  <!-- 错误状态 -->
+  <block wx:if="{{errorMsg}}">
+    <error-state errorMsg="{{errorMsg}}" bind:retry="onRetry" />
+  </block>
+
+  <!-- 内容骨架 -->
+  <block wx:elif="{{loading && selectedPoiIdx >= 0}}">
+    <view class="camping-card sk-card-wrap">
+      <view class="sk-bar sk-lg"></view>
+      <view class="sk-bar sk-md" style="margin-top:16rpx;"></view>
+    </view>
+    <view class="camping-card sk-card-wrap">
+      <view class="sk-bar sk-md"></view>
+      <view class="sk-bar sk-sm" style="margin-top:16rpx;"></view>
+    </view>
+  </block>
+
+  <!-- 正常内容 -->
+  <block wx:elif="{{selectedDay}}">
+
+    <!-- ① 露营评分卡 -->
+    <view class="camping-card advice-card" style="border-top-color: {{selectedDay.advice.color}}">
+      <view class="advice-header">
+        <text class="advice-icon">{{selectedDay.advice.icon}}</text>
+        <view class="advice-main">
+          <text class="advice-label" style="color: {{selectedDay.advice.color}}">{{selectedDay.advice.label}}</text>
+          <text class="advice-date">{{selectedDay.week}} · {{selectedDay.dateLabel}}</text>
+        </view>
+        <view class="advice-score-badge" style="background: {{selectedDay.advice.color}}20; color: {{selectedDay.advice.color}}">
+          {{selectedDay.advice.score > 0 ? '+' : ''}}{{selectedDay.advice.score}}分
+        </view>
+      </view>
+
+      <!-- 夜间温度突出显示 -->
+      <view class="night-temp-row">
+        <text class="night-temp-icon">🌙</text>
+        <text class="night-temp-label">夜间温度</text>
+        <text class="night-temp-val">{{tu.fmt(selectedDay.tempMinRaw, tempUnit)}}°C</text>
+        <text class="night-temp-tag">露营关键</text>
+      </view>
+
+      <!-- 提示列表 -->
+      <view wx:if="{{selectedDay.advice.tips.length}}" class="advice-tips">
+        <view wx:for="{{selectedDay.advice.tips}}" wx:key="*this" class="advice-tip-item">
+          <text class="tip-dot">·</text>
+          <text class="tip-text">{{item}}</text>
+        </view>
+      </view>
+      <view wx:else class="advice-tip-item">
+        <text class="tip-dot">·</text>
+        <text class="tip-text">天气宜人，带上装备出发吧！</text>
+      </view>
+    </view>
+
+    <!-- ② 天气详情卡 -->
+    <view class="camping-card">
+      <view class="card-title">天气详情</view>
+      <view class="weather-row">
+        <view class="weather-icon-wrap">
+          <text class="weather-icon qi-{{selectedDay.iconDay}}-fill ic-{{ic.category(selectedDay.iconDay)}}"></text>
+          <text class="weather-text">{{selectedDay.textDay}}</text>
+        </view>
+        <view class="weather-temp-wrap">
+          <view class="temp-item">
+            <text class="temp-sub-label">白天</text>
+            <text class="temp-high">{{tu.fmt(selectedDay.tempMaxRaw, tempUnit)}}°</text>
+          </view>
+          <text class="temp-sep">/</text>
+          <view class="temp-item">
+            <text class="temp-sub-label night-label">夜间</text>
+            <text class="temp-low">{{tu.fmt(selectedDay.tempMinRaw, tempUnit)}}°</text>
+          </view>
+        </view>
+      </view>
+      <view class="detail-grid">
+        <view class="detail-item" wx:if="{{selectedDay.pop > 0}}">
+          <text class="detail-label">降水概率</text>
+          <text class="detail-val">{{selectedDay.pop}}%</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.humidity > 0}}">
+          <text class="detail-label">相对湿度</text>
+          <text class="detail-val">{{selectedDay.humidity}}%</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.windDirDay}}">
+          <text class="detail-label">风向</text>
+          <text class="detail-val">{{selectedDay.windDirDay}}</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.windScaleDay}}">
+          <text class="detail-label">风力</text>
+          <text class="detail-val">{{selectedDay.windScaleDay}}级</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.vis > 0}}">
+          <text class="detail-label">能见度</text>
+          <text class="detail-val">{{selectedDay.vis}}km</text>
+        </view>
+        <view class="detail-item" wx:if="{{selectedDay.uvIndex > 0}}">
+          <text class="detail-label">紫外线</text>
+          <text class="detail-val">{{selectedDay.uvIndex}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ③ 生活指数卡 -->
+    <view wx:if="{{selectedDay.indices}}" class="camping-card">
+      <view class="card-title">生活指数</view>
+      <view class="index-grid">
+        <view
+          wx:for="{{selectedDay.indices}}"
+          wx:key="type"
+          class="index-item"
+        >
+          <view class="index-dot" style="background: {{item.color}}"></view>
+          <text class="index-name">{{item.name}}</text>
+          <text class="index-cat" style="color: {{item.color}}">{{item.category}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:elif="{{selectedDay.indices === null}}" class="camping-card indices-na-card">
+      <text class="indices-na-text">该日期超出生活指数预报范围（仅提供3天）</text>
+    </view>
+
+    <!-- ④ 空气质量卡 -->
+    <view wx:if="{{selectedDay.air}}" class="camping-card">
+      <view class="card-title-row">
+        <text class="card-title">空气质量</text>
+        <text class="card-note">当前实况</text>
+      </view>
+      <view class="air-row">
+        <view class="aqi-badge" style="background: {{selectedDay.air.color}}">
+          <text class="aqi-num">{{selectedDay.air.aqiDisplay}}</text>
+          <text class="aqi-label">AQI</text>
+        </view>
+        <view class="air-info">
+          <text class="air-cat" style="color: {{selectedDay.air.color}}">{{selectedDay.air.category}}</text>
+          <text class="air-sub">
+            {{selectedDay.air.level <= 2 ? '空气清新，适合户外露营' :
+              selectedDay.air.level == 3 ? '轻度污染，敏感人群减少户外' :
+              '空气较差，露营体验受影响'}}
+          </text>
+        </view>
+      </view>
+    </view>
+
+  </block>
+
+  <!-- 未选城市引导 -->
+  <view wx:if="{{!city && !poiLoading}}" class="empty-hint">
+    <text class="empty-icon">🏕️</text>
+    <text class="empty-title">寻找露营好去处</text>
+    <text class="empty-sub">选择目的地城市，查看附近营地与露营天气评估</text>
+  </view>
+
+  <!-- 已选城市但未选营地引导 -->
+  <view wx:elif="{{city && pois.length > 0 && selectedPoiIdx < 0 && !poiLoading}}" class="empty-hint">
+    <text class="empty-icon">☝️</text>
+    <text class="empty-title">选择营地查看天气</text>
+    <text class="empty-sub">点击上方营地名称，获取该营地的露营天气评估</text>
+  </view>
+
+</view>
+
+<!-- 城市搜索面板 -->
+<city-search
+  show="{{selectorVisible}}"
+  tempUnit="{{tempUnit}}"
+  bind:select="onSelectCity"
+  bind:close="onSelectorClose"
+/>

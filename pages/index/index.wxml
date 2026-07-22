@@ -6,9 +6,9 @@
   <map
     id="bgMap"
     class="bg-map"
-    longitude="{{longitude}}"
-    latitude="{{latitude}}"
-    scale="9"
+    longitude="{{mapCenterLon || longitude}}"
+    latitude="{{mapCenterLat || latitude}}"
+    scale="15"
     show-location
     enable-3D="{{false}}"
     show-compass="{{false}}"
@@ -18,6 +18,8 @@
     markers="{{mapMarkers}}"
     bindtap="onMapTap"
     bindpoitap="onMapPoiTap"
+    bindmarkertap="onMarkerTap"
+    bindcallouttap="onMarkerTap"
   >
   </map>
 
@@ -49,7 +51,7 @@
         </view>
       </view>
     </view>
-    <view class="map-tips-hint">精确坐标预览 · 点击查看完整预报</view>
+    <view class="map-tips-hint">{{mapTipsData.isCamping ? '⛺ 营地天气 · 点击查看露营评估' : '精确坐标预览 · 点击查看完整预报'}}</view>
   </view>
 
   <!-- 天气粒子动效层 -->
@@ -84,6 +86,12 @@
       catchtap="onTripTap"
     >
       <weather-icon class="map-trip-icon" src="/static/icons/cx.svg" colors="{{['#333']}}" />
+    </view>
+    <view
+      class="map-action-btn {{campingLayerOn ? 'camping-active' : ''}} {{sheetExpanded ? '' : 'map-action-interactive'}}"
+      catchtap="onCampingLayerTap"
+    >
+      <weather-icon class="map-camping-icon" src="/static/icons/tent.svg" colors="{{campingLayerOn ? ['#2a7b3e'] : ['#333']}}" />
     </view>
     <view
       class="map-action-btn {{sheetExpanded ? '' : 'map-action-interactive'}}"
