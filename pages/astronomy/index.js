@@ -326,11 +326,14 @@ Page({
 
     ctx.clearRect(0, 0, w, h);
 
-    const padL = 16, padR = 16, padT = 10, padB = 44;
+    const padL = 16, padR = 16, padT = 22, padB = 44;
     const chartW = w - padL - padR;
     const chartH = h - padT - padB;
     const toX = (min) => padL + (min / 1440) * chartW;
     const baseY = padT + chartH * 0.78;
+    // 圆点安全边界（光晕半径 14px）
+    const dotSafeTop = 15;
+    const dotSafeBottom = h - 15;
 
     // 数据无效
     if (riseMin == null || setMin == null || setMin <= riseMin) {
@@ -351,7 +354,7 @@ Page({
     const curveY = (min) => {
       if (min >= riseMin && min <= setMin) {
         const t = (min - riseMin) / (setMin - riseMin);
-        return baseY - chartH * 0.86 * Math.sin(Math.PI * t);
+        return baseY - chartH * 0.80 * Math.sin(Math.PI * t);
       }
       const offset = min >= setMin ? min - setMin : (1440 - setMin) + min;
       const t = offset / nightSpan;
@@ -425,7 +428,7 @@ Page({
     // 太阳当前位置（仅今天）
     if (nowMin != null && nowMin >= riseMin && nowMin <= setMin) {
       const dotX = toX(nowMin);
-      const dotY = curveY(nowMin);
+      const dotY = Math.max(dotSafeTop, Math.min(dotSafeBottom, curveY(nowMin)));
       ctx.fillStyle = COLOR;
       ctx.beginPath();
       ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
@@ -479,11 +482,14 @@ Page({
 
     ctx.clearRect(0, 0, w, h);
 
-    const padL = 16, padR = 16, padT = 10, padB = 44;
+    const padL = 16, padR = 16, padT = 22, padB = 44;
     const chartW = w - padL - padR;
     const chartH = h - padT - padB;
     const toX = (min) => padL + (min / 1440) * chartW;
     const baseY = padT + chartH * 0.78;
+    // 圆点安全边界（光晕半径 14px）
+    const dotSafeTop = 15;
+    const dotSafeBottom = h - 15;
 
     if (riseMin == null) {
       ctx.strokeStyle = COLOR;
@@ -512,7 +518,7 @@ Page({
           ? (min >= riseMin ? min - riseMin : (1440 - riseMin) + min)
           : (min - riseMin);
         const t = offset / upSpan;
-        return baseY - chartH * 0.86 * Math.sin(Math.PI * t);
+        return baseY - chartH * 0.80 * Math.sin(Math.PI * t);
       }
       const offset = crossMidnight
         ? (min - effectiveSetMin)
@@ -605,24 +611,19 @@ Page({
       ctx.fillText('月落', setX, baseY + 28);
     }
 
-    // 月亮当前位置（仅今天）
+    // 月亮当前位置（仅今天，无论月亮是否在天上均显示）
     if (nowMin != null) {
-      const isUp = crossMidnight
-        ? (nowMin >= riseMin || nowMin <= effectiveSetMin)
-        : (nowMin >= riseMin && nowMin <= effectiveSetMin);
-      if (isUp) {
-        const dotX = toX(nowMin);
-        const dotY = curveY(nowMin);
-        ctx.fillStyle = COLOR;
-        ctx.beginPath();
-        ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 0.18;
-        ctx.beginPath();
-        ctx.arc(dotX, dotY, 14, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
+      const dotX = toX(nowMin);
+      const dotY = Math.max(dotSafeTop, Math.min(dotSafeBottom, curveY(nowMin)));
+      ctx.fillStyle = COLOR;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 0.18;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
     }
   },
 

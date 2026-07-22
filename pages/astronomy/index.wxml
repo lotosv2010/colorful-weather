@@ -29,7 +29,7 @@
 
     <!-- ─── 太阳卡片 ─────────────────────────────── -->
     <view class="astro-card">
-      <view class="card-title">☀️ 太阳</view>
+      <view class="card-title"><i class="qi-100-fill card-title-icon" style="color:#fa8c16"></i>太阳</view>
 
       <!-- 日出日落曲线 -->
       <view class="canvas-wrap">
@@ -71,12 +71,7 @@
 
     <!-- ─── 月亮卡片 ─────────────────────────────── -->
     <view class="astro-card">
-      <view class="card-title-row">
-        <text class="card-title">🌙 月亮</text>
-        <text class="moon-badge" wx:if="{{moonPhaseIcon}}">
-          {{mp.emoji(moonPhaseIcon)}} {{moonPhaseName}}
-        </text>
-      </view>
+      <view class="card-title"><i class="qi-150-fill card-title-icon" style="color:#6CB4EE"></i>月亮</view>
 
       <!-- 月升月落曲线 -->
       <view class="canvas-wrap">

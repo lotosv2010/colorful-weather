@@ -67,18 +67,13 @@ page {
   color: rgba(255, 255, 255, 0.65);
   font-weight: 500;
   margin-bottom: 20rpx;
-}
-
-.card-title-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20rpx;
 }
 
-.moon-badge {
-  font-size: 26rpx;
-  color: #6CB4EE;
+.card-title-icon {
+  font-size: 36rpx;
+  margin-right: 20rpx;
 }
 
 /* ─── Canvas 区域 ───────────────────────────────── */

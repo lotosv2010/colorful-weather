@@ -198,9 +198,12 @@ Component({
 
       ctx.clearRect(0, 0, w, h);
 
-      const padL = 10, padR = 10, padT = 10, padB = 40;
+      const padL = 10, padR = 10, padT = 18, padB = 40;
       const chartW = w - padL - padR;
       const chartH = h - padT - padB;
+      // 圆点安全边界（光晕半径 10px）
+      const dotSafeTop = 12;
+      const dotSafeBottom = h - 12;
 
       // 将 0~1440 分钟映射到 canvas x 坐标
       const minuteToX = (min) => padL + (min / 1440) * chartW;
@@ -230,7 +233,7 @@ Component({
         if (min >= riseMin && min <= setMin) {
           // 白天：基线上方
           const t = (min - riseMin) / (setMin - riseMin);
-          return baseY - chartH * 0.86 * Math.sin(Math.PI * t);
+          return baseY - chartH * 0.80 * Math.sin(Math.PI * t);
         } else {
           // 夜间：基线下方，以日落→午夜→日出为一段弧
           const offset = min >= setMin ? min - setMin : (1440 - setMin) + min;
@@ -315,16 +318,16 @@ Component({
       // 太阳圆点（当前位置）
       if (nowMin >= riseMin && nowMin <= setMin) {
         const dotX = minuteToX(nowMin);
-        const dotY = curveY(nowMin);
+        const dotY = Math.max(15, Math.min(h - 15, curveY(nowMin)));
 
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+        ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.globalAlpha = 0.15;
         ctx.beginPath();
-        ctx.arc(dotX, dotY, 10, 0, Math.PI * 2);
+        ctx.arc(dotX, dotY, 14, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
       }
@@ -349,9 +352,12 @@ Component({
 
       ctx.clearRect(0, 0, w, h);
 
-      const padL = 10, padR = 10, padT = 10, padB = 40;
+      const padL = 10, padR = 10, padT = 18, padB = 40;
       const chartW = w - padL - padR;
       const chartH = h - padT - padB;
+      // 圆点安全边界（光晕半径 10px）
+      const dotSafeTop = 12;
+      const dotSafeBottom = h - 12;
 
       const minuteToX = (min) => padL + (min / 1440) * chartW;
 
@@ -388,7 +394,7 @@ Component({
             ? (min >= riseMin ? min - riseMin : (1440 - riseMin) + min)
             : min - riseMin;
           const t = offset / upSpan;
-          return baseY - chartH * 0.86 * Math.sin(Math.PI * t);
+          return baseY - chartH * 0.80 * Math.sin(Math.PI * t);
         } else {
           // 基线下方
           const offset = crossMidnight
@@ -477,26 +483,20 @@ Component({
         this.drawCurveSegment(ctx, dayTime, color, 2, false);
       }
 
-      // 月亮圆点
-      const isUp = !crossMidnight
-        ? (nowMin >= riseMin && nowMin <= setMin)
-        : (nowMin >= riseMin || nowMin <= setMin);
+      // 月亮圆点（无论月亮是否在天上均显示当前时间位置）
+      const dotX = minuteToX(nowMin);
+      const dotY = Math.max(15, Math.min(h - 15, curveY(nowMin)));
 
-      if (isUp) {
-        const dotX = minuteToX(nowMin);
-        const dotY = curveY(nowMin);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
+      ctx.fill();
 
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.globalAlpha = 0.15;
-        ctx.beginPath();
-        ctx.arc(dotX, dotY, 10, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
+      ctx.globalAlpha = 0.15;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
     }
   }
 });
