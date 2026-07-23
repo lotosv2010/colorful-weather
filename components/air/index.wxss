@@ -92,6 +92,9 @@
   bottom: -4px;
   margin-left: 1px;
 }
+.weather-air-header .right {
+  color: rgb(181, 187, 204);
+}
 .weather-air-header .action.more {
   color: var(--theme, rgb(68, 179, 255));
 }

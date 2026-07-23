@@ -4,6 +4,7 @@ const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
 const { parsePageOptions } = require('../../utils/route');
 const prefsBehavior = require('../../behaviors/prefsBehavior');
+const { fmtTime, toMin, drawSun, drawMoon } = require('../../utils/astronomyCanvas');
 
 Page({
   behaviors: [prefsBehavior],
@@ -154,10 +155,10 @@ Page({
 
   _processSun(data) {
     if (!data || data.code !== '200') return;
-    const riseStr = this._fmtTime(data.sunrise);
-    const setStr = this._fmtTime(data.sunset);
-    const riseMin = this._toMin(riseStr);
-    const setMin = this._toMin(setStr);
+    const riseStr = fmtTime(data.sunrise);
+    const setStr = fmtTime(data.sunset);
+    const riseMin = toMin(riseStr);
+    const setMin = toMin(setStr);
     let daylightStr = '';
     if (riseMin != null && setMin != null && setMin > riseMin) {
       const total = setMin - riseMin;
@@ -168,7 +169,7 @@ Page({
     this.setData({ sunrise: riseStr, sunset: setStr, daylightStr });
     wx.nextTick(() => {
       if (this._sunCtx) {
-        this._drawSun();
+        this._redrawSun();
       } else {
         this._initSunCanvas();
       }
@@ -177,10 +178,10 @@ Page({
 
   _processMoon(data) {
     if (!data || data.code !== '200') return;
-    const riseStr = this._fmtTime(data.moonrise);
-    const setStr = data.moonset ? this._fmtTime(data.moonset) : '--:--';
-    const riseMin = this._toMin(riseStr);
-    const setMin = data.moonset ? this._toMin(setStr) : null;
+    const riseStr = fmtTime(data.moonrise);
+    const setStr = data.moonset ? fmtTime(data.moonset) : '--:--';
+    const riseMin = toMin(riseStr);
+    const setMin = data.moonset ? toMin(setStr) : null;
 
     // 计算在天时长
     let lunarTimeStr = '';
@@ -224,7 +225,7 @@ Page({
     });
     wx.nextTick(() => {
       if (this._moonCtx) {
-        this._drawMoon();
+        this._redrawMoon();
       } else {
         this._initMoonCanvas();
       }
@@ -250,35 +251,9 @@ Page({
     });
   },
 
-  // ─── Canvas 工具 ──────────────────────────────────────────────────────
 
-  _fmtTime(isoStr) {
-    if (!isoStr) return '--:--';
-    const m = isoStr.match(/T(\d{2}:\d{2})/);
-    return m ? m[1] : '--:--';
-  },
-
-  _toMin(str) {
-    if (!str || str === '--:--') return null;
-    const [h, m] = str.split(':').map(Number);
-    return h * 60 + m;
-  },
-
-  _drawCurve(ctx, points, color, lineWidth, isDashed) {
-    if (points.length < 2) return;
-    ctx.strokeStyle = color;
-    ctx.lineWidth = lineWidth;
-    ctx.globalAlpha = isDashed ? 0.35 : 1;
-    ctx.setLineDash(isDashed ? [6, 4] : []);
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.globalAlpha = 1;
-  },
-
-  // ─── 日出日落 Canvas ──────────────────────────────────────────────────
+  // ─── Canvas 初始化与重绘 ──────────────────────────────────────────────
+  // 绘制细节全在 utils/astronomyCanvas.js，页面只负责获取 Canvas 节点、组装 nowMin
 
   _initSunCanvas(retry = 0) {
     const query = wx.createSelectorQuery();
@@ -296,141 +271,18 @@ Page({
       this._sunCtx = ctx;
       this._sunW = res[0].width;
       this._sunH = res[0].height;
-      this._drawSun();
+      this._redrawSun();
     });
   },
 
-  _drawSun() {
+  _redrawSun() {
     if (!this._sunCtx) return;
-    const ctx = this._sunCtx;
-    const w = this._sunW;
-    const h = this._sunH;
-    const COLOR = '#FF8C00';
     const { sunrise, sunset, selectedDate, todayStr } = this.data;
-    const riseMin = this._toMin(sunrise);
-    const setMin = this._toMin(sunset);
     const isToday = selectedDate === todayStr;
     const now = new Date();
     const nowMin = isToday ? now.getHours() * 60 + now.getMinutes() : null;
-
-    ctx.clearRect(0, 0, w, h);
-
-    const padL = 16, padR = 16, padT = 22, padB = 44;
-    const chartW = w - padL - padR;
-    const chartH = h - padT - padB;
-    const toX = (min) => padL + (min / 1440) * chartW;
-    const baseY = padT + chartH * 0.78;
-    // 圆点安全边界（光晕半径 14px）
-    const dotSafeTop = 15;
-    const dotSafeBottom = h - 15;
-
-    // 数据无效
-    if (riseMin == null || setMin == null || setMin <= riseMin) {
-      ctx.strokeStyle = COLOR;
-      ctx.lineWidth = 1.5;
-      ctx.globalAlpha = 0.3;
-      ctx.setLineDash([6, 4]);
-      ctx.beginPath();
-      ctx.moveTo(padL, baseY);
-      ctx.lineTo(w - padR, baseY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-      return;
-    }
-
-    const nightSpan = 1440 - (setMin - riseMin);
-    const curveY = (min) => {
-      if (min >= riseMin && min <= setMin) {
-        const t = (min - riseMin) / (setMin - riseMin);
-        return baseY - chartH * 0.80 * Math.sin(Math.PI * t);
-      }
-      const offset = min >= setMin ? min - setMin : (1440 - setMin) + min;
-      const t = offset / nightSpan;
-      return baseY + chartH * 0.20 * Math.sin(Math.PI * t);
-    };
-
-    const allPts = [];
-    for (let m = 0; m <= 1440; m += 5) allPts.push({ x: toX(m), y: curveY(m), m });
-
-    const nightBefore = allPts.filter(p => p.m <= riseMin);
-    const dayTime    = allPts.filter(p => p.m >= riseMin && p.m <= setMin);
-    const nightAfter = allPts.filter(p => p.m >= setMin);
-
-    // 基线
-    ctx.strokeStyle = COLOR;
-    ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.18;
-    ctx.setLineDash([]);
-    ctx.beginPath();
-    ctx.moveTo(padL, baseY);
-    ctx.lineTo(w - padR, baseY);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // 白天渐变填充
-    const grad = ctx.createLinearGradient(0, padT, 0, baseY);
-    grad.addColorStop(0, 'rgba(255,140,0,0.22)');
-    grad.addColorStop(1, 'rgba(255,140,0,0)');
-    ctx.beginPath();
-    ctx.moveTo(toX(riseMin), baseY);
-    for (const p of dayTime) ctx.lineTo(p.x, p.y);
-    ctx.lineTo(toX(setMin), baseY);
-    ctx.closePath();
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    // 曲线
-    if (nightBefore.length >= 2) this._drawCurve(ctx, nightBefore, COLOR, 1.5, true);
-    if (nightAfter.length >= 2)  this._drawCurve(ctx, nightAfter,  COLOR, 1.5, true);
-    if (dayTime.length >= 2)     this._drawCurve(ctx, dayTime,     COLOR, 2.5, false);
-
-    // 日出标注
-    const riseX = toX(riseMin);
-    const setX  = toX(setMin);
-    ctx.font = '12px sans-serif';
-    ctx.textAlign = 'center';
-
-    ctx.fillStyle = COLOR;
-    ctx.globalAlpha = 0.7;
-    ctx.beginPath();
-    ctx.arc(riseX, baseY, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#fff';
-    ctx.fillText(sunrise, riseX, baseY + 15);
-    ctx.fillStyle = 'rgba(166,169,173,0.8)';
-    ctx.fillText('日出', riseX, baseY + 28);
-
-    // 日落标注
-    ctx.fillStyle = COLOR;
-    ctx.globalAlpha = 0.7;
-    ctx.beginPath();
-    ctx.arc(setX, baseY, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#fff';
-    ctx.fillText(sunset, setX, baseY + 15);
-    ctx.fillStyle = 'rgba(166,169,173,0.8)';
-    ctx.fillText('日落', setX, baseY + 28);
-
-    // 太阳当前位置（仅今天）
-    if (nowMin != null && nowMin >= riseMin && nowMin <= setMin) {
-      const dotX = toX(nowMin);
-      const dotY = Math.max(dotSafeTop, Math.min(dotSafeBottom, curveY(nowMin)));
-      ctx.fillStyle = COLOR;
-      ctx.beginPath();
-      ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 0.18;
-      ctx.beginPath();
-      ctx.arc(dotX, dotY, 14, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
+    drawSun(this._sunCtx, this._sunW, this._sunH, { sunrise, sunset, nowMin });
   },
-
-  // ─── 月升月落 Canvas ──────────────────────────────────────────────────
 
   _initMoonCanvas(retry = 0) {
     const query = wx.createSelectorQuery();
@@ -448,172 +300,17 @@ Page({
       this._moonCtx = ctx;
       this._moonW = res[0].width;
       this._moonH = res[0].height;
-      this._drawMoon();
+      this._redrawMoon();
     });
   },
 
-  _drawMoon() {
+  _redrawMoon() {
     if (!this._moonCtx) return;
-    const ctx = this._moonCtx;
-    const w = this._moonW;
-    const h = this._moonH;
-    const COLOR = '#6CB4EE';
     const { moonrise, moonset, hasMoonset, selectedDate, todayStr } = this.data;
-
-    let riseMin = this._toMin(moonrise);
-    const rawSetMin = hasMoonset ? this._toMin(moonset) : null;
-    // moonset 为空（月落次日）时，画到 23:59
-    const effectiveSetMin = rawSetMin ?? (23 * 60 + 59);
-
     const isToday = selectedDate === todayStr;
     const now = new Date();
     const nowMin = isToday ? now.getHours() * 60 + now.getMinutes() : null;
-
-    ctx.clearRect(0, 0, w, h);
-
-    const padL = 16, padR = 16, padT = 22, padB = 44;
-    const chartW = w - padL - padR;
-    const chartH = h - padT - padB;
-    const toX = (min) => padL + (min / 1440) * chartW;
-    const baseY = padT + chartH * 0.78;
-    // 圆点安全边界（光晕半径 14px）
-    const dotSafeTop = 15;
-    const dotSafeBottom = h - 15;
-
-    if (riseMin == null) {
-      ctx.strokeStyle = COLOR;
-      ctx.lineWidth = 1.5;
-      ctx.globalAlpha = 0.3;
-      ctx.setLineDash([6, 4]);
-      ctx.beginPath();
-      ctx.moveTo(padL, baseY);
-      ctx.lineTo(w - padR, baseY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-      return;
-    }
-
-    const crossMidnight = effectiveSetMin <= riseMin;
-    const upSpan   = crossMidnight ? (1440 - riseMin) + effectiveSetMin : effectiveSetMin - riseMin;
-    const downSpan = 1440 - upSpan;
-
-    const curveY = (min) => {
-      const isUp = crossMidnight
-        ? (min >= riseMin || min <= effectiveSetMin)
-        : (min >= riseMin && min <= effectiveSetMin);
-      if (isUp) {
-        const offset = crossMidnight
-          ? (min >= riseMin ? min - riseMin : (1440 - riseMin) + min)
-          : (min - riseMin);
-        const t = offset / upSpan;
-        return baseY - chartH * 0.80 * Math.sin(Math.PI * t);
-      }
-      const offset = crossMidnight
-        ? (min - effectiveSetMin)
-        : (min >= effectiveSetMin ? min - effectiveSetMin : (1440 - effectiveSetMin) + min);
-      const t = offset / downSpan;
-      return baseY + chartH * 0.20 * Math.sin(Math.PI * t);
-    };
-
-    const allPts = [];
-    for (let m = 0; m <= 1440; m += 5) allPts.push({ x: toX(m), y: curveY(m), m });
-
-    let nightBefore, dayTime, nightAfter;
-    if (!crossMidnight) {
-      nightBefore = allPts.filter(p => p.m <= riseMin);
-      dayTime     = allPts.filter(p => p.m >= riseMin && p.m <= effectiveSetMin);
-      nightAfter  = allPts.filter(p => p.m >= effectiveSetMin);
-    } else {
-      nightBefore = allPts.filter(p => p.m >= effectiveSetMin && p.m <= riseMin);
-      dayTime     = allPts.filter(p => p.m >= riseMin || p.m <= effectiveSetMin);
-      nightAfter  = [];
-    }
-
-    // 基线
-    ctx.strokeStyle = COLOR;
-    ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.18;
-    ctx.setLineDash([]);
-    ctx.beginPath();
-    ctx.moveTo(padL, baseY);
-    ctx.lineTo(w - padR, baseY);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    // 月亮在天渐变填充
-    const grad = ctx.createLinearGradient(0, padT, 0, baseY);
-    grad.addColorStop(0, 'rgba(108,180,238,0.2)');
-    grad.addColorStop(1, 'rgba(108,180,238,0)');
-    if (!crossMidnight) {
-      ctx.beginPath();
-      ctx.moveTo(toX(riseMin), baseY);
-      for (const p of dayTime) ctx.lineTo(p.x, p.y);
-      ctx.lineTo(toX(effectiveSetMin), baseY);
-      ctx.closePath();
-    } else {
-      ctx.beginPath();
-      const risePts = allPts.filter(p => p.m >= riseMin);
-      const setPts  = allPts.filter(p => p.m <= effectiveSetMin);
-      ctx.moveTo(toX(riseMin), baseY);
-      for (const p of risePts) ctx.lineTo(p.x, p.y);
-      for (const p of setPts)  ctx.lineTo(p.x, p.y);
-      ctx.lineTo(toX(effectiveSetMin), baseY);
-      ctx.closePath();
-    }
-    ctx.fillStyle = grad;
-    ctx.fill();
-
-    // 曲线
-    if (nightBefore.length >= 2) this._drawCurve(ctx, nightBefore, COLOR, 1.5, true);
-    if (nightAfter.length >= 2)  this._drawCurve(ctx, nightAfter,  COLOR, 1.5, true);
-    if (dayTime.length >= 2)     this._drawCurve(ctx, dayTime,     COLOR, 2.5, false);
-
-    // 月出标注
-    const riseX = toX(riseMin);
-    ctx.font = '12px sans-serif';
-    ctx.textAlign = 'center';
-
-    ctx.fillStyle = COLOR;
-    ctx.globalAlpha = 0.7;
-    ctx.beginPath();
-    ctx.arc(riseX, baseY, 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#fff';
-    ctx.fillText(moonrise, riseX, baseY + 15);
-    ctx.fillStyle = 'rgba(166,169,173,0.8)';
-    ctx.fillText('月出', riseX, baseY + 28);
-
-    // 月落标注（仅当天有月落时）
-    if (hasMoonset && rawSetMin != null) {
-      const setX = toX(rawSetMin);
-      ctx.fillStyle = COLOR;
-      ctx.globalAlpha = 0.7;
-      ctx.beginPath();
-      ctx.arc(setX, baseY, 4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#fff';
-      ctx.fillText(moonset, setX, baseY + 15);
-      ctx.fillStyle = 'rgba(166,169,173,0.8)';
-      ctx.fillText('月落', setX, baseY + 28);
-    }
-
-    // 月亮当前位置（仅今天，无论月亮是否在天上均显示）
-    if (nowMin != null) {
-      const dotX = toX(nowMin);
-      const dotY = Math.max(dotSafeTop, Math.min(dotSafeBottom, curveY(nowMin)));
-      ctx.fillStyle = COLOR;
-      ctx.beginPath();
-      ctx.arc(dotX, dotY, 7, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 0.18;
-      ctx.beginPath();
-      ctx.arc(dotX, dotY, 14, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
+    drawMoon(this._moonCtx, this._moonW, this._moonH, { moonrise, moonset, hasMoonset, nowMin });
   },
 
   // ─── 重试 & 分享 ──────────────────────────────────────────────────────

@@ -1,28 +1,12 @@
 // pages/compare/index.js
 const { now, sevenDay, air } = require('../../utils/api');
-const { toHex } = require('../../utils/util');
+const { toHex, safeNum, hexToRgba } = require('../../utils/util');
 const prefs = require('../../utils/prefs');
 const { convert } = require('../../utils/temp');
 const monitor = require('../../utils/monitor');
 const { WEEK_LABELS } = require('../../utils/date');
+const { AQI_LEVEL_COLORS } = require('../../utils/airMeta');
 const prefsBehavior = require('../../behaviors/prefsBehavior');
-
-// 安全取数值
-const safeNum = (val, fallback = 0) => {
-  if (val == null) return fallback;
-  const n = Number(val);
-  return isNaN(n) ? fallback : n;
-};
-
-// AQI 等级颜色（来自 airMeta）
-const AQI_LEVEL_COLORS = {
-  '1': '#4caf50',
-  '2': '#8bc34a',
-  '3': '#ffb300',
-  '4': '#ff9800',
-  '5': '#f44336',
-  '6': '#b71c1c',
-};
 
 // 城市B对比色
 const COLOR_B = '#FF9B50';
@@ -330,9 +314,9 @@ Page({
 
     // 颜色：城市A=主题色，城市B=橙色
     const colorA = themeColor || '#1296db';
-    const colorALow = this._alphaColor(colorA, 0.45);
+    const colorALow = hexToRgba(colorA, 0.45);
     const colorBHigh = COLOR_B;
-    const colorBLow = this._alphaColor(COLOR_B, 0.45);
+    const colorBLow = hexToRgba(COLOR_B, 0.45);
 
     drawLines(daily1, colorA, colorALow);
     drawLines(daily2, colorBHigh, colorBLow);
@@ -366,12 +350,4 @@ Page({
     ctx.fill();
   },
 
-  // hex / rgba 字符串 → 带 alpha 的 rgba 字符串（简单处理 #rrggbb 格式）
-  _alphaColor(hex, alpha) {
-    if (!hex || !hex.startsWith('#') || hex.length < 7) return `rgba(255,255,255,${alpha})`;
-    const r = parseInt(hex.substr(1, 2), 16);
-    const g = parseInt(hex.substr(3, 2), 16);
-    const b = parseInt(hex.substr(5, 2), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
-  },
 });

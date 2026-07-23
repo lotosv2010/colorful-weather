@@ -1,6 +1,22 @@
 // 数字补零（2位），供日期格式化使用
 const pad = (n) => `${n}`.padStart(2, '0');
 
+// 安全取数字：null/undefined → fallback；非法数值 → fallback
+const safeNum = (val, fb = 0) => {
+  if (val == null) return fb;
+  const n = Number(val);
+  return isNaN(n) ? fb : n;
+};
+
+// hex "#rrggbb" + alpha → "rgba(r,g,b,a)"
+const hexToRgba = (hex, a) => {
+  if (!hex || hex.length < 7) return `rgba(0,0,0,${a})`;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${a})`;
+};
+
 const formatDate = (date) => {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 };
@@ -79,4 +95,6 @@ module.exports = {
   getTextColorRgb,
   tzDiffText,
   buildLocationLabel,
+  safeNum,
+  hexToRgba,
 };

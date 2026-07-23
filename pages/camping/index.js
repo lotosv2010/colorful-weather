@@ -1,26 +1,12 @@
 // pages/camping/index.js
 const { sevenDay, indices3d, air } = require('../../utils/api');
-const { getDefinition, getColor } = require('../../utils/lifeMeta');
-const { toHex } = require('../../utils/util');
+const { safeNum } = require('../../utils/util');
 const { convert } = require('../../utils/temp');
 const monitor = require('../../utils/monitor');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
-const { WEEK_LABELS } = require('../../utils/date');
 const prefsBehavior = require('../../behaviors/prefsBehavior');
+const outingBehavior = require('../../behaviors/outingBehavior');
 const app = getApp();
-
-// 安全取数字
-const safeNum = (val, fb = 0) => {
-  if (val == null) return fb;
-  const n = Number(val);
-  return isNaN(n) ? fb : n;
-};
-
-// AQI 等级默认颜色
-const AQI_COLORS = {
-  '1': '#4caf50', '2': '#8bc34a', '3': '#ffb300',
-  '4': '#ff9800', '5': '#f44336', '6': '#b71c1c',
-};
 
 // 露营评级（比出行评分更严格：夜间温度、风力、能见度是关键）
 const CAMPING_GRADE_MAP = [
@@ -35,25 +21,8 @@ const CAMPING_GRADE_MAP = [
 // 重点展示的生活指数（旅游/运动/穿衣/感冒）
 const KEY_INDEX_TYPES = ['6', '1', '3', '9'];
 
-// YYYY-MM-DD → { week, dateLabel }
-const parseDateParts = (s) => {
-  if (!s) return { week: '', dateLabel: '' };
-  const [y, m, d] = s.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  const today = new Date();
-  const isToday = y === today.getFullYear() && m - 1 === today.getMonth() && d === today.getDate();
-  const isTomorrow = (() => {
-    const t = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-    return date.getTime() === t.getTime();
-  })();
-  return {
-    week: isToday ? '今天' : (isTomorrow ? '明天' : WEEK_LABELS[date.getDay()]),
-    dateLabel: `${m}/${d}`,
-  };
-};
-
 Page({
-  behaviors: [prefsBehavior],
+  behaviors: [prefsBehavior, outingBehavior],
 
   data: {
     city: null,              // { location, name, province, district }
@@ -211,60 +180,7 @@ Page({
     }
   },
 
-  // ── 数据解析 ───────────────────────────────────────────────────────────────
-
-  _processDaily(res) {
-    if (!res || res.code !== '200' || !res.daily) return [];
-    return res.daily.slice(0, 7).map(d => {
-      const { week, dateLabel } = parseDateParts(d.fxDate);
-      return {
-        fxDate: d.fxDate,
-        week,
-        dateLabel,
-        iconDay: d.iconDay,
-        textDay: d.textDay,
-        tempMax: safeNum(d.tempMax),
-        tempMin: safeNum(d.tempMin),
-        humidity: safeNum(d.humidity),
-        pop: safeNum(d.pop),
-        windDirDay: d.windDirDay || '',
-        windScaleDay: d.windScaleDay || '',
-        uvIndex: safeNum(d.uvIndex),
-        vis: safeNum(d.vis),
-      };
-    });
-  },
-
-  _processIndices(res) {
-    if (!res || res.code !== '200' || !res.daily) return {};
-    const map = {};
-    res.daily.forEach(item => {
-      const dateStr = item.date;
-      if (!map[dateStr]) map[dateStr] = {};
-      map[dateStr][item.type] = {
-        type: item.type,
-        name: item.name || (getDefinition(item.type) || {}).name || '',
-        level: item.level,
-        category: item.category,
-        text: item.text,
-        color: getColor(item.type, item.level, item.category),
-      };
-    });
-    return map;
-  },
-
-  _processAir(res) {
-    if (!res || !res.indexes || !res.indexes.length) return null;
-    const idx = res.indexes[0];
-    const colorHex = idx.color ? toHex(idx.color) : (AQI_COLORS[idx.level] || '#9BB365');
-    return {
-      aqi: idx.aqi,
-      aqiDisplay: idx.aqiDisplay || idx.aqi,
-      category: idx.category || '',
-      level: idx.level || '',
-      color: colorHex,
-    };
-  },
+  // 7 天预报解析、生活指数解析、空气质量解析 → 见 behaviors/outingBehavior.js
 
   // ── 日期切换 ───────────────────────────────────────────────────────────────
 
@@ -438,10 +354,7 @@ Page({
   },
 
   // ── 城市选择 ───────────────────────────────────────────────────────────────
-
-  onSelectSlot() {
-    this.setData({ selectorVisible: true });
-  },
+  // onSelectSlot / onSelectorClose 由 outingBehavior 提供
 
   onSelectCity(e) {
     const city = e.detail.city;
@@ -469,10 +382,6 @@ Page({
       selectedDateIdx: 0,
     });
     this._searchAndLoad();
-  },
-
-  onSelectorClose() {
-    this.setData({ selectorVisible: false });
   },
 
   // ── 重试 ──────────────────────────────────────────────────────────────────

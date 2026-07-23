@@ -13,6 +13,9 @@
   align-items: center;
   margin-bottom: 10px;
 }
+.weather-daily-header .right {
+  color: rgb(181, 187, 204);
+}
 .weather-daily-header .action.more {
   color: var(--theme, rgb(68, 179, 255));
   text-decoration: none;

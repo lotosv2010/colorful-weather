@@ -4,10 +4,7 @@
 <view class="weather-astronomy">
   <view class="weather-astronomy-header">
     <text class="title">太阳和月亮</text>
-    <view class="astro-nav-hint">
-      <text class="astro-nav-hint-text">天文详情</text>
-      <text class="astro-nav-arrow">›</text>
-    </view>
+    <text class="astro-nav-hint-text">预报和更多 ›</text>
   </view>
   <view class="weather-astronomy-main">
     <!-- 太阳折线图 -->

@@ -19,8 +19,7 @@
   align-items: center;
 }
 .weather-tm-header .title {
-  font-size: 0.9rem;
-  font-weight: 500;
+  color: rgb(181, 187, 204);
 }
 .weather-tm-header .hint {
   color: #A6A9AD;
