@@ -18,7 +18,7 @@
 }
 .astro-nav-hint-text {
   font-size: 0.7rem;
-  color: #A6A9AD;
+  color: var(--theme, rgb(68, 179, 255));
 }
 .weather-astronomy-main {
   display: flex;

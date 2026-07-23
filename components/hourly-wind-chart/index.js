@@ -4,92 +4,24 @@ const chartCanvasBehavior = require('../../behaviors/chartCanvasBehavior');
 
 Component({
   behaviors: [chartCanvasBehavior],
-  options: {
-    addGlobalClass: true
-  },
-  properties: {
-    hourly: {
-      type: Array,
-      value: []
-    },
-    selectedIndex: {
-      type: Number,
-      value: 0
-    },
-    scrollToItem: {
-      type: String,
-      value: ''
-    },
-    syncScrollLeft: {
-      type: Number,
-      value: 0
-    }
-  },
+  options: { addGlobalClass: true },
+
+  // 风向箭头位置列表为本组件独有 data
   data: {
-    canvasWidth: 0,
-    canvasHeight: 140,
-    chartContentWidth: 0,
-    scrollIntoItem: '',
-    currentScrollLeft: 0,
     arrowPositions: []
   },
-  lifetimes: {
-    ready() {
-      this.initSize();
-      const idx = this.data.selectedIndex;
-      if (idx > 0) {
-        this.setData({ scrollIntoItem: 'chart-item-' + idx });
-      }
-    }
-  },
-  observers: {
-    'hourly'(list) {
-      if (list && list.length) {
-        this.initSize();
-        this.computeArrowPositions();
-        wx.nextTick(() => this.drawChart());
-      }
-    },
-    'selectedIndex, hourly'(idx, list) {
-      if (list && list.length) {
-        this.computeArrowPositions();
-        wx.nextTick(() => this.drawChart());
-      }
-    },
-    'scrollToItem'(val) {
-      if (!val) return;
-      this._suppressScrollEvent = true;
-      this.setData({ scrollIntoItem: val });
-      wx.nextTick(() => {
-        const query = this.createSelectorQuery();
-        query.select('.chart-scroll').scrollOffset();
-        query.exec((res) => {
-          if (res && res[0]) {
-            const scrollLeft = res[0].scrollLeft;
-            this.data.currentScrollLeft = scrollLeft;
-            this.triggerEvent('scrollend', { scrollLeft });
-          }
-          setTimeout(() => { this._suppressScrollEvent = false; }, 100);
-        });
-      });
-    },
-    'syncScrollLeft'(val) {
-      if (this._suppressScrollEvent) return;
-      if (Math.abs(val - this.data.currentScrollLeft) < 1) return;
-      this.setData({ currentScrollLeft: val });
-    }
-  },
+
   methods: {
-    initSize() {
-      const info = wx.getWindowInfo();
-      const width = info.windowWidth - 48;
-      const itemWidth = width / 24 * 1.5;
-      const chartContentWidth = Math.max(width, itemWidth * this.data.hourly.length);
-      this.setData({ canvasWidth: width, chartContentWidth });
+    // 钩子：hourly / selectedIndex 变化时，在 drawChart 前重算箭头坐标
+    _onBeforeDrawChart() {
+      this.computeArrowPositions();
     },
+
     drawChart() {
       this.initCanvas('#windCanvas', () => this._drawChart());
     },
+
+    // 计算各时刻风向箭头的 WXML 层叠位置（用于 SVG 图标定位）
     computeArrowPositions() {
       const hourly = this.data.hourly;
       if (!hourly.length) return;
@@ -116,6 +48,7 @@ Component({
       });
       this.setData({ arrowPositions: positions });
     },
+
     _drawChart() {
       const ctx = this._ctx;
       const w = this._w;
@@ -124,6 +57,8 @@ Component({
       if (!ctx || !hourly.length) return;
 
       const padL = 36, padR = 16, padT = 36, padB = 30;
+      this._chartPadL = padL;
+      this._chartPadR = padR;
       const chartW = w - padL - padR;
       const chartH = h - padT - padB;
       const count = hourly.length;
@@ -197,7 +132,6 @@ Component({
       const sel = this.data.selectedIndex;
       points.forEach((p, i) => {
         const d = hourly[i];
-
         if (i === sel) {
           ctx.fillStyle = '#4ECDC4';
           ctx.strokeStyle = '#fff';
@@ -227,25 +161,5 @@ Component({
         }
       });
     },
-    onTap(e) {
-      const hourly = this.data.hourly;
-      if (!hourly.length) return;
-      const touch = e.touches[0];
-      const w = this._w || this.data.chartContentWidth;
-      const padL = 36, padR = 16;
-      const chartW = w - padL - padR;
-      const stepX = chartW / (hourly.length - 1);
-      let idx = Math.round((touch.x - padL) / stepX);
-      idx = Math.max(0, Math.min(hourly.length - 1, idx));
-      this.triggerEvent('select', { index: idx });
-    },
-    onScroll(e) {
-      const { scrollLeft, source } = e.detail;
-      this.data.currentScrollLeft = scrollLeft;
-      if (this._suppressScrollEvent) return;
-      if (source === 'touch') {
-        this.triggerEvent('scroll', { scrollLeft, source });
-      }
-    }
   }
 })

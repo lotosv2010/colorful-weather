@@ -1,13 +1,9 @@
+const { toMin } = require('../../utils/time');
+
 const MOON_EMOJI = {
-  '新月': '🌑', '蛾眉月': '🌒', '上弦月': '🌓', '盈凸月': '🌔',
+  '新月': '🌑', '蛾眉月': '🌒', '峨眉月': '🌒', '上弦月': '🌓', '盈凸月': '🌔',
   '满月': '🌕', '亏凸月': '🌖', '下弦月': '🌗', '残月': '🌘',
 };
-
-function toMin(t) {
-  if (!t) return 0;
-  const [h, m] = t.split(':').map(Number);
-  return h * 60 + m;
-}
 
 Component({
   data: { city: '', date: '', sunrise: '', sunset: '', moonrise: '', moonset: '', moonEmoji: '🌙', moonName: '', sunProgress: 0, isDaytime: false },
@@ -24,10 +20,10 @@ Component({
         const nowMin = now.getHours() * 60 + now.getMinutes();
         const srMin = toMin(s.sunrise);
         const ssMin = toMin(s.sunset);
-        const isDaytime = nowMin >= srMin && nowMin <= ssMin;
+        const isDaytime = srMin != null && ssMin != null && nowMin >= srMin && nowMin <= ssMin;
         const progress = isDaytime
           ? Math.round(Math.max(0, Math.min(100, ((nowMin - srMin) / (ssMin - srMin)) * 100)))
-          : nowMin < srMin ? 0 : 100;
+          : (srMin != null && nowMin < srMin) ? 0 : 100;
         const moonName = s.moonPhase ? s.moonPhase.name : '';
         const moonEmoji = MOON_EMOJI[moonName] || '🌙';
         this.setData({ city, date: s.date, sunrise: s.sunrise, sunset: s.sunset, moonrise: s.moonrise, moonset: s.moonset, moonEmoji, moonName, sunProgress: progress, isDaytime });

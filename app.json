@@ -10,9 +10,9 @@
     "instruction": "AGENTS.md",
     "skills": [
       {
-        "name": "weatherSkill",
+        "name": "weather-skill",
         "description": "查询天气、空气质量、生活指数和天气预警",
-        "path": "skills/weatherSkill"
+        "path": "skills/weather-skill"
       }
     ]
   },

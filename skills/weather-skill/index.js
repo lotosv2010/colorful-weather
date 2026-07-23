@@ -11,7 +11,7 @@ const getHistoricalWeather = require('./apis/getHistoricalWeather');
 const getStationAirQuality = require('./apis/getStationAirQuality');
 const getSolarElevationAngle = require('./apis/getSolarElevationAngle');
 
-const skill = wx.modelContext.createSkill('skills/weatherSkill');
+const skill = wx.modelContext.createSkill('skills/weather-skill');
 
 skill.registerAPI('getCurrentWeather', getCurrentWeather);
 skill.registerAPI('getWeatherForecast', getWeatherForecast);

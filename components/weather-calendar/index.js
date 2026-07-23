@@ -2,19 +2,7 @@
 const api = require('../../utils/api');
 const { getLunarLabels } = require('../../utils/lunar');
 const { WEEK_LABELS } = require('../../utils/date');
-
-// 月相名称 → 图标码（对齐 moonPhase.wxs 的 800~807 体系）
-// 接口有时返回"峨眉月"，有时返回"蛾眉月"（同音异字），均兼容
-const MOON_PHASE_ICON = {
-  '新月': '800',
-  '蛾眉月': '801', '峨眉月': '801',
-  '上弦月': '802',
-  '盈凸月': '803',
-  '满月':   '804',
-  '亏凸月': '805',
-  '下弦月': '806',
-  '残月':   '807',
-};
+const { MOON_PHASE_NAME_TO_CODE } = require('../../utils/moonPhaseMeta');
 
 // ── 辅助函数 ──────────────────────────────────────────────────────────────
 // 某月天数
@@ -226,7 +214,7 @@ Component({
             sunset:        dw.sunset,
             // weatherDaily 返回月相名称，通过反向映射表推导图标码
             moonPhase:     dw.moonPhase || '',
-            moonPhaseIcon: MOON_PHASE_ICON[dw.moonPhase] || '',
+            moonPhaseIcon: MOON_PHASE_NAME_TO_CODE[dw.moonPhase] || '',
             moonrise:      dw.moonrise      || '',
             moonset:       dw.moonset       || '',
             air:           null,
