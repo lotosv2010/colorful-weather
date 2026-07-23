@@ -31,7 +31,7 @@ pages/
   weather30/                       30 天预报页（列表 / 图表 / 月历三视图、统计摘要）
   hourly/                          逐小时预报详情页（温度 / 降水 / 风力三图表联动）
   minutely/                        分钟级降水页（Canvas 2D 柱状图）
-  typhoon/                         台风路径页（原生地图、历史 / 预测轨迹、预测表格）
+  typhoon/                         台风路径页（原生地图、历史 / 预测轨迹、预测表格）【暂不启用，见下文】
   compare/                         城市对比页（2 城市实时 + 7 天温度趋势 + 空气质量对比）
   astronomy/                       天文详情页（日出日落弧线、太阳高度角全天、月相）
   trip/                            出行规划页（目标城市 + 日期 → 天气评分 + 建议）
@@ -62,8 +62,8 @@ components/
   solar-term/                      节气 / 节日高亮卡片（首页 bottom-sheet）
   weather-particles/               全屏天气粒子动效层（Canvas 2D，雨 / 雪 / 雷暴等）
   weather-decor/                   卡片右上角天气装饰层（纯 CSS 动画）
-  solar/                           太阳辐射 GHI 图表（Canvas 2D，当前未引用）
-  tide/                            潮汐高度图表（Canvas 2D，高低潮标记，当前未引用）
+  solar/                           太阳辐射 GHI 图表（Canvas 2D）【暂不启用，见下文】
+  tide/                            潮汐高度图表（Canvas 2D，高低潮标记）【暂不启用，见下文】
   hourly-temp-chart/               逐小时温度折线图（Canvas 2D，可滚动）
   hourly-precip-chart/             逐小时降水柱状 + 概率折线图（Canvas 2D）
   hourly-wind-chart/               逐小时风速图表 + 风向箭头（Canvas 2D）
@@ -186,6 +186,18 @@ static/
 - 新开发者参考 `utils/config.example.js` / `skills/weather-skill/config.example.js` 创建本地配置
 
 ⚠️ 密钥仍会随 wxapkg 包泄露，后续可考虑迁移至云函数代理。
+
+## 暂不启用的功能
+
+以下功能已完整实现，但对应的和风天气付费 API 暂未开通，故**保留代码、不配置入口**，待后续按需启用。
+
+| 功能 | 路径 | 暂停原因 | 启用方式 |
+|------|------|----------|----------|
+| 台风路径页 | `pages/typhoon/` | 台风 API（`/typhoon`）为付费接口 | 在 `components/temp/index.wxml` 添加台风预警入口按钮，调用 `utils/route.js` 跳转 |
+| 太阳辐射图表组件 | `components/solar/` | 太阳辐射 API（`/solar/radiation`）为付费接口 | 在 `pages/index/index.json` 注册 `weather-solar`，在首页 wxml 放置标签并传入数据 |
+| 潮汐图表组件 | `components/tide/` | 潮汐 API（`/ocean/tide`）为付费接口 | 在 `pages/index/index.json` 注册 `weather-tide`，在首页 wxml 放置标签并传入数据 |
+
+> `pages/typhoon` 已在 `app.json` 保持注册（页面存在），但全局无任何 `navigateTo` 入口；`components/solar` 与 `components/tide` 已从 `pages/index/index.json` 的 `usingComponents` 中移除，不占用包体。
 
 ## 已知待办与潜在问题
 

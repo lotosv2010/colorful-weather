@@ -57,13 +57,23 @@
 | 空气质量 | `pages/air` | AQI + 污染物 + 趋势 |
 | 生活指数 | `pages/life` | 16 种指数详情 |
 | 天气预警 | `pages/warning` | 预警列表 + 城市收藏 |
-| 台风路径 | `pages/typhoon` | 实时台风轨迹地图 |
+| 台风路径 | `pages/typhoon` | 实时台风轨迹地图（⚠️ 暂不启用，见下文） |
 | 天文详情 | `pages/astronomy` | 日出日落 + 太阳高度角 + 月相 |
 | 城市对比 | `pages/compare` | 2 城市天气横向对比 |
 | 出行规划 | `pages/trip` | 目的地天气评分 |
 | 分享卡片 | `pages/share` | Canvas 精美天气卡 |
 | 露营探索 | `pages/camping` | 营地 POI + 天气 |
 | 设置 | `pages/settings` | 偏好、城市、主题管理 |
+
+## 暂不启用的功能
+
+以下功能已完整实现，因对应和风天气 API 为**付费接口**暂未开通，代码保留但不对用户展示，待后续按需启用：
+
+| 功能 | 涉及文件 | 所需付费 API |
+|------|----------|-------------|
+| 台风路径页 | `pages/typhoon/` | 台风路径 `/typhoon` |
+| 太阳辐射图表 | `components/solar/` | 太阳辐射 `/solar/radiation` |
+| 潮汐高度图表 | `components/tide/` | 海洋潮汐 `/ocean/tide` |
 
 ## 快速开始
 
