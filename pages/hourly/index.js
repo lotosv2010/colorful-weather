@@ -1,13 +1,14 @@
 // pages/hourly/index.js
 const api = require('../../utils/api');
-const prefs = require('../../utils/prefs');
 const { buildPath, parsePageOptions } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
 const { getLunarLabels } = require('../../utils/lunar');
-
-const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+const { WEEK_LABELS } = require('../../utils/date');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     loading: true,
     errorMsg: '',
@@ -19,24 +20,10 @@ Page({
     city: '',
     district: '',
     detail: null,
-    tempUnit: 'C',
-    themeColor: '#1296db'
-  },
-
-  _syncPrefs() {
-    const p = prefs.getPrefs();
-    if (p.tempUnit === this.data.tempUnit && p.themeColor === this.data.themeColor) return;
-    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor });
-  },
-
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   onLoad(options) {
     this._loadStart = Date.now();
-    this._syncPrefs();
-    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const { location, province, city, district } = parsePageOptions(options);
     const { hour, date } = options;
     if (!location) {
@@ -85,7 +72,7 @@ Page({
         return {
           ...item,
           hour: item.fxTime.substr(11, 2),
-          week: weekMap[date.getDay()],
+          week: WEEK_LABELS[date.getDay()],
           datePart,
           timePart,
           dateLabel: `${datePart} ${timePart}`

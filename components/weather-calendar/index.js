@@ -1,8 +1,7 @@
 // components/weather-calendar/index.js
 const api = require('../../utils/api');
 const { getLunarLabels } = require('../../utils/lunar');
-
-const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+const { WEEK_LABELS } = require('../../utils/date');
 
 // 月相名称 → 图标码（对齐 moonPhase.wxs 的 800~807 体系）
 // 接口有时返回"峨眉月"，有时返回"蛾眉月"（同音异字），均兼容
@@ -207,7 +206,7 @@ Component({
 
           this._histCache[ds] = {
             fxDate:        ds,
-            week:          weekMap[new Date(y, mo - 1, day).getDay()],
+            week:          WEEK_LABELS[new Date(y, mo - 1, day).getDay()],
             dateLabel:     `${mo}月${day}日`,
             lunarLabel:    lunarMap[ds] || '',
             iconDay:       noon  ? noon.icon  : '100',

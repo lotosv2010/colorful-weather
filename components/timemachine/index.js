@@ -1,5 +1,6 @@
 // components/timemachine/index.js
 const { historicalWeather, historicalAir } = require('../../utils/api');
+const { WEEK_LABELS } = require('../../utils/date');
 const { convert, fmt: fmtTemp } = require('../../utils/temp');
 const { AQI_LEVEL_COLORS } = require('../../utils/airMeta');
 
@@ -16,7 +17,7 @@ const buildDateList = (days = 10) => {
     list.push({
       key: `${y}${m}${day}`,
       label: `${d.getMonth() + 1}/${d.getDate()}`,
-      weekday: i === 1 ? '昨天' : ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][d.getDay()],
+      weekday: i === 1 ? '昨天' : WEEK_LABELS[d.getDay()],
     });
   }
   return list;

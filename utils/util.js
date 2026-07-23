@@ -8,13 +8,18 @@ const formatDate = (date) => {
 // RGBA 对象 → hex 字符串
 const toHex = (c = {}) => `#${c.red.toString(16).padStart(2, '0')}${c.green.toString(16).padStart(2, '0')}${c.blue.toString(16).padStart(2, '0')}`;
 
-// 根据背景色计算文字颜色（深色背景用白色，浅色背景用深色）
+// 根据 RGB 分量判断文字颜色（深色背景→白色，浅色背景→深色）
+const getTextColorRgb = (r, g, b) => {
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 128 ? '#333' : '#fff';
+};
+
+// 根据背景色（hex 字符串）计算文字颜色
 const getTextColor = (hexColor) => {
   const r = parseInt(hexColor.substr(1, 2), 16);
   const g = parseInt(hexColor.substr(3, 2), 16);
   const b = parseInt(hexColor.substr(5, 2), 16);
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 128 ? '#333' : '#fff';
+  return getTextColorRgb(r, g, b);
 };
 
 // utcOffset 如 "+08:00" → 相对本地时差文字："早Xh" / "晚Xh" / ""（同区返回空串）
@@ -71,6 +76,7 @@ module.exports = {
   formatDate,
   toHex,
   getTextColor,
+  getTextColorRgb,
   tzDiffText,
   buildLocationLabel,
 };

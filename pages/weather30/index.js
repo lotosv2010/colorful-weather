@@ -1,5 +1,6 @@
 const api = require('../../utils/api');
 const { formatDate, toHex, getTextColor } = require('../../utils/util');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 
 // hex 主题色 → "r,g,b" 字符串（供 rgba() 内联使用）
 const hexToRgbStr = (hex) => {
@@ -25,8 +26,7 @@ const { getLunarLabels } = require('../../utils/lunar');
 const prefs = require('../../utils/prefs');
 const { buildPath, parsePageOptions } = require('../../utils/route');
 const monitor = require('../../utils/monitor');
-
-const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+const { WEEK_LABELS } = require('../../utils/date');
 
 // 扁平化单个值：对象/数组→简单值
 const flattenVal = (val) => {
@@ -54,6 +54,8 @@ const flattenObj = (obj) => {
 };
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     loading: true,
     errorMsg: '',
@@ -70,15 +72,13 @@ Page({
     // 默认展示月历 tab
     activeTab: 'calendar',
     updateTime: '',
-    tempUnit: 'C',
-    themeColor: '#1296db',
   },
 
+  // 覆盖 prefsBehavior 的默认 _syncPrefs：主题色变化时额外重算热力格
   _syncPrefs() {
     const p = prefs.getPrefs();
     if (p.tempUnit === this.data.tempUnit && p.themeColor === this.data.themeColor) return;
     const patch = { tempUnit: p.tempUnit, themeColor: p.themeColor };
-    // 主题色变化时同步重算热力格颜色
     if (p.themeColor !== this.data.themeColor && this.data.daily.length) {
       const { cells, legend } = this.computeHeatmap(this.data.daily, p.themeColor);
       patch.heatCells = cells;
@@ -87,14 +87,8 @@ Page({
     this.setData(patch);
   },
 
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
-  },
-
   onLoad(options) {
     this._loadStart = Date.now();
-    this._syncPrefs();
-    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const { location, province, city, district, cityId } = parsePageOptions(options);
     const { date } = options;
     if (!location) {
@@ -129,7 +123,7 @@ Page({
         const date = new Date(item.fxDate);
         return {
           ...flattenObj(item),
-          week:      weekMap[date.getDay()],
+          week:      WEEK_LABELS[date.getDay()],
           month:     date.getMonth() + 1,
           day:       date.getDate(),
           dateLabel: `${date.getMonth() + 1}月${date.getDate()}日`

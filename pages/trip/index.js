@@ -2,9 +2,11 @@
 const { sevenDay, indices3d, air } = require('../../utils/api');
 const { getDefinition, getColor } = require('../../utils/lifeMeta');
 const { toHex } = require('../../utils/util');
-const prefs = require('../../utils/prefs');
 const { convert } = require('../../utils/temp');
 const monitor = require('../../utils/monitor');
+const { ADVICE_GRADE_MAP } = require('../../utils/tripAdvice');
+const { WEEK_LABELS } = require('../../utils/date');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 
 // 安全取数字
 const safeNum = (val, fb = 0) => {
@@ -19,20 +21,8 @@ const AQI_COLORS = {
   '4': '#ff9800', '5': '#f44336', '6': '#b71c1c',
 };
 
-// 出行建议评级配置
-const GRADE_MAP = [
-  { minScore: 4,  icon: '🌟', label: '晴好出行',         color: '#4caf50' },
-  { minScore: 2,  icon: '👍', label: '适合出行',         color: '#8bc34a' },
-  { minScore: 0,  icon: '☂️', label: '可以出行，建议备伞', color: '#ffb300' },
-  { minScore: -2, icon: '⚠️', label: '谨慎出行，做好防护', color: '#ff9800' },
-  { minScore: -99,icon: '🚫', label: '不建议出行',        color: '#f44336' },
-];
-
 // 重点展示的生活指数 type（旅游/穿衣/运动/感冒）
 const KEY_INDEX_TYPES = ['6', '3', '1', '9'];
-
-// 星期标签
-const WEEK_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
 // YYYY-MM-DD → { week, dateLabel }
 const parseDateParts = (s) => {
@@ -52,6 +42,8 @@ const parseDateParts = (s) => {
 };
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     city: null,             // { location, name, province, district }
     daily: [],              // 7天预报（带 week/dateLabel 预处理）
@@ -60,8 +52,6 @@ Page({
     loading: false,
     errorMsg: '',
     selectorVisible: false,
-    tempUnit: 'C',
-    themeColor: '#1296db',
   },
 
   // 内部缓存（不入 data，避免触发渲染）
@@ -71,12 +61,6 @@ Page({
 
   onLoad(options = {}) {
     this._loadStart = Date.now();
-    const p = prefs.getPrefs();
-    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor || '#1296db' });
-    this._unsubPrefs = prefs.subscribe(up => {
-      const changed = up.tempUnit !== this.data.tempUnit || up.themeColor !== this.data.themeColor;
-      if (changed) this.setData({ tempUnit: up.tempUnit, themeColor: up.themeColor });
-    });
 
     // 解析可选预填城市（loc/n/p/d）
     const city = this._parseCity(options);
@@ -88,10 +72,6 @@ Page({
 
   onReady() {
     monitor.recordPageLoad('/pages/trip/index', this._loadStart);
-  },
-
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   // 解析 URL 城市参数
@@ -307,7 +287,7 @@ Page({
     }
 
     // 匹配评级
-    const grade = GRADE_MAP.find(g => score >= g.minScore) || GRADE_MAP[GRADE_MAP.length - 1];
+    const grade = ADVICE_GRADE_MAP.find(g => score >= g.minScore) || ADVICE_GRADE_MAP[ADVICE_GRADE_MAP.length - 1];
 
     return {
       score,

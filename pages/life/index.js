@@ -1,9 +1,10 @@
 // pages/life/index.js
 const { indices3d, indices: indices1d } = require('../../utils/api');
 const { getDefinition, getColor, getMaxLevel } = require('../../utils/lifeMeta');
-const prefs = require('../../utils/prefs');
 const { buildPath, parsePageOptions } = require('../../utils/route');
+const { WEEK_LABELS } = require('../../utils/date');
 const monitor = require('../../utils/monitor');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 
 // 全量 16 类生活指数（无 SVG 的用文字兜底显示在圆内）
 const DEFAULT_TYPES = [
@@ -27,7 +28,6 @@ const DEFAULT_TYPES = [
 
 // YYYY-MM-DD → { week, dateLabel }
 const formatDateParts = (s) => {
-  const weekArr = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   if (!s) return { week: '', dateLabel: '' };
   const [y, m, d] = s.split('-').map(Number);
   const date = new Date(y, m - 1, d);
@@ -36,12 +36,14 @@ const formatDateParts = (s) => {
                   date.getMonth() === today.getMonth() &&
                   date.getDate() === today.getDate();
   return {
-    week: isToday ? '今天' : weekArr[date.getDay()],
+    week: isToday ? '今天' : WEEK_LABELS[date.getDay()],
     dateLabel: `${m}月${d}日`
   };
 };
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     location: '',
     province: '',
@@ -54,23 +56,10 @@ Page({
     definition: {},
     loading: false,
     errorMsg: '',
-    themeColor: '#1296db'
-  },
-
-  _syncPrefs() {
-    const p = prefs.getPrefs();
-    if (p.themeColor === this.data.themeColor) return;
-    this.setData({ themeColor: p.themeColor });
-  },
-
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   onLoad(options = {}) {
     this._loadStart = Date.now();
-    this._syncPrefs();
-    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
     const { location, province, city, district } = parsePageOptions(options);
     const activeType = options.type && this.matchType(options.type) ? options.type : '1';
     this.setData({ location, province, city, district, activeType, definition: getDefinition(activeType) });

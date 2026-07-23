@@ -2,10 +2,12 @@
 const { sun, moon, solarElevationAngle } = require('../../utils/api');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
-const prefs = require('../../utils/prefs');
 const { parsePageOptions } = require('../../utils/route');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     location: '',
     province: '',
@@ -13,7 +15,6 @@ Page({
     district: '',
     loading: false,
     errorMsg: '',
-    themeColor: '',
 
     // 日期导航（前后各 3 天，共 7 项）
     dates: [],
@@ -52,12 +53,6 @@ Page({
     const { location, province, city, district } = parsePageOptions(options);
     this.setData({ location, province, city, district });
 
-    const p = prefs.getPrefs();
-    this.setData({ themeColor: p.themeColor || '' });
-    this._unsubPrefs = prefs.subscribe(up => {
-      this.setData({ themeColor: up.themeColor || '' });
-    });
-
     this._initDates();
 
     if (location) {
@@ -65,10 +60,6 @@ Page({
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
     }
-  },
-
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   onReady() {

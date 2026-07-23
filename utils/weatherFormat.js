@@ -2,6 +2,7 @@
 // 天气数据格式化工具（纯函数，供 index 页面及未来其他页面复用）
 
 const { getLunarLabels } = require('./lunar');
+const { WEEK_LABELS } = require('./date');
 
 // 逐小时预报：从 fxTime 中提取 "HH" 小时字段
 function formatHourly(data = []) {
@@ -14,15 +15,6 @@ function formatHourly(data = []) {
 
 // 逐日预报：为每条记录附加 week（今天/周X）、month、day、lunarLabel
 function formatDaily(data = []) {
-  const weekMap = new Map([
-    [1, '周一'],
-    [2, '周二'],
-    [3, '周三'],
-    [4, '周四'],
-    [5, '周五'],
-    [6, '周六'],
-    [0, '周日'],
-  ]);
   const today = new Date();
   const mapped = data.map(d => {
     const res = { ...d };
@@ -30,7 +22,7 @@ function formatDaily(data = []) {
     const isToday = date.getFullYear() === today.getFullYear() &&
                     date.getMonth() === today.getMonth() &&
                     date.getDate() === today.getDate();
-    res.week = isToday ? '今天' : weekMap.get(date.getDay());
+    res.week = isToday ? '今天' : WEEK_LABELS[date.getDay()];
     res.month = date.getMonth() + 1;
     res.day = `${date.getDate()}`.padStart(2, '0');
     return res;

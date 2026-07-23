@@ -2,10 +2,11 @@
 const { sevenDay, indices3d, air } = require('../../utils/api');
 const { getDefinition, getColor } = require('../../utils/lifeMeta');
 const { toHex } = require('../../utils/util');
-const prefs = require('../../utils/prefs');
 const { convert } = require('../../utils/temp');
 const monitor = require('../../utils/monitor');
 const QQMapWX = require('../../libs/qqmap-wx-jssdk.min');
+const { WEEK_LABELS } = require('../../utils/date');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 const app = getApp();
 
 // 安全取数字
@@ -34,9 +35,6 @@ const CAMPING_GRADE_MAP = [
 // 重点展示的生活指数（旅游/运动/穿衣/感冒）
 const KEY_INDEX_TYPES = ['6', '1', '3', '9'];
 
-// 星期标签
-const WEEK_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-
 // YYYY-MM-DD → { week, dateLabel }
 const parseDateParts = (s) => {
   if (!s) return { week: '', dateLabel: '' };
@@ -55,6 +53,8 @@ const parseDateParts = (s) => {
 };
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     city: null,              // { location, name, province, district }
     pois: [],                // 营地 POI 列表（展示用）
@@ -67,8 +67,6 @@ Page({
     errorMsg: '',
     selectorVisible: false,
     scrollToPoiId: '',       // scroll-into-view 目标 id，驱动横滚条定位
-    tempUnit: 'C',
-    themeColor: '#1296db',
   },
 
   // 私有变量（不入 data，避免触发渲染）
@@ -81,13 +79,6 @@ Page({
     this._loadStart = Date.now();
     // 初始化腾讯地图 SDK
     this.qqmapsdk = new QQMapWX({ key: app.globalData.lbs.key });
-
-    const p = prefs.getPrefs();
-    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor || '#1296db' });
-    this._unsubPrefs = prefs.subscribe(up => {
-      const changed = up.tempUnit !== this.data.tempUnit || up.themeColor !== this.data.themeColor;
-      if (changed) this.setData({ tempUnit: up.tempUnit, themeColor: up.themeColor });
-    });
 
     // 解析 URL 参数（从首页露营 marker tips 跳转时传入）
     const city = this._parseCity(options);
@@ -106,10 +97,6 @@ Page({
 
   onReady() {
     monitor.recordPageLoad('/pages/camping/index', this._loadStart);
-  },
-
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   // 解析 URL 城市参数

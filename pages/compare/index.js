@@ -4,6 +4,8 @@ const { toHex } = require('../../utils/util');
 const prefs = require('../../utils/prefs');
 const { convert } = require('../../utils/temp');
 const monitor = require('../../utils/monitor');
+const { WEEK_LABELS } = require('../../utils/date');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 
 // 安全取数值
 const safeNum = (val, fallback = 0) => {
@@ -26,6 +28,8 @@ const AQI_LEVEL_COLORS = {
 const COLOR_B = '#FF9B50';
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     // 城市信息：{ location, name, province, district }
     city1: null,
@@ -47,25 +51,21 @@ Page({
     // 城市选择面板
     selectorTarget: null,   // 'c1' | 'c2'
     selectorVisible: false,
-    // 偏好
-    tempUnit: 'C',
-    themeColor: '#1296db',
+  },
+
+  // 覆盖 prefsBehavior 的默认 _syncPrefs：温度单位变化时需重绘图表
+  _syncPrefs() {
+    const p = prefs.getPrefs();
+    const changed = p.tempUnit !== this.data.tempUnit || p.themeColor !== this.data.themeColor;
+    if (!changed) return;
+    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor });
+    if (this.data.daily1.length || this.data.daily2.length) {
+      wx.nextTick(() => this._drawChart());
+    }
   },
 
   onLoad(options = {}) {
     this._loadStart = Date.now();
-    const p = prefs.getPrefs();
-    this.setData({ tempUnit: p.tempUnit, themeColor: p.themeColor || '#1296db' });
-    this._unsubPrefs = prefs.subscribe(up => {
-      const changed = up.tempUnit !== this.data.tempUnit || up.themeColor !== this.data.themeColor;
-      if (changed) {
-        this.setData({ tempUnit: up.tempUnit, themeColor: up.themeColor });
-        // 温度单位变化时重绘图表
-        if (this.data.daily1.length || this.data.daily2.length) {
-          wx.nextTick(() => this._drawChart());
-        }
-      }
-    });
 
     // 解析 URL 参数（可选预填城市）
     const city1 = this._parseCity(options, '1');
@@ -80,10 +80,6 @@ Page({
 
   onReady() {
     monitor.recordPageLoad('/pages/compare/index', this._loadStart);
-  },
-
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   // 解析 URL 中的城市参数：loc1/n1/p1/d1 或 loc2/n2/p2/d2
@@ -159,13 +155,12 @@ Page({
   // 解析 7 天预报（取前 7 条，保留高低温和日期）
   _processDaily(res) {
     if (!res || res.code !== '200' || !res.daily) return [];
-    const weekMap = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
     return res.daily.slice(0, 7).map(d => {
       const parts = (d.fxDate || '').split('-');
       const dateObj = parts.length === 3 ? new Date(parts[0], parts[1] - 1, parts[2]) : new Date();
       return {
         date: d.fxDate,
-        week: weekMap[dateObj.getDay()],
+        week: WEEK_LABELS[dateObj.getDay()],
         dateLabel: `${parseInt(parts[1] || 1)}/${parseInt(parts[2] || 1)}`,
         tempMax: safeNum(d.tempMax),
         tempMin: safeNum(d.tempMin),

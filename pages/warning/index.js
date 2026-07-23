@@ -1,18 +1,14 @@
 // pages/warning/index.js
 const { warning } = require('../../utils/api');
+const { getTextColorRgb } = require('../../utils/util');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
 const prefs = require('../../utils/prefs');
 const { parsePageOptions } = require('../../utils/route');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 
 // RGBA 对象 → CSS 颜色值
 const toRgba = (c = {}) => `rgba(${c.red || 0},${c.green || 0},${c.blue || 0},${c.alpha != null ? c.alpha : 1})`;
-
-// 根据背景色亮度计算文字颜色
-const getTextColor = (r, g, b) => {
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 128 ? '#333' : '#fff';
-};
 
 // 格式化时间：ISO → YYYY-MM-DD HH:mm
 const fmtTime = (t) => {
@@ -56,13 +52,14 @@ const MSG_TYPE_MAP = {
 };
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     location: '',
     province: '',
     city: '',
     district: '',
     cityId: '',
-    themeColor: '#1296db',
     isFavorite: false,
     alerts: [],
     attributions: '',
@@ -70,17 +67,21 @@ Page({
     errorMsg: ''
   },
 
+  // 覆盖 prefsBehavior 的默认 _syncPrefs：额外同步收藏状态
+  _syncPrefs() {
+    const p = prefs.getPrefs();
+    const { cityId } = this.data;
+    this.setData({
+      themeColor: p.themeColor,
+      isFavorite: cityId ? !!prefs.findCity(cityId) : false,
+    });
+  },
+
   onLoad(options = {}) {
     this._loadStart = Date.now();
     const { location, province, city, district, cityId } = parsePageOptions(options);
-
-    // 订阅偏好（主题色 + 收藏状态同步）
-    this._unsubPrefs = prefs.subscribe(() => this._syncPrefs());
-    const p = prefs.getPrefs();
-
     this.setData({
       location, province, city, district, cityId,
-      themeColor: p.themeColor,
       isFavorite: cityId ? !!prefs.findCity(cityId) : false,
     });
 
@@ -89,19 +90,6 @@ Page({
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
     }
-  },
-
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
-  },
-
-  _syncPrefs() {
-    const p = prefs.getPrefs();
-    const { cityId } = this.data;
-    this.setData({
-      themeColor: p.themeColor,
-      isFavorite: cityId ? !!prefs.findCity(cityId) : false,
-    });
   },
 
   onReady() {
@@ -122,7 +110,7 @@ Page({
       const alerts = res.alerts.map(a => {
         const c = a.color || {};
         const bgColor = toRgba(c);
-        const textColor = getTextColor(c.red || 0, c.green || 0, c.blue || 0);
+        const textColor = getTextColorRgb(c.red || 0, c.green || 0, c.blue || 0);
         const code = a.messageType?.code;
         return {
           ...a,
@@ -145,7 +133,6 @@ Page({
 
       this.setData({ alerts, attributions });
     } catch (e) {
-      console.log(e);
       monitor.recordError('page', e?.message || '预警数据加载失败', { page: '/pages/warning/index', stack: e?.stack });
       this.setData({ errorMsg: '网络异常，请稍后重试' });
     } finally {

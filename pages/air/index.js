@@ -3,13 +3,16 @@ const { air, airHourly, airDaily } = require('../../utils/api');
 const { toHex, getTextColor } = require('../../utils/util');
 const share = require('../../utils/share');
 const monitor = require('../../utils/monitor');
-const prefs = require('../../utils/prefs');
 const { parsePageOptions } = require('../../utils/route');
+const { WEEK_LABELS } = require('../../utils/date');
+const prefsBehavior = require('../../behaviors/prefsBehavior');
 
 // 各污染物浓度参考上限（用于进度条归一化）
 const POLLUTANT_MAX = { pm2p5: 250, pm10: 600, no2: 200, so2: 150, co: 35, o3: 200 };
 
 Page({
+  behaviors: [prefsBehavior],
+
   data: {
     location: '',
     province: '',
@@ -29,27 +32,17 @@ Page({
     stations: [],    // 周边监测站名称列表
     loading: false,
     errorMsg: '',
-    themeColor: ''
   },
 
   onLoad(options = {}) {
     this._loadStart = Date.now();
     const { location, province, city, district } = parsePageOptions(options);
     this.setData({ location, province, city, district });
-    const p = prefs.getPrefs();
-    this.setData({ themeColor: p.themeColor || '' });
-    this._unsubPrefs = prefs.subscribe(up => {
-      this.setData({ themeColor: up.themeColor || '' });
-    });
     if (location) {
       this.loadData();
     } else {
       this.setData({ errorMsg: '缺少城市定位' });
     }
-  },
-
-  onUnload() {
-    if (this._unsubPrefs) this._unsubPrefs();
   },
 
   onReady() {
@@ -208,7 +201,7 @@ Page({
   },
 
   processDaily(list) {
-    const weekArr = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
     const daily = list.map(item => {
       const idx = (item.indexes && item.indexes[0]) || {};
       const dateStr = (item.forecastStartTime || '').substr(0, 10);
@@ -221,7 +214,7 @@ Page({
       const bgColor = idx.color ? toHex(idx.color) : '#9BB365';
       return {
         date: dateStr,
-        week: isToday ? '今天' : weekArr[dateObj.getDay()],
+        week: isToday ? '今天' : WEEK_LABELS[dateObj.getDay()],
         dateLabel: `${parseInt(parts[1])}月${parseInt(parts[2])}日`,
         name: idx.name || 'AQI',
         aqi: idx.aqi,
