@@ -183,17 +183,22 @@ Page({
     const { locationLabel, currentWeather, tempUnit } = this.data;
     const tempStr = currentWeather && currentWeather.temp != null ? `${fmtTemp(currentWeather.temp, tempUnit)}°` : '';
     const text = currentWeather && currentWeather.text ? `${currentWeather.text} ${tempStr}` : '实时天气';
+    // 优先使用 pages/share 生成的精美卡片，未生成时降级为兜底封面
+    const imageUrl = app.globalData.sharePreviewPath || '/static/app.jpg';
     return {
       title: `${locationLabel || '我的位置'}：${text}`,
-      path: '/pages/index/index'
+      path: '/pages/index/index',
+      imageUrl
     };
   },
   onShareTimeline() {
     const { locationLabel, currentWeather, tempUnit } = this.data;
     const tempStr = currentWeather && currentWeather.temp != null ? `${fmtTemp(currentWeather.temp, tempUnit)}°` : '';
+    const imageUrl = app.globalData.sharePreviewPath || '/static/app.jpg';
     return {
       title: `${locationLabel || '我的位置'} 天气 ${tempStr}`,
-      query: ''
+      query: '',
+      imageUrl
     };
   },
 

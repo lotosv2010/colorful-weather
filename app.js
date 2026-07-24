@@ -51,5 +51,6 @@ App({
     needForceRefresh: false,
     agentHandoffs: {},
     shareData: null,         // 天气分享快照（index → share 页单次传递）
+    sharePreviewPath: null,  // 分享卡片缓存路径（pages/share 绘制完成后写入，首页分享时读取）
   }
 })

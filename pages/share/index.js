@@ -136,6 +136,12 @@ Page({
     ctx.scale(dpr, dpr);
     this._canvas = canvas;
     drawShareCard(ctx, W, H, this._raw, this.data.tempUnit, this._qiFontLoaded);
+
+    // 静默导出临时路径，缓存到 globalData 供首页 onShareAppMessage 使用
+    // 不 await，不阻塞页面交互；失败时忽略（首页会降级到 /static/app.jpg）
+    this._exportCanvas().then(path => {
+      getApp().globalData.sharePreviewPath = path;
+    }).catch(() => {});
   },
 
   // ── 保存到相册 ──────────────────────────────────────────────────────────────
