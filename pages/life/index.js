@@ -144,14 +144,15 @@ Page({
     const { district, city, definition } = this.data;
     const title = `${district || city || ''} ${definition && definition.name ? definition.name + '指数' : '生活指数'}`;
     const p = this._shareParams();
-    return { title, path: buildPath('/pages/life/index', p) };
+    return { title, path: buildPath('/pages/life/index', p), imageUrl: '/static/app.jpg' };
   },
   onShareTimeline() {
     const { district, city, definition } = this.data;
     const p = this._shareParams();
     return {
       title: `${district || city || ''} ${definition && definition.name ? definition.name + '指数' : '生活指数'}`,
-      query: buildPath('/pages/life/index', p).split('?')[1] || ''
+      query: buildPath('/pages/life/index', p).split('?')[1] || '',
+      imageUrl: '/static/app.jpg'
     };
   }
 });

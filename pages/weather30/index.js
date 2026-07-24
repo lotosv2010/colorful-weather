@@ -316,14 +316,15 @@ Page({
   onShareAppMessage() {
     const { district, city, province } = this.data;
     const path = buildPath('/pages/weather30/index', { location: this.location || '', province, city, district });
-    return { title: `${district || city || ''} 未来 30 天天气`, path };
+    return { title: `${district || city || ''} 未来 30 天天气`, path, imageUrl: '/static/app.jpg' };
   },
   onShareTimeline() {
     const { district, city, province } = this.data;
     const path = buildPath('/pages/weather30/index', { location: this.location || '', province, city, district });
     return {
       title: `${district || city || ''} 30 天天气趋势`,
-      query: path.split('?')[1] || ''
+      query: path.split('?')[1] || '',
+      imageUrl: '/static/app.jpg'
     };
   }
 });

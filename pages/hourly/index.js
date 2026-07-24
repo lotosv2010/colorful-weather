@@ -134,14 +134,16 @@ Page({
     const { district, city } = this.data;
     return {
       title: `${district || city || ''} 逐小时天气预报`,
-      path: this._sharePath()
+      path: this._sharePath(),
+      imageUrl: '/static/app.jpg'
     };
   },
   onShareTimeline() {
     const { district, city } = this.data;
     return {
       title: `${district || city || ''} 逐小时天气预报`,
-      query: this._sharePath().split('?')[1] || ''
+      query: this._sharePath().split('?')[1] || '',
+      imageUrl: '/static/app.jpg'
     };
   }
 });

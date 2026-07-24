@@ -173,14 +173,15 @@ Page({
   onShareAppMessage() {
     const { city, district, province, summary } = this.data;
     const path = buildPath('/pages/minutely/index', { location: this._location || '', province, city, district });
-    return { title: `${district || city || ''} ${summary || '分钟级降水'}`, path };
+    return { title: `${district || city || ''} ${summary || '分钟级降水'}`, path, imageUrl: '/static/app.jpg' };
   },
   onShareTimeline() {
     const { city, district, province, summary } = this.data;
     const path = buildPath('/pages/minutely/index', { location: this._location || '', province, city, district });
     return {
       title: `${district || city || ''} ${summary || '分钟级降水'}`,
-      query: path.split('?')[1] || ''
+      query: path.split('?')[1] || '',
+      imageUrl: '/static/app.jpg'
     };
   }
 });
